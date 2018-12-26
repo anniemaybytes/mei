@@ -1,0 +1,18 @@
+# EditorConfig is awesome: http://EditorConfig.org
+
+root = true
+
+[*]
+insert_final_newline = true
+charset = utf-8
+
+[*.{yml,yaml,json}]
+indent_style = space
+indent_size = 4
+
+[*.{js,php,css,xml}]
+indent_style = space
+indent_size = 4
+
+[*.twig]
+insert_final_newline = false

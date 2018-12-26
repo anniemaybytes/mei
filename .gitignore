@@ -1,0 +1,28 @@
+# dev stuff (IDE configs etc)
+.idea/
+composer.phar
+nbproject/*
+.vagrant/*
+.buildpath/*
+.project/*
+.settings/*
+desktop.ini
+.buildpath
+.project
+
+# general extensions of files we dont want
+*.sql.gz
+*.sql
+*.log
+*.mmdb
+
+# dynamic vendor stuff
+vendor/*
+node_modules/*
+
+# project dirs
+images/*
+deleted/*
+
+# project files
+/config/config.ini

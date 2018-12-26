@@ -1,0 +1,3 @@
+Package: *
+Pin: origin ams2.mirrors.digitalocean.com
+Pin-Priority: 900

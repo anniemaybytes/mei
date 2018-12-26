@@ -1,0 +1,27 @@
+server {
+  listen 80;
+  server_name_in_redirect on;
+  charset utf-8;
+  server_name mei.animebytes.local;
+  access_log off;
+
+  client_max_body_size 25m;
+
+  root   /code/public;
+  index  index.php;
+
+  location / {
+    try_files $uri $uri/ /index.php?$args;
+  }
+
+  location /index.php {
+    include        fastcgi_params;
+    fastcgi_param  HTTPS on;
+    fastcgi_param  SCRIPT_FILENAME   $document_root$fastcgi_script_name;
+    if ($uri !~ "^/images/") {
+      fastcgi_pass unix:/var/run/php7.0-fpm.www.sock;
+    }
+    fastcgi_index  index.php;
+    fastcgi_read_timeout 300;
+  }
+}

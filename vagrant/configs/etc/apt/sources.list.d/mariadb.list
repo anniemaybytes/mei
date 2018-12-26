@@ -1,0 +1,2 @@
+deb [arch=amd64,i386] http://ams2.mirrors.digitalocean.com/mariadb/repo/10.2/debian stretch main
+deb-src [arch=amd64,i386] http://ams2.mirrors.digitalocean.com/mariadb/repo/10.2/debian stretch main
