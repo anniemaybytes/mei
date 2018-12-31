@@ -79,7 +79,7 @@ class ServeCtrl extends \Mei\Controller\BaseCtrl
         $response = $response->withHeader('Content-Type', $meta['mime']);
         $response = $response->withHeader('Content-Length', $meta['size']);
         $response = $response->withHeader('Cache-Control', 'public, max-age='.(strtotime('+30 days')-time()));
-        $response = $response->withHeader('ETag', $eTag);
+        $response = $response->withHeader('ETag', '"' . $eTag . '"');
         $response = $response->withHeader('Expires', date('r', strtotime('+30 days')));
         $response = $response->withHeader('Last-Modified', date('r', $timeStamp));
 
