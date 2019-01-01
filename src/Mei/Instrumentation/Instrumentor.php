@@ -1,6 +1,7 @@
 <?php
-
 namespace Mei\Instrumentation;
+
+use Exception;
 
 class Instrumentor
 {
@@ -47,7 +48,7 @@ class Instrumentor
     {
         if (!$this->enabled) return;
         if (!array_key_exists($event_id, $this->eventLog)) {
-            throw new \Exception("Trying to end event that hasn't happened");
+            throw new Exception("Trying to end event that hasn't happened");
         }
 
         $now = $this->now();

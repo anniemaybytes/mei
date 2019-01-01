@@ -1,8 +1,9 @@
 <?php
-
 namespace Mei\Exception;
 
-class GeneralException extends \Exception
+use Exception;
+
+class GeneralException extends Exception
 {
     private $description;
 

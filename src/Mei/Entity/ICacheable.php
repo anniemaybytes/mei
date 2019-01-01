@@ -1,6 +1,7 @@
 <?php
-
 namespace Mei\Entity;
+
+use Mei\Cache\IKeyStore;
 
 /**
  *
@@ -69,17 +70,15 @@ interface ICacheable
 
     /**
      * Store the values into cache
-     * @param \Mei\Cache\IKeyStore $cache
-     * @return
+     * @param IKeyStore $cache
      */
-    public function save(\Mei\Cache\IKeyStore $cache);
+    public function save(IKeyStore $cache);
 
     /**
      * Delete the values from cache
-     * @param \Mei\Cache\IKeyStore $cache
-     * @return
+     * @param IKeyStore $cache
      */
-    public function delete(\Mei\Cache\IKeyStore $cache);
+    public function delete(IKeyStore $cache);
 
     /**
      * Get the data that gets stored into cache

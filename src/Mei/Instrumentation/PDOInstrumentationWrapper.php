@@ -1,11 +1,14 @@
 <?php
-
 namespace Mei\Instrumentation;
+
+use Exception;
+use PDO;
+use PDOException;
 
 class PDOInstrumentationWrapper
 {
     private $instrumentor;
-    /** @var $pdo \PDO **/
+    /** @var $pdo PDO **/
     private $pdo;
     private $transactionQueue = array();
     public $pdoQueries = array();
@@ -85,7 +88,7 @@ class PDOInstrumentationWrapper
                 $res = $this->pdo->query($statement, $type, $type_arg, $ctorarg);
                 break;
             default:
-                throw new \Exception("PDOInstrumentationWrapper can't handle query with " . $n . " additional arguments");
+                throw new Exception("PDOInstrumentationWrapper can't handle query with " . $n . " additional arguments");
                 break;
         }
         $this->instrumentor->end($iid);
@@ -109,7 +112,7 @@ class PDOInstrumentationWrapper
         try {
             $res = $this->pdo->exec($statement);
             $this->pdoQueries[$hash] = array('query' => $statement, 'method' => 'exec');
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             if (!in_array($e->errorInfo[1], array(1213, 1205)) || $retries < 0) {
                 $this->pdoQueries[$hash] = array('query' => $statement, 'method' => 'exec', 'error' => $e->errorInfo);
                 throw $e;
@@ -131,7 +134,7 @@ class PDOInstrumentationWrapper
         return call_user_func_array(array($this->pdo, $method), $args);
     }
 
-    public function quote($string, $parameter_type = \PDO::PARAM_STR)
+    public function quote($string, $parameter_type = PDO::PARAM_STR)
     {
         $iid = $this->instrumentor->start('pdo:quote:'. md5($string.$parameter_type), $string . '_' . $parameter_type);
         $res = $this->pdo->quote($string, $parameter_type);

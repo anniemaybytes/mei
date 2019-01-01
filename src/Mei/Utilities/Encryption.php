@@ -1,6 +1,7 @@
 <?php
-
 namespace Mei\Utilities;
+
+use Exception;
 
 class Encryption
 {
@@ -37,7 +38,7 @@ class Encryption
                 $r = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $this->encryptionKey, $unpaddedCryptedData, MCRYPT_MODE_CBC,$initVector));
                 if(!$r) return false;
                 return $r;
-            } catch(\Exception $e) { return false; }
+            } catch(Exception $e) { return false; }
         } else {
             return "";
         }

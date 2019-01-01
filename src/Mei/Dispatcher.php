@@ -2,10 +2,11 @@
 namespace Mei;
 
 use Mei\Route as R;
+use Slim\App;
 
 class Dispatcher extends Singleton
 {
-    /** @var \Slim\App $app */
+    /** @var App $app */
     private $app;
 
     private $config;
@@ -15,7 +16,7 @@ class Dispatcher extends Singleton
     /**
      * Returns the slim application object
      *
-     * @return \Slim\App
+     * @return App
      */
     public static function app()
     {
@@ -59,7 +60,7 @@ class Dispatcher extends Singleton
 
     private function initApplication()
     {
-        $app = new \Slim\App($this->di);
+        $app = new App($this->di);
 
         $routes = array(
             new R\Main($app),

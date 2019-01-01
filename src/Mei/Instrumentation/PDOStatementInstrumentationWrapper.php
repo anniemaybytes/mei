@@ -1,6 +1,7 @@
 <?php
-
 namespace Mei\Instrumentation;
+
+use PDOException;
 
 class PDOStatementInstrumentationWrapper
 {
@@ -40,7 +41,7 @@ class PDOStatementInstrumentationWrapper
                 $this->storedParams = $params;
                 $this->pdoQueries[$this->id] = array('query' => $this->statement->queryString, 'params' => $this->storedParams, 'rows' => $this->statement->rowCount(), 'method' => 'execute');
             }
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             if (!in_array($e->errorInfo[1], array(1213, 1205)) || $retries < 0) {
                 $this->pdoQueries[$this->id] = array('query' => $this->statement->queryString, 'params' => $this->storedParams, 'method' => 'execute', 'error' => $e->errorInfo);
                 throw $e;

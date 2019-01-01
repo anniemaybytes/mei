@@ -1,8 +1,9 @@
 <?php
-
 namespace Mei\Controller;
 
-class DeleteCtrl extends \Mei\Controller\BaseCtrl
+use Exception;
+
+class DeleteCtrl extends BaseCtrl
 {
     /**
      * @param \Slim\Http\Request $request
@@ -37,7 +38,7 @@ class DeleteCtrl extends \Mei\Controller\BaseCtrl
             ($domain . $this->di['router']->pathFor('serve:legacy', ['img' => $info['filename'] . '.' . $info['extension']]))
         ];
 
-        foreach(\Mei\Controller\ServeCtrl::$legacySizes as $resInfo) // handling common resolutions + crop
+        foreach(ServeCtrl::$legacySizes as $resInfo) // handling common resolutions + crop
         {
             $urls[] = ($domain . $this->di['router']->pathFor('serve', [
                     'img' => (
@@ -68,13 +69,13 @@ class DeleteCtrl extends \Mei\Controller\BaseCtrl
                 $savePath = pathinfo($fileEntity->Key);
                 $this->di['utility.images']->deleteImage($this->di['utility.images']->getSavePath($savePath['filename'] . '.' . $this->di['utility.images']->mapExtension($savePath['extension'])));
             }
-        } catch(\Exception $e) {
+        } catch(Exception $e) {
             return $response->withJson(array('success' => false, 'reason' => 'unknown failure'))->withStatus(200);
         }
 
         try{
             $this->di['utility.images']->clearCacheForImage($urls);
-        } catch(\Exception $e) {
+        } catch(Exception $e) {
             error_log("Caught $e");
         }
 

@@ -1,10 +1,11 @@
 <?php
-
 namespace Mei\Utilities;
 
+use InvalidArgumentException;
+use Mei\Entity\IAttributeMapper;
 use Mei\Entity\ICacheable;
 
-class EntityAttributeMapper implements \Mei\Entity\IAttributeMapper
+class EntityAttributeMapper implements IAttributeMapper
 {
     private $attributeMap;
     private $defaultValues; // stored in db string form
@@ -28,7 +29,7 @@ class EntityAttributeMapper implements \Mei\Entity\IAttributeMapper
             return $this->defaultValues[$attribute];
         }
 
-        throw new \InvalidArgumentException("Tried to get attribute that hasn't been set");
+        throw new InvalidArgumentException("Tried to get attribute that hasn't been set");
     }
 
     private function setAttributeValue(ICacheable $cache, $attribute, $value)
@@ -47,7 +48,7 @@ class EntityAttributeMapper implements \Mei\Entity\IAttributeMapper
     public function get(ICacheable $cache, $attribute)
     {
         if (!array_key_exists($attribute, $this->attributeMap)) {
-            throw new \InvalidArgumentException("Tried to get unknown key name '$attribute' - not in allowed attributes");
+            throw new InvalidArgumentException("Tried to get unknown key name '$attribute' - not in allowed attributes");
         }
 
         return $this->getAttributeValue($cache, $attribute);
@@ -63,7 +64,7 @@ class EntityAttributeMapper implements \Mei\Entity\IAttributeMapper
     public function set(ICacheable $cache, $attribute, $value)
     {
         if (!array_key_exists($attribute, $this->attributeMap)) {
-            throw new \InvalidArgumentException("Tried to set unknown key name '$attribute'");
+            throw new InvalidArgumentException("Tried to set unknown key name '$attribute'");
         }
 
         return $this->setAttributeValue($cache, $attribute, $value);

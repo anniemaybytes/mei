@@ -1,5 +1,4 @@
 <?php
-
 namespace Mei\Controller;
 
 abstract class BaseCtrl

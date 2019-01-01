@@ -1,15 +1,21 @@
 <?php
-
 namespace Mei\Controller;
 
-class UploadCtrl extends \Mei\Controller\BaseCtrl
+use Exception;
+use Mei\Exception\AccessDenied;
+use Mei\Exception\GeneralException;
+use Mei\Exception\NoImages;
+use Mei\Utilities\StringUtil;
+use Mei\Utilities\Time;
+
+class UploadCtrl extends BaseCtrl
 {
     /**
      * @param \Slim\Http\Request $request
      * @param \Slim\Http\Response $response
      * @param $args
      * @return \Slim\Http\Response
-     * @throws \Exception
+     * @throws Exception
      */
     public function account($request, $response, $args)
     {
@@ -20,13 +26,13 @@ class UploadCtrl extends \Mei\Controller\BaseCtrl
          * tvalue: (valid until)
          **/
         $token = json_decode($this->di['utility.encryption']->decryptString($request->getParam('token')), true);
-        if (!$token || $token['method'] !== 'account' || time() > $token['tvalid']) throw new \Mei\Exception\AccessDenied;
+        if (!$token || $token['method'] !== 'account' || time() > $token['tvalid']) throw new AccessDenied;
 
         $dataToHandle = array();
 
         $files = $request->getUploadedFiles();
         $url = $request->getParam('url');
-        if (!$files && !$url) throw new \Mei\Exception\GeneralException('No files to upload found');
+        if (!$files && !$url) throw new GeneralException('No files to upload found');
 
         foreach ($files as $fileArray) {
             if (!$fileArray) continue;
@@ -40,7 +46,7 @@ class UploadCtrl extends \Mei\Controller\BaseCtrl
 
         try {
             $images = $this->processUploadedData($dataToHandle, $token['ident']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
 
@@ -51,7 +57,7 @@ class UploadCtrl extends \Mei\Controller\BaseCtrl
             /** @var \Slim\Http\Response $response */
             return $response->withStatus(303)->withHeader('Location', "{$this->config['api.redirect']}{$urlString}");
         } else {
-            throw new \Mei\Exception\NoImages('No processed images found. Possibly file was more than ' . $this->config['site.max_filesize'] . ' bytes?');
+            throw new NoImages('No processed images found. Possibly file was more than ' . $this->config['site.max_filesize'] . ' bytes?');
         }
     }
 
@@ -64,10 +70,10 @@ class UploadCtrl extends \Mei\Controller\BaseCtrl
          * tvalue: (valid until)
          **/
         $token = json_decode($this->di['utility.encryption']->decryptString($request->getParam('token')), true);
-        if (!$token || $token['method'] !== 'screenshot' || time() > $token['tvalid']) throw new \Mei\Exception\AccessDenied;
+        if (!$token || $token['method'] !== 'screenshot' || time() > $token['tvalid']) throw new AccessDenied;
 
         $files = $request->getUploadedFiles();
-        if (!$files) throw new \Mei\Exception\GeneralException('No files to upload found');
+        if (!$files) throw new GeneralException('No files to upload found');
 
         $imageData = array();
         foreach ($files as $fileArray) {
@@ -86,7 +92,7 @@ class UploadCtrl extends \Mei\Controller\BaseCtrl
 
         try {
             $images = $this->processUploadedData($imageData, $token['ident'], $args['torrentid']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
 
@@ -101,7 +107,7 @@ class UploadCtrl extends \Mei\Controller\BaseCtrl
             /** @var \Slim\Http\Response $response */
             return $response->withStatus(303)->withHeader('Location', "{$this->config['api.redirect']}{$urlString}");
         } else {
-            throw new \Mei\Exception\NoImages('No processed images found. Possibly file was more than ' . $this->config['site.max_filesize'] . ' bytes or image was not PNG?');
+            throw new NoImages('No processed images found. Possibly file was more than ' . $this->config['site.max_filesize'] . ' bytes or image was not PNG?');
         }
     }
 
@@ -110,13 +116,13 @@ class UploadCtrl extends \Mei\Controller\BaseCtrl
      * @param \Slim\Http\Response $response
      * @param $args
      * @return \Slim\Http\Response
-     * @throws \Exception
+     * @throws Exception
      */
     public function api($request, $response, $args)
     {
         $auth = $request->getParam('auth');
 
-        if (!hash_equals($auth, $this->config['api.auth_key'])) throw new \Mei\Exception\AccessDenied;
+        if (!hash_equals($auth, $this->config['api.auth_key'])) throw new AccessDenied;
 
         $dataToHandle = array();
 
@@ -142,11 +148,11 @@ class UploadCtrl extends \Mei\Controller\BaseCtrl
             }
         }
 
-        if (!$file && !$url && !$files) throw new \Mei\Exception\GeneralException('No files to upload found');
+        if (!$file && !$url && !$files) throw new GeneralException('No files to upload found');
 
         try {
             $images = $this->processUploadedData($dataToHandle);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
 
@@ -156,7 +162,7 @@ class UploadCtrl extends \Mei\Controller\BaseCtrl
             $response->getBody()->write(json_encode($images));
             return $response->withStatus(201);
         } else {
-            throw new \Mei\Exception\NoImages('No processed images found. Possibly file was more than ' . $this->config['site.max_filesize'] . ' bytes?');
+            throw new NoImages('No processed images found. Possibly file was more than ' . $this->config['site.max_filesize'] . ' bytes?');
         }
     }
 
@@ -185,17 +191,17 @@ class UploadCtrl extends \Mei\Controller\BaseCtrl
             $checksum = $isLegacy ? $metadata['checksum_legacy'] : $metadata['checksum'];
             if(!$found) {
                 $savePath = $this->di['utility.images']->getSavePath($checksum . '.' . $metadata['extension']);
-                if (!$this->di['utility.images']->saveData($bindata, $savePath, ($uploaderId && !$torrentId && $metadata['mime'] != 'image/gif' ? true : false))) throw new \Mei\Exception\GeneralException('Unable to save file');
+                if (!$this->di['utility.images']->saveData($bindata, $savePath, ($uploaderId && !$torrentId && $metadata['mime'] != 'image/gif' ? true : false))) throw new GeneralException('Unable to save file');
             }
 
-            $filename = \Mei\Utilities\StringUtil::generateRandomString(11) . '.' . $metadata['extension'];
+            $filename = StringUtil::generateRandomString(11) . '.' . $metadata['extension'];
             $newImage = $this->di['model.files_map']->createEntity([
                 'Key' => $checksum . '.' . $metadata['extension'],
                 'FileName' => $filename,
                 'UploaderId' => $uploaderId,
                 'TorrentId' => $torrentId,
                 'Protected' => 0,
-                'UploadTime' => \Mei\Utilities\Time::now()
+                'UploadTime' => Time::now()
             ]);
             $this->di['model.files_map']->save($newImage);
             array_push($images, $filename);

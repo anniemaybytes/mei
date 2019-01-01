@@ -1,8 +1,9 @@
 <?php
-
 namespace Mei\Exception;
 
-class AccessDenied extends \Exception
+use Exception;
+
+class AccessDenied extends Exception
 {
 
 }

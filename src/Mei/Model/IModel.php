@@ -1,6 +1,7 @@
 <?php
-
 namespace Mei\Model;
+
+use Mei\Entity\IEntity;
 
 /**
  *
@@ -29,7 +30,7 @@ interface IModel
      * Return null if no entity is found, or if the id is invalid
      *
      * @param array $id
-     * @return \Mei\Entity\IEntity | null
+     * @return IEntity | null
      */
     public function getById($id);
 
@@ -38,7 +39,7 @@ interface IModel
      * The entity must return true to isNew and false to hasChanged
      *
      * @param array $arr array of entity attribute-value pairs
-     * @return \Mei\Entity\IEntity
+     * @return IEntity
      */
     public function createEntity($arr);
 
@@ -47,20 +48,20 @@ interface IModel
      * This method must not mutate the entity passed as a parameter.
      * This method must return the resulting entity.
      *
-     * @param \Mei\Entity\IEntity $entity
-     * @return \Mei\Entity\IEntity
+     * @param IEntity $entity
+     * @return IEntity
      */
-    public function save(\Mei\Entity\IEntity $entity);
+    public function save(IEntity $entity);
 
     /**
      * Delete the entity handled by the model.
      * This method must not mutate the entity passed as a parameter.
      * This method must return back entity given as parameter.
      *
-     * @param \Mei\Entity\IEntity $entity
-     * @return \Mei\Entity\IEntity
+     * @param IEntity $entity
+     * @return IEntity
      */
-    public function delete(\Mei\Entity\IEntity $entity);
+    public function delete(IEntity $entity);
 
     public function deleteById($id);
 }

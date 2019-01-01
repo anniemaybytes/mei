@@ -1,8 +1,10 @@
 <?php
-
 namespace Mei\Cache;
 
-class EntityCache implements \Mei\Entity\ICacheable
+use InvalidArgumentException;
+use Mei\Entity\ICacheable;
+
+class EntityCache implements ICacheable
 {
     private $key;
     private $id;
@@ -12,7 +14,7 @@ class EntityCache implements \Mei\Entity\ICacheable
     private $dbRow;
     private $loadedValues;
 
-    public function __construct(\Mei\Cache\IKeyStore $cache, $key, $id = array(), $duration = 3600)
+    public function __construct(IKeyStore $cache, $key, $id = array(), $duration = 3600)
     {
         $this->setKey($key);
         $this->setId($id);
@@ -34,7 +36,7 @@ class EntityCache implements \Mei\Entity\ICacheable
     public function setId($id)
     {
         if (!is_array($id)) {
-            throw new \InvalidArgumentException("ID must be an array");
+            throw new InvalidArgumentException("ID must be an array");
         }
 
         $row = $this->getRow();
@@ -93,7 +95,7 @@ class EntityCache implements \Mei\Entity\ICacheable
         return $this;
     }
 
-    private function loadCache(\Mei\Cache\IKeyStore $cache)
+    private function loadCache(IKeyStore $cache)
     {
         $key = $this->getCacheKey();
         if (!$key) return;
@@ -133,7 +135,7 @@ class EntityCache implements \Mei\Entity\ICacheable
         return $this;
     }
 
-    public function save(\Mei\Cache\IKeyStore $cache)
+    public function save(IKeyStore $cache)
     {
         $r = $this->getData();
 
@@ -146,7 +148,7 @@ class EntityCache implements \Mei\Entity\ICacheable
         return $r;
     }
 
-    public function delete(\Mei\Cache\IKeyStore $cache)
+    public function delete(IKeyStore $cache)
     {
         $key = $this->getCacheKey();
         if ($key) {

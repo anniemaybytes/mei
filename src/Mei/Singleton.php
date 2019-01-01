@@ -1,6 +1,7 @@
 <?php
-
 namespace Mei;
+
+use Exception;
 
 class Singleton
 {
@@ -18,7 +19,7 @@ class Singleton
 
     public function __wakeup()
     {
-        throw new \Exception("Cannot unserialize singleton");
+        throw new Exception("Cannot unserialize singleton");
     }
 
     public static function getInstance()

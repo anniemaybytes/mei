@@ -1,5 +1,4 @@
 <?php
-
 namespace Mei\Cache;
 
 class NonPersistent implements IKeyStore
@@ -137,7 +136,7 @@ class NonPersistent implements IKeyStore
 
     public function getEntityCache($key, $id = array(), $duration = 0)
     {
-        return new \Mei\Cache\EntityCache($this, $key, $id, $duration);
+        return new EntityCache($this, $key, $id, $duration);
     }
 
     private function startCall()

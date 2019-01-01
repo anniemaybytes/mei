@@ -1,5 +1,4 @@
 <?php
-
 namespace Mei\Model;
 
 class FilesMap extends Model

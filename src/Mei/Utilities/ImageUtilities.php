@@ -1,6 +1,8 @@
 <?php
-
 namespace Mei\Utilities;
+
+use Exception;
+use Imagick;
 
 class ImageUtilities
 {
@@ -66,7 +68,7 @@ class ImageUtilities
 
         if (in_array($scheme, self::$allowedUrlScheme))
         {
-            $curl = new \Mei\Utilities\Curl();
+            $curl = new Curl();
             $curl->setoptArray(array(
                 CURLOPT_URL => $url,
                 CURLOPT_ENCODING => 'UTF-8',
@@ -113,7 +115,7 @@ class ImageUtilities
 
     /**
      * @param $bindata
-     * @return bool|\Imagick
+     * @return bool|Imagick
      */
     public function readImage($bindata)
     {
@@ -121,13 +123,13 @@ class ImageUtilities
         if (!$data) return false;
 
         try {
-            $image = new \Imagick();
+            $image = new Imagick();
             $image->readImageBlob($bindata);
             $image->setImageFormat($data['extension']);
             $image->setImageCompressionQuality(100);
             return $image;
         }
-        catch (\Exception $e) {
+        catch (Exception $e) {
             return false;
         }
     }
@@ -150,8 +152,8 @@ class ImageUtilities
     }
 
     /**
-     * @param \Imagick $image
-     * @return bool|\Imagick
+     * @param Imagick $image
+     * @return bool|Imagick
      */
     private function stripImage($image)
     {
@@ -165,17 +167,17 @@ class ImageUtilities
             }
             return $image;
         }
-        catch (\Exception $e) {
+        catch (Exception $e) {
             return false;
         }
     }
 
     /**
-     * @param \Imagick $image
+     * @param Imagick $image
      * @param $maxWidth
      * @param $maxHeight
      * @param bool $crop
-     * @return bool|\Imagick
+     * @return bool|Imagick
      */
     public function resizeImage($image, $maxWidth, $maxHeight, $crop = false)
     {
@@ -197,7 +199,7 @@ class ImageUtilities
             }
             return $image;
         }
-        catch (\Exception $e) {
+        catch (Exception $e) {
             return false;
         }
     }
@@ -210,7 +212,7 @@ class ImageUtilities
     public function clearCacheForImage($urls)
     {
         if (is_array($urls) && $this->config['cloudflare.enabled']) { // domain present
-            $curl = new \Mei\Utilities\Curl();
+            $curl = new Curl();
             $curl->setoptArray(array(
                 CURLOPT_URL => 'https://api.cloudflare.com/client/v4/zones/' . $this->config['cloudflare.zone'] . '/purge_cache',
                 CURLOPT_ENCODING => 'UTF-8',

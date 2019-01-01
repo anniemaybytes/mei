@@ -1,6 +1,8 @@
 <?php
 namespace Mei\Utilities;
 
+use Mei\Dispatcher;
+
 class Curl
 {
     private $curl = null;
@@ -34,10 +36,10 @@ class Curl
     {
         if(!$proxyOverride) { // override proxy
             $this->setopt(CURLOPT_PROXY,
-                (\Mei\Dispatcher::config('site.proxy') ? \Mei\Dispatcher::config('site.proxy') : null)
+                (Dispatcher::config('site.proxy') ? Dispatcher::config('site.proxy') : null)
             );
         }
-        $this->setopt(CURLOPT_TIMEOUT, \Mei\Dispatcher::config('site.timeout'));
+        $this->setopt(CURLOPT_TIMEOUT, Dispatcher::config('site.timeout'));
 
         return \curl_exec($this->curl);
     }

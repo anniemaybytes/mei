@@ -1,5 +1,4 @@
 <?php
-
 namespace Mei\Entity;
 
 /**
@@ -112,7 +111,6 @@ interface IEntity
     /**
      * Get the value for the given key, generating it if needed
      * @param $key
-     * @return
      */
     public function getCachedValue($key);
 }

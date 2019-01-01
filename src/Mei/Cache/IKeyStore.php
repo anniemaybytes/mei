@@ -25,7 +25,6 @@ interface IKeyStore
      * @param $key
      * @param $value
      * @param int|number $time
-     * @return
      */
     public function set($key, $value, $time = 3600);
 

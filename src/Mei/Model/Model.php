@@ -1,8 +1,10 @@
 <?php
-
 namespace Mei\Model;
 
+use InvalidArgumentException;
+use Mei\Entity\IEntity;
 use Mei\Utilities\PDOParamMapper;
+use PDO;
 
 abstract class Model implements IModel
 {
@@ -81,7 +83,7 @@ abstract class Model implements IModel
     /**
      * @see \Mei\Model\IModel::getById()
      * @param array $id
-     * @return \Mei\Entity\IEntity
+     * @return IEntity
      */
     public function getById($id)
     {
@@ -116,7 +118,7 @@ abstract class Model implements IModel
                 $q->bindValue(':'.$param, $value, PDOParamMapper::map($attrs[$param]));
             }
             $q->execute();
-            $row = $q->fetch(\PDO::FETCH_ASSOC);
+            $row = $q->fetch(PDO::FETCH_ASSOC);
             if ($row) {
                 $entityCache = $entityCache->setRow($row);
                 $entityCache->save($this->getCache());
@@ -133,12 +135,12 @@ abstract class Model implements IModel
     /**
      * @see \Mei\Model\IModel::createEntity()
      * @param array $arr
-     * @return \Mei\Entity\IEntity
+     * @return IEntity
      */
     public function createEntity($arr)
     {
         if (!is_array($arr)) {
-            throw new \InvalidArgumentException("createEntity expects array as argument");
+            throw new InvalidArgumentException("createEntity expects array as argument");
         }
         $builder = $this->entityBuilder;
         $entityCache = $this->getCache()->getEntityCache($this->getTableName());
@@ -155,10 +157,10 @@ abstract class Model implements IModel
 
     /**
      * @see \Mei\Model\IModel::save()
-     * @param \Mei\Entity\IEntity $entity
-     * @return \Mei\Entity\IEntity
+     * @param IEntity $entity
+     * @return IEntity
      */
-    public function save(\Mei\Entity\IEntity $entity)
+    public function save(IEntity $entity)
     {
         $table = $this->getTableName();
         $entity = clone $entity;
@@ -171,7 +173,7 @@ abstract class Model implements IModel
             if (count($idAttr) > 1) {
                 $id = $entity->getId();
                 if (is_null($id) || count($id) != count($idAttr)) {
-                    throw new \InvalidArgumentException("Unable to save entity - primary key not set");
+                    throw new InvalidArgumentException("Unable to save entity - primary key not set");
                 }
             }
 
@@ -200,7 +202,7 @@ abstract class Model implements IModel
             if (count($idAttr) == 1) {
                 $insertId = $this->getDatabase()->lastInsertId();
                 if (is_null($insertId)) {
-                    throw new \InvalidArgumentException("Unable to save entity - failed to retrieve id after save");
+                    throw new InvalidArgumentException("Unable to save entity - failed to retrieve id after save");
                 }
                 $idCol = reset($idAttr);
                 $id = [$idCol => $insertId];
@@ -227,14 +229,14 @@ abstract class Model implements IModel
             $id = $entity->getId();
             $idAttr = $entity->getIdAttributes();
             if ((is_null($id)) || (count($id) == 0) || (count($id) != count($idAttr))) {
-                throw new \InvalidArgumentException("Unable to save entity - primary key not set");
+                throw new InvalidArgumentException("Unable to save entity - primary key not set");
             }
 
             $values = $entity->getChangedValues();
             $attrs = $entity->getAttributes();
 
             if (count($values) == 0) {
-                throw new \InvalidArgumentException('Unable to save entity - nothing was changed, but marked as changed');
+                throw new InvalidArgumentException('Unable to save entity - nothing was changed, but marked as changed');
             }
 
             // prevent changing primary key, since this could result in overwriting
@@ -242,10 +244,10 @@ abstract class Model implements IModel
             // also check that each of the ID columns is set
             foreach ($idAttr as $idAttribute) {
                 if (array_key_exists($idAttribute, $values)) {
-                    throw new \InvalidArgumentException("Unable to save entity - primary key was changed");
+                    throw new InvalidArgumentException("Unable to save entity - primary key was changed");
                 }
                 if (!array_key_exists($idAttribute, $id)) {
-                    throw new \InvalidArgumentException("Unable to save entity - primary key not set");
+                    throw new InvalidArgumentException("Unable to save entity - primary key not set");
                 }
             }
 
@@ -280,17 +282,17 @@ abstract class Model implements IModel
 
     /**
      * @see \Mei\Model\IModel::delete()
-     * @param \Mei\Entity\IEntity $entity
-     * @return \Mei\Entity\IEntity
+     * @param IEntity $entity
+     * @return IEntity
      */
-    public function delete(\Mei\Entity\IEntity $entity)
+    public function delete(IEntity $entity)
     {
         $table = $this->getTableName();
         $entity = clone $entity;
 
         $id = $entity->getId();
         if (is_null($id) || count($id) == 0) {
-            throw new \InvalidArgumentException("Unable to delete entity - primary key not set");
+            throw new InvalidArgumentException("Unable to delete entity - primary key not set");
         }
 
         $where = array();

@@ -1,8 +1,10 @@
 <?php
-
 namespace Mei\Cache;
 
-class EntityCachelessCache implements \Mei\Entity\ICacheable
+use InvalidArgumentException;
+use Mei\Entity\ICacheable;
+
+class EntityCachelessCache implements ICacheable
 {
     private $dbRow;
     private $loadedValues;
@@ -26,7 +28,7 @@ class EntityCachelessCache implements \Mei\Entity\ICacheable
     public function setId($id)
     {
         if (!is_array($id)) {
-            throw new \InvalidArgumentException("ID must be an array");
+            throw new InvalidArgumentException("ID must be an array");
         }
 
         $this->id = implode('_', $id);
@@ -86,12 +88,12 @@ class EntityCachelessCache implements \Mei\Entity\ICacheable
         return $this;
     }
 
-    public function save(\Mei\Cache\IKeyStore $cache)
+    public function save(IKeyStore $cache)
     {
         return $this->getData();
     }
 
-    public function delete(\Mei\Cache\IKeyStore $cache)
+    public function delete(IKeyStore $cache)
     {
         return;
     }

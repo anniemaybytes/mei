@@ -1,10 +1,16 @@
 <?php
 namespace Mei\Entity;
 
+use ArrayAccess;
+use ArrayIterator;
+use Exception;
+use InvalidArgumentException;
+use IteratorAggregate;
+use JsonSerializable;
 use Mei\Utilities\EntityAttributeMapper as Mapper;
 use Mei\Utilities\EntityAttributeType as Type;
 
-abstract class Entity implements IEntity, \ArrayAccess, \JsonSerializable, \IteratorAggregate
+abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, IteratorAggregate
 {
     /**
      * @var ICacheable
@@ -47,14 +53,14 @@ abstract class Entity implements IEntity, \ArrayAccess, \JsonSerializable, \Iter
     public static function getAttributesFromColumns($columns)
     {
         if (!is_array($columns)) {
-            throw new \InvalidArgumentException("Expects array argument");
+            throw new InvalidArgumentException("Expects array argument");
         }
 
         $attributes = array();
 
         foreach ($columns as $val) {
             if (!is_array($val) || count($val) < 2) {
-                throw new \Exception("Invalid attributes set");
+                throw new Exception("Invalid attributes set");
             }
             $column = $val[0];
             $type = $val[1];
@@ -72,13 +78,13 @@ abstract class Entity implements IEntity, \ArrayAccess, \JsonSerializable, \Iter
     public static function getDefaultsFromColumns($columns)
     {
         if (!is_array($columns)) {
-            throw new \InvalidArgumentException("Expects array argument");
+            throw new InvalidArgumentException("Expects array argument");
         }
 
         $defaults = array();
         foreach ($columns as $val) {
             if (!is_array($val) || count($val) < 2) {
-                throw new \Exception("Invalid defaults set");
+                throw new Exception("Invalid defaults set");
             }
             $column = $val[0];
             if (isset($val[2])) {
@@ -97,13 +103,13 @@ abstract class Entity implements IEntity, \ArrayAccess, \JsonSerializable, \Iter
     public static function getIdAttributesFromColumns($columns)
     {
         if (!is_array($columns)) {
-            throw new \InvalidArgumentException("Expects array argument");
+            throw new InvalidArgumentException("Expects array argument");
         }
 
         $ids = array();
         foreach ($columns as $val) {
             if (!is_array($val) || count($val) < 2) {
-                throw new \Exception("Invalid ID set");
+                throw new Exception("Invalid ID set");
             }
             $column = $val[0];
             if (isset($val[3]) && $val[3]) {
@@ -280,6 +286,6 @@ abstract class Entity implements IEntity, \ArrayAccess, \JsonSerializable, \Iter
 
     public function getIterator()
     {
-        return new \ArrayIterator($this->getMappedValues());
+        return new ArrayIterator($this->getMappedValues());
     }
 }

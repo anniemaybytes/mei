@@ -1,5 +1,4 @@
 <?php
-
 namespace Mei\Utilities;
 
 class StringUtil

@@ -1,7 +1,10 @@
 <?php
-
 namespace Mei\Controller;
 
+use Exception;
+use Mei\Exception\AccessDenied;
+use Mei\Exception\NoImages;
+use Mei\Exception\NotFound;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -33,13 +36,13 @@ class ErrorCtrl extends BaseCtrl
         // make sure we don't throw an exception
         try {
             $statusCode = 500;
-            if ($exception instanceof \Mei\Exception\NotFound) {
+            if ($exception instanceof NotFound) {
                 $statusCode = 404;
             }
-            if ($exception instanceof \Mei\Exception\AccessDenied) {
+            if ($exception instanceof AccessDenied) {
                 $statusCode = 403;
             }
-            if ($exception instanceof \Mei\Exception\NoImages) {
+            if ($exception instanceof NoImages) {
                 $statusCode = 415;
             }
 
@@ -67,14 +70,14 @@ class ErrorCtrl extends BaseCtrl
 
             return $response->withStatus($statusCode);
         }
-        catch (\Exception $e) {
+        catch (Exception $e) {
             error_log('Caught exception in exception handler - ' . $e->getFile() . '(' . $e->getLine() . ') ' . $e->getMessage() . "\n" . $e->getTraceAsString());
             $response->getBody()->write('Something broke. Sorry.');
             return $response->withStatus(500);
         }
     }
 
-    private function logError(Request $request, \Exception $exception, $data)
+    private function logError(Request $request, Exception $exception, $data)
     {
         // don't log 404s
         if ($data['status_code'] == 404) {

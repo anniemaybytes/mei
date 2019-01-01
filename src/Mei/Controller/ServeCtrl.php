@@ -1,8 +1,11 @@
 <?php
-
 namespace Mei\Controller;
 
-class ServeCtrl extends \Mei\Controller\BaseCtrl
+use GuzzleHttp\Psr7\BufferStream;
+use Mei\Exception\NotFound;
+use Mei\Utilities\Time;
+
+class ServeCtrl extends BaseCtrl
 {
     public static $legacySizes = array(
         'small'     => array(80 , 150),
@@ -18,13 +21,13 @@ class ServeCtrl extends \Mei\Controller\BaseCtrl
      * @param \Slim\Http\Response $response
      * @param $args
      * @return \Slim\Http\Response
-     * @throws \Mei\Exception\NotFound
+     * @throws NotFound
      */
     public function serve($request, $response, $args)
     {
         $pathInfo = pathinfo($args['img']);
         if (!isset($pathInfo['extension']) || !isset($pathInfo['filename'])) {
-            throw new \Mei\Exception\NotFound('Image Not Found');
+            throw new NotFound('Image Not Found');
         }
 
         $hashInfo = explode('-', $pathInfo['filename']);
@@ -48,13 +51,13 @@ class ServeCtrl extends \Mei\Controller\BaseCtrl
         $fileEntity = $this->di['model.files_map']->getByFileName($info['name'] . '.' . $pathInfo['extension']);
 
         if (!$fileEntity) {
-            throw new \Mei\Exception\NotFound('Image Not Found');
+            throw new NotFound('Image Not Found');
         }
 
         $savePath = pathinfo($fileEntity->Key);
         $bindata = $this->di['utility.images']->getDataFromPath($this->di['utility.images']->getSavePath($savePath['filename'] . '.' . $this->di['utility.images']->mapExtension($savePath['extension'])));
         if (!$bindata) {
-            throw new \Mei\Exception\NotFound('Image Not Found');
+            throw new NotFound('Image Not Found');
         }
 
         // resize if necessary
@@ -65,11 +68,11 @@ class ServeCtrl extends \Mei\Controller\BaseCtrl
         $meta = $this->di['utility.images']->readImageData($bindata);
 
         if (!$meta) {
-            throw new \Mei\Exception\NotFound('Image Not Found');
+            throw new NotFound('Image Not Found');
         }
 
         $eTag = md5($bindata);
-        $timeStamp = \Mei\Utilities\Time::timeIsNonZero($fileEntity->UploadTime)
+        $timeStamp = Time::timeIsNonZero($fileEntity->UploadTime)
             ?
             $fileEntity->UploadTime->getTimestamp()
             :
@@ -84,7 +87,7 @@ class ServeCtrl extends \Mei\Controller\BaseCtrl
         $response = $response->withHeader('Last-Modified', date('r', $timeStamp));
 
         if($request->getHeader('If-None-Match') != $eTag) { // does not match etag?
-            $fh = new \GuzzleHttp\Psr7\BufferStream();
+            $fh = new BufferStream();
             $fh->write($bindata);
             return $response->withBody($fh);
         } else { // matches etag, return 304
