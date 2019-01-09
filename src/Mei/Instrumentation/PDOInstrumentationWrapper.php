@@ -11,7 +11,6 @@ class PDOInstrumentationWrapper
     /** @var $pdo PDO **/
     private $pdo;
     private $transactionQueue = array();
-    public $pdoQueries = array();
 
     public function __construct($instrumentor, $pdo)
     {
@@ -100,7 +99,7 @@ class PDOInstrumentationWrapper
     {
         $hash = md5($statement.rand());
         $iid = $this->instrumentor->start('pdo:prepare:' . $hash, $statement);
-        $res = new PDOStatementInstrumentationWrapper($this->instrumentor, $this->pdo->prepare($statement, $driver_options), $hash, $this->pdoQueries);
+        $res = new PDOStatementInstrumentationWrapper($this->instrumentor, $this->pdo->prepare($statement, $driver_options), $hash);
         $this->instrumentor->end($iid);
         return $res;
     }
@@ -111,10 +110,8 @@ class PDOInstrumentationWrapper
         $iid = $this->instrumentor->start('pdo:exec:'. $hash . '_' . $retries, $statement);
         try {
             $res = $this->pdo->exec($statement);
-            $this->pdoQueries[$hash] = array('query' => $statement, 'method' => 'exec');
         } catch (PDOException $e) {
             if (!in_array($e->errorInfo[1], array(1213, 1205)) || $retries < 0) {
-                $this->pdoQueries[$hash] = array('query' => $statement, 'method' => 'exec', 'error' => $e->errorInfo);
                 throw $e;
             }
             sleep(max([2, (3 - $retries) * 3])); // wait longer as attempts increase
