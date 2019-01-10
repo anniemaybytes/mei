@@ -19,7 +19,7 @@ class Main extends Base
                 $this->post('/screenshot/{torrentid}', UploadCtrl::class . ':screenshot')->setName('upload:screenshot');
                 $this->post('/api', UploadCtrl::class . ':api')->setName('upload:api');
             });
-            $this->post('/delete/{img}', DeleteCtrl::class . ':delete')->setName('delete');
+            $this->post('/delete', DeleteCtrl::class . ':delete')->setName('delete');
             $this->get('/{img}', ServeCtrl::class . ':serve')->setName('serve');
             $this->get('/images/{img}', function($request, $response, $args) { // legacy
                 /** @var \Slim\Container $this */

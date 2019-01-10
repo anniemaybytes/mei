@@ -3,6 +3,7 @@ namespace Mei;
 
 use PDO;
 use Slim\Container;
+use RunTracy\Helpers\Profiler\Profiler;
 
 class DependencyInjection
 {
@@ -10,13 +11,42 @@ class DependencyInjection
     {
         if (!$args) {
             $args = array(
-                'settings' => array('displayErrorDetails' => ($config['mode'] == 'development'),));
+                'settings' => array(
+                    'addContentLengthHeader' => !($config['mode'] == 'development'),
+                    'displayErrorDetails' => ($config['mode'] == 'development'),
+                    'determineRouteBeforeAppMiddleware' => true,
+                    'tracy' => [
+                        'showPhpInfoPanel' => 0,
+                        'showSlimRouterPanel' => 1,
+                        'showSlimEnvironmentPanel' => 1,
+                        'showSlimRequestPanel' => 1,
+                        'showSlimResponsePanel' => 1,
+                        'showSlimContainer' => 1,
+                        'showTwigPanel' => 0,
+                        'showProfilerPanel' => 1,
+                        'showVendorVersionsPanel' => 0,
+                        'showIncludedFiles' => 1,
+                        'showConsolePanel' => 0,
+                        'showXDebugHelper' => 0,
+                        'configs' => [
+                            'ProfilerPanel' => [
+                                'show' => [
+                                    'memoryUsageChart' => 1,
+                                    'shortProfiles' => false,
+                                    'timeLines' => true
+                                ]
+                            ]
+                        ]
+                    ]
+                )
+            );
         }
 
         $di = new Container($args);
 
-        $di['config'] = $config;
+        $di['obLevel'] = ob_get_level();
 
+        $di['config'] = $config;
         $di['instrumentor'] = function () {
             return new Instrumentation\Instrumentor();
         };
@@ -66,18 +96,21 @@ class DependencyInjection
             throw new Exception\NotFound('Route Not Found');
         };
 
+        unset($di['phpErrorHandler']); // php 7.0+ only - this will disable default Slim error handler and allow Tracy to catch PHP errors
         if ($config['mode'] != 'development') {
             $di['errorHandler'] = function ($di) {
                 $ctrl = new Controller\ErrorCtrl($di);
                 return array($ctrl, 'handleException');
             };
-        }
+        } else unset($di['errorHandler']);
 
         return $di;
     }
 
     private static function setUtilities($di)
     {
+        Profiler::start('setUtilities');
+
         $di['utility.images'] = function ($di) {
             return new Utilities\ImageUtilities($di);
         };
@@ -90,16 +123,22 @@ class DependencyInjection
             return new Utilities\Time();
         };
 
+        Profiler::finish('setUtilities');
+
         return $di;
     }
 
     private static function setModels($di)
     {
+        Profiler::start('setModels');
+
         $di['model.files_map'] = function($di) {
             return new Model\FilesMap($di, function($c) {
                 return new Entity\FilesMap($c);
             });
         };
+
+        Profiler::finish('setModels');
 
         return $di;
     }

@@ -3,6 +3,7 @@ namespace Mei;
 
 use Mei\Route as R;
 use Slim\App;
+use RunTracy\Helpers\Profiler\Profiler;
 
 class Dispatcher extends Singleton
 {
@@ -45,7 +46,10 @@ class Dispatcher extends Singleton
 
     private function initConfig()
     {
+        Profiler::start('initConfig');
         $config = ConfigLoader::load();
+        Profiler::finish('initConfig');
+
         $config['site.public_root'] = BASE_ROOT . '/' . $config['site.public_root'];
         $config['site.images_root'] = BASE_ROOT . '/' . $config['site.images_root'];
         $config['site.deleted_root'] = BASE_ROOT . '/' . $config['site.deleted_root'];
@@ -54,7 +58,10 @@ class Dispatcher extends Singleton
 
     private function initDependencyInjection()
     {
+        Profiler::start('initDependencyInjection');
         $di = DependencyInjection::get($this->config);
+        Profiler::finish('initDependencyInjection');
+
         $this->di = $di;
     }
 
@@ -62,11 +69,12 @@ class Dispatcher extends Singleton
     {
         $app = new App($this->di);
 
+        Profiler::start('initRoutes');
         $routes = array(
             new R\Main($app),
         );
-
         $this->di['routes'] = $routes;
+        Profiler::finish('initRoutes');
 
         $this->app = $app;
     }

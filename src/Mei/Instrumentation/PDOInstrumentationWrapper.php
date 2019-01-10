@@ -4,6 +4,7 @@ namespace Mei\Instrumentation;
 use Exception;
 use PDO;
 use PDOException;
+use Tracy\Debugger;
 
 class PDOInstrumentationWrapper
 {
@@ -21,6 +22,7 @@ class PDOInstrumentationWrapper
     public function __destruct()
     {
         if ($this->transactionQueue) {
+            Debugger::log('PDO transaction queue was not empty on destruct!', Debugger::WARNING);
             while(count($this->transactionQueue) > 0) $this->rollBack();
         }
     }

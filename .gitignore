@@ -23,6 +23,7 @@ node_modules/*
 # project dirs
 images/*
 deleted/*
+logs/*
 
 # project files
 /config/config.ini

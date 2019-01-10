@@ -14,7 +14,7 @@
         "robmorgan/phinx": "^0.9.2",
         "slim/twig-view": "^2.3",
         "slim/flash": "^0.4.0",
-        "symfony/event-dispatcher": "^3.1",
+        "glpi-project/runtracy": "dev-master#07a152237bf516a6660c6d805eb0a9c4f5ad622d",
         "ext-xml": "*",
         "ext-json": "*",
         "ext-gd": "*",

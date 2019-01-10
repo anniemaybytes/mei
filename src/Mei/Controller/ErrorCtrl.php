@@ -7,6 +7,7 @@ use Mei\Exception\NoImages;
 use Mei\Exception\NotFound;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Tracy\Debugger;
 
 class ErrorCtrl extends BaseCtrl
 {
@@ -60,6 +61,17 @@ class ErrorCtrl extends BaseCtrl
             $body->rewind();
             $response = $response->withBody($body);
 
+            // clear output buffer
+            while (ob_get_level() > $this->di['obLevel']) {
+                $status = ob_get_status();
+                if (in_array($status['name'], ['ob_gzhandler', 'zlib output compression'], true)) {
+                    break;
+                }
+                if (!@ob_end_clean()) { // @ may be not removable
+                    break;
+                }
+            }
+
             if($this->config['site.errors'])
             {
                 $response->getBody()->write($data['status_code'].' - '.$data['status_message']);
@@ -71,38 +83,30 @@ class ErrorCtrl extends BaseCtrl
             return $response->withStatus($statusCode);
         }
         catch (Exception $e) {
-            error_log('Caught exception in exception handler - ' . $e->getFile() . '(' . $e->getLine() . ') ' . $e->getMessage() . "\n" . $e->getTraceAsString());
-            $response->getBody()->write('Something broke. Sorry.');
-            return $response->withStatus(500);
+            Debugger::log($e, Debugger::EXCEPTION);
         }
     }
 
     private function logError(Request $request, Exception $exception, $data)
     {
         // don't log 404s
-        if ($data['status_code'] == 404) {
+        if ($data['status_code'] == 404 || $data['status_code'] == 403 || $data['status_code'] == 415) {
             return;
         }
 
-        $uri = $request->getUri();
-        $path = $uri->getPath();
-        $query = $uri->getQuery();
-        $fragment = $uri->getFragment();
-        $path =  $path . ($query ? '?' . $query : '') . ($fragment ? '#' . $fragment : '');
-        $method = $request->getMethod();
-        $referrer = $request->getHeaderLine('HTTP_REFERER');
-        $ua = $request->getHeaderLine('HTTP_USER_AGENT');
-        $bt = '';
+        Debugger::getBlueScreen()->addPanel(function() {
+            return [
+                'tab' => 'Cache hits',
+                'panel' => Debugger::dump($this->di['cache']->getCacheHits(), true),
+            ];
+        });
+        Debugger::getBlueScreen()->addPanel(function() {
+            return [
+                'tab' => 'Instrumentor',
+                'panel' => Debugger::dump($this->di['instrumentor']->getLog(), true),
+            ] ;
+        });
 
-        $prefix =  "Error: {$data['status_code']} Method: $method $path ";
-        if ($referrer) {
-            $prefix .= '(referrer: ' . $referrer . ') ';
-        }
-        $msg = $prefix . ' - ' . $data['status_message'] . ' - ' . $ua;
-        $msg = sprintf("%s\n%s:%s", $msg, $exception->getFile(), $exception->getLine());
-
-        $ErrorData = sprintf("%s\nMessage:%s\nBacktrace:\n%s", $msg, $exception->getMessage(), $bt);
-
-        error_log($ErrorData);
+        Debugger::log($exception, Debugger::EXCEPTION);
     }
 }
