@@ -21,6 +21,7 @@ Vagrant.configure(2) do |config|
     group: "www-data",
     mount_options: ["dmode=775,fmode=775"]
   config.vm.synced_folder "./vagrant", "/vagrantroot"
+  config.vm.synced_folder ".", "/vagrant", type: "rsync", disabled: true
   
   # virtualbox-specific overrides
   config.vm.provider :virtualbox do |v, override|

@@ -12,8 +12,6 @@
         "slim/slim": "^3.0",
         "guzzlehttp/psr7": "^1.3",
         "robmorgan/phinx": "^0.9.2",
-        "slim/twig-view": "^2.3",
-        "slim/flash": "^0.4.0",
         "glpi-project/runtracy": "dev-master#07a152237bf516a6660c6d805eb0a9c4f5ad622d",
         "ext-xml": "*",
         "ext-json": "*",
@@ -23,7 +21,7 @@
         "ext-imagick": "*",
         "ext-zlib": "*",
         "ext-date": "*",
-        "ext-mcrypt": "*",
+        "ext-openssl": "*",
         "ext-curl": "*"
     },
     "autoload": {

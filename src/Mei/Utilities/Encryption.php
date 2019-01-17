@@ -5,6 +5,8 @@ use Exception;
 
 class Encryption
 {
+    const CIPHER = 'aes-256-cbc';
+
     protected $di;
     protected $encryptionKey;
     protected $config;
@@ -19,10 +21,16 @@ class Encryption
     public function encrypt($plainData)
     {
         srand();
-        $paddedData = str_pad($plainData, 32 - strlen($plainData));
-        $ivSize = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
-        $initVector = mcrypt_create_iv($ivSize, MCRYPT_RAND);
-        $cryptoStr = mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $this->encryptionKey, $paddedData, MCRYPT_MODE_CBC, $initVector);
+
+        // we need to manually pad data for compatibility with mcrypt
+        $paddedData = $plainData;
+        if (strlen($paddedData) % 32) {
+            $paddedData = str_pad($paddedData,
+                strlen($paddedData) + 32 - strlen($paddedData) % 32, "\0");
+        }
+
+        $initVector = random_bytes(16);
+        $cryptoStr = openssl_encrypt($paddedData, self::CIPHER, $this->encryptionKey, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $initVector);
 
         return base64_encode($initVector . $cryptoStr);
     }
@@ -35,7 +43,7 @@ class Encryption
                 if ($data == false) return false;
                 $initVector = substr($data,0,16);
                 $unpaddedCryptedData = substr($data,16);
-                $r = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $this->encryptionKey, $unpaddedCryptedData, MCRYPT_MODE_CBC,$initVector));
+                $r = trim(openssl_decrypt($unpaddedCryptedData, self::CIPHER, $this->encryptionKey, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $initVector));
                 if(!$r) return false;
                 return $r;
             } catch(Exception $e) { return false; }

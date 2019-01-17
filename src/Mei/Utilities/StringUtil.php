@@ -9,12 +9,12 @@ class StringUtil
         return self::randomize($charset, $len);
     }
 
-    public static function randomize($OK, $len)
+    public static function randomize($ok, $len)
     {
         $token = '';
-        $max = mb_strlen($OK, '8bit') - 1;
+        $max = mb_strlen($ok, '8bit') - 1;
         for ($i = 0; $i < $len; $i++) {
-            $token .= $OK[random_int(0, $max)];
+            $token .= $ok[random_int(0, $max)];
         }
 
         return str_shuffle($token);
