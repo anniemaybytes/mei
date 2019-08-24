@@ -11,12 +11,12 @@ echo never > /sys/kernel/mm/transparent_hugepage/enabled
 
 echo
 echo Stopping daemons...
-service nginx stop
-service php7.0-fpm stop
-service mysql stop
+sudo systemctl stop nginx
+sudo systemctl stop php7.3-fpm
+sudo systemctl stop mariadb
 
 echo
 echo Starting daemons...
-service nginx start
-service php7.0-fpm start
-service mysql start
+sudo systemctl start nginx
+sudo systemctl start php7.3-fpm
+sudo systemctl start mariadb

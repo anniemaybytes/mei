@@ -191,7 +191,7 @@ class UploadCtrl extends BaseCtrl
             $checksum = $isLegacy ? $metadata['checksum_legacy'] : $metadata['checksum'];
             if(!$found) {
                 $savePath = $this->di['utility.images']->getSavePath($checksum . '.' . $metadata['extension']);
-                if (!$this->di['utility.images']->saveData($bindata, $savePath, ($uploaderId && !$torrentId && $metadata['mime'] != 'image/gif' ? true : false))) throw new GeneralException('Unable to save file');
+                if (!$this->di['utility.images']->saveData($bindata, $savePath, false)) throw new GeneralException('Unable to save file');
             }
 
             $filename = StringUtil::generateRandomString(11) . '.' . $metadata['extension'];

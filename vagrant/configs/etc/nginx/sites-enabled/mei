@@ -19,7 +19,7 @@ server {
     fastcgi_param  HTTPS on;
     fastcgi_param  SCRIPT_FILENAME   $document_root$fastcgi_script_name;
     if ($uri !~ "^/images/") {
-      fastcgi_pass unix:/var/run/php7.0-fpm.www.sock;
+      fastcgi_pass unix:/var/run/php7.3-fpm.www.sock;
     }
     fastcgi_index  index.php;
     fastcgi_read_timeout 300;
