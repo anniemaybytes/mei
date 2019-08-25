@@ -17,6 +17,7 @@ sudo systemctl stop mariadb
 
 echo
 echo Starting daemons...
+systemctl daemon-reload
 sudo systemctl start nginx
 sudo systemctl start php7.3-fpm
 sudo systemctl start mariadb

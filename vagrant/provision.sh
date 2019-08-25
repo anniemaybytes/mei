@@ -6,7 +6,7 @@ export DEBIAN_FRONTEND=noninteractive
 echo
 echo Installing required base components
 apt-get update
-apt-get -y --force-yes install apt-transport-https dirmngr curl
+apt-get -y --force-yes install apt-transport-https dirmngr curl htop iotop
 
 echo
 echo Adding repositories
@@ -57,6 +57,7 @@ systemctl stop mariadb
 
 echo
 echo Starting daemons...
+systemctl daemon-reload
 systemctl start nginx
 systemctl start php7.3-fpm
 systemctl start mariadb
