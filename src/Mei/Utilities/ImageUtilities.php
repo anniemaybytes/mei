@@ -126,7 +126,8 @@ class ImageUtilities
             $image = new Imagick();
             $image->readImageBlob($bindata);
             $image->setImageFormat($data['extension']);
-            $image->setImageCompressionQuality(100);
+            $image->setImageCompressionQuality(90);
+            $image->setOption('png:compression-level', 9);
             return $image;
         }
         catch (Exception $e) {
@@ -142,6 +143,7 @@ class ImageUtilities
         if($stripExif) {
             $bindata = $this->stripImage($this->readImage($bindata)); // strip image of EXIF, profiles and comments
         }
+        if($bindata instanceof Imagick) $bindata = $bindata->getImagesBlob();
         if(!$bindata) return false;
 
         $dir = dirname($savePath);
@@ -197,6 +199,7 @@ class ImageUtilities
             else {
                 $image->thumbnailImage($maxWidth, $maxHeight, true);
             }
+            $image->setImagePage(0, 0, 0, 0);
             return $image;
         }
         catch (Exception $e) {

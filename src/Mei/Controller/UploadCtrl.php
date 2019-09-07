@@ -136,7 +136,7 @@ class UploadCtrl extends BaseCtrl
 
         if ($file) {
             $fileDecoded = base64_decode($file);
-            if (sizeof($fileDecoded) <= $this->config['site.max_filesize']) $dataToHandle[] = $fileDecoded;
+            if (strlen($fileDecoded) <= $this->config['site.max_filesize']) $dataToHandle[] = $fileDecoded;
         }
 
         foreach ($files as $fileArray) {

@@ -47,7 +47,6 @@ curl -s https://getcomposer.org/installer | php
 mv ./composer.phar /usr/local/bin/composer
 cd /code
 composer install
-ln -s /code/vendor/robmorgan/phinx/bin/phinx /usr/local/bin/phinx
 
 echo
 echo Stopping daemons...
@@ -67,3 +66,4 @@ echo Configuring MySQL...
 echo "CREATE DATABASE mei; GRANT ALL ON mei.* TO mei@localhost IDENTIFIED BY 'mei';GRANT ALL ON mei.* TO mei@127.0.0.1 IDENTIFIED BY 'mei';GRANT ALL ON mei.* TO 'mei'@'10.0.%.%' IDENTIFIED BY 'mei';" | mysql -uroot
 mysqladmin -uroot password w3llkn0wn
 echo "DELETE FROM user WHERE (User = 'root' AND Host != 'localhost') OR (User = '');FLUSH PRIVILEGES;\q" | mysql -uroot -pw3llkn0wn mysql
+mysql -umei -pmei mei < /vagrantroot/mei.sql
