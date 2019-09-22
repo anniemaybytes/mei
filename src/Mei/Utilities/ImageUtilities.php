@@ -230,8 +230,7 @@ class ImageUtilities
                 CURLOPT_SSL_VERIFYHOST => 2,
                 CURLOPT_HTTPHEADER => [
                     'Host: api.cloudflare.com',
-                    'X-Auth-Email: ' . $this->config['cloudflare.email'],
-                    'X-Auth-Key: ' . $this->config['cloudflare.api'],
+                    'Authorization: Bearer ' . $this->config['cloudflare.api'],
                     'Content-Type: application/json'
                 ],
                 CURLOPT_CUSTOMREQUEST => 'DELETE',
