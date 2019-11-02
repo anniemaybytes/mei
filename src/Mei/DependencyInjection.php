@@ -1,17 +1,18 @@
 <?php
+
 namespace Mei;
 
 use PDO;
-use Slim\Container;
 use RunTracy\Helpers\Profiler\Profiler;
+use Slim\Container;
 
 class DependencyInjection
 {
-    public static function get($config, $args = array())
+    public static function get($config, $args = [])
     {
         if (!$args) {
-            $args = array(
-                'settings' => array(
+            $args = [
+                'settings' => [
                     'addContentLengthHeader' => !($config['mode'] == 'development'),
                     'displayErrorDetails' => ($config['mode'] == 'development'),
                     'determineRouteBeforeAppMiddleware' => true,
@@ -38,8 +39,8 @@ class DependencyInjection
                             ]
                         ]
                     ]
-                )
-            );
+                ]
+            ];
         }
 
         $di = new Container($args);
@@ -69,12 +70,12 @@ class DependencyInjection
 
             $o = new PDO($dsn, $config['db.username'],
                 $config['db.password'],
-                array(
+                [
                     PDO::ATTR_PERSISTENT => false,
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::MYSQL_ATTR_INIT_COMMAND => "set time_zone = '+00:00';",
                     PDO::ATTR_EMULATE_PREPARES => false, // emulated prepares ignore param hinting when binding
-                )
+                ]
             );
             $w = new Instrumentation\PDOInstrumentationWrapper($di['instrumentor'], $o);
             $ins->end($iid);
@@ -85,8 +86,8 @@ class DependencyInjection
         $di['cache'] = function ($di) {
             $ins = $di['instrumentor'];
             $iid = $ins->start('nonpersistent:create');
-            $cache = array();
-            $mycache = new Cache\NonPersistent($cache,'');
+            $cache = [];
+            $mycache = new Cache\NonPersistent($cache, '');
             $ins->end($iid);
             return $mycache;
         };
@@ -100,7 +101,7 @@ class DependencyInjection
         if ($config['mode'] != 'development') {
             $di['errorHandler'] = function ($di) {
                 $ctrl = new Controller\ErrorCtrl($di);
-                return array($ctrl, 'handleException');
+                return [$ctrl, 'handleException'];
             };
         } else unset($di['errorHandler']);
 
@@ -132,8 +133,8 @@ class DependencyInjection
     {
         Profiler::start('setModels');
 
-        $di['model.files_map'] = function($di) {
-            return new Model\FilesMap($di, function($c) {
+        $di['model.files_map'] = function ($di) {
+            return new Model\FilesMap($di, function ($c) {
                 return new Entity\FilesMap($c);
             });
         };

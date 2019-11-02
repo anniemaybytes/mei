@@ -1,4 +1,5 @@
 <?php
+
 namespace Mei\Cache;
 
 class NonPersistent implements IKeyStore
@@ -12,7 +13,7 @@ class NonPersistent implements IKeyStore
     /** @var bool $clear_on_get */
     private $clear_on_get = false;
     /** @var array $cacheHits */
-    private $cacheHits = array();
+    private $cacheHits = [];
     /** @var int $time */
     private $time = 0;
 
@@ -35,7 +36,7 @@ class NonPersistent implements IKeyStore
             return false;
         }
 
-        if(array_key_exists($key, $this->inner)) {
+        if (array_key_exists($key, $this->inner)) {
             $res = $this->inner['key'];
         } else {
             $res = false;
@@ -98,14 +99,14 @@ class NonPersistent implements IKeyStore
         }
 
         $value = $this->get($key);
-        if($value === false) { // key does not exists yet, create it with $initial.
+        if ($value === false) { // key does not exists yet, create it with $initial.
             $value = $initial;
-        } else if(is_int($value)) { // exists and value is numeric, increment by $n
+        } else if (is_int($value)) { // exists and value is numeric, increment by $n
             $value += $n;
         } else { // unhandled case. value exists but is not numeric, can not increment.
             return false;
         }
-        
+
 
         $this->inner[$key] = $value;
         $this->endCall($start);
@@ -120,12 +121,12 @@ class NonPersistent implements IKeyStore
 
     public function setClearOnGet($val)
     {
-        $this->clear_on_get = (bool) $val;
+        $this->clear_on_get = (bool)$val;
     }
 
     public function getStats()
     {
-        return array();
+        return [];
     }
 
     public function flush()
@@ -134,7 +135,7 @@ class NonPersistent implements IKeyStore
         $this->inner = $this->initInner; // reset inner to init status
     }
 
-    public function getEntityCache($key, $id = array(), $duration = 0)
+    public function getEntityCache($key, $id = [], $duration = 0)
     {
         return new EntityCache($this, $key, $id, $duration);
     }

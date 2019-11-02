@@ -1,4 +1,5 @@
 <?php
+
 namespace Mei\Cache;
 
 /**
@@ -46,5 +47,5 @@ interface IKeyStore
 
     public function flush();
 
-    public function getEntityCache($key, $id = array(), $duration = 3600);
+    public function getEntityCache($key, $id = [], $duration = 3600);
 }

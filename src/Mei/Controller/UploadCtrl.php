@@ -1,4 +1,5 @@
 <?php
+
 namespace Mei\Controller;
 
 use Exception;
@@ -7,14 +8,16 @@ use Mei\Exception\GeneralException;
 use Mei\Exception\NoImages;
 use Mei\Utilities\StringUtil;
 use Mei\Utilities\Time;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 class UploadCtrl extends BaseCtrl
 {
     /**
-     * @param \Slim\Http\Request $request
-     * @param \Slim\Http\Response $response
+     * @param Request $request
+     * @param Response $response
      * @param $args
-     * @return \Slim\Http\Response
+     * @return Response
      * @throws Exception
      */
     public function account($request, $response, $args)
@@ -28,7 +31,7 @@ class UploadCtrl extends BaseCtrl
         $token = json_decode($this->di['utility.encryption']->decryptString($request->getParam('token')), true);
         if (!$token || $token['method'] !== 'account' || time() > $token['tvalid']) throw new AccessDenied;
 
-        $dataToHandle = array();
+        $dataToHandle = [];
 
         $files = $request->getUploadedFiles();
         $url = $request->getParam('url');
@@ -51,10 +54,10 @@ class UploadCtrl extends BaseCtrl
         }
 
         if ($images) {
-            $qs = array('img' => $this->di['utility.encryption']->encryptUrl(implode('|', $images)));
+            $qs = ['img' => $this->di['utility.encryption']->encryptUrl(implode('|', $images))];
             $urlString = '?' . http_build_query($qs);
 
-            /** @var \Slim\Http\Response $response */
+            /** @var Response $response */
             return $response->withStatus(303)->withHeader('Location', "{$this->config['api.redirect']}{$urlString}");
         } else {
             throw new NoImages('No processed images found. Possibly file was more than ' . $this->config['site.max_filesize'] . ' bytes?');
@@ -75,7 +78,7 @@ class UploadCtrl extends BaseCtrl
         $files = $request->getUploadedFiles();
         if (!$files) throw new GeneralException('No files to upload found');
 
-        $imageData = array();
+        $imageData = [];
         foreach ($files as $fileArray) {
             if (!$fileArray) continue;
             foreach ($fileArray as $file) {
@@ -97,14 +100,14 @@ class UploadCtrl extends BaseCtrl
         }
 
         if ($images) {
-            $qs = array(
+            $qs = [
                 'action' => 'takeupload',
                 'torrentid' => $args['torrentid'],
                 'imgs' => $this->di['utility.encryption']->encryptUrl(implode('|', $images))
-            );
+            ];
             $urlString = '?' . http_build_query($qs);
 
-            /** @var \Slim\Http\Response $response */
+            /** @var Response $response */
             return $response->withStatus(303)->withHeader('Location', "{$this->config['api.redirect']}{$urlString}");
         } else {
             throw new NoImages('No processed images found. Possibly file was more than ' . $this->config['site.max_filesize'] . ' bytes or image was not PNG?');
@@ -112,10 +115,10 @@ class UploadCtrl extends BaseCtrl
     }
 
     /**
-     * @param \Slim\Http\Request $request
-     * @param \Slim\Http\Response $response
+     * @param Request $request
+     * @param Response $response
      * @param $args
-     * @return \Slim\Http\Response
+     * @return Response
      * @throws Exception
      */
     public function api($request, $response, $args)
@@ -124,7 +127,7 @@ class UploadCtrl extends BaseCtrl
 
         if (!hash_equals($auth, $this->config['api.auth_key'])) throw new AccessDenied;
 
-        $dataToHandle = array();
+        $dataToHandle = [];
 
         $url = $request->getParam('url');
         $file = $request->getParam('file');
@@ -157,7 +160,7 @@ class UploadCtrl extends BaseCtrl
         }
 
         if ($images) {
-            /** @var \Slim\Http\Response $response */
+            /** @var Response $response */
             $response = $response->withHeader('Content-Type', 'application/json');
             $response->getBody()->write(json_encode($images));
             return $response->withStatus(201);
@@ -168,7 +171,7 @@ class UploadCtrl extends BaseCtrl
 
     private function processUploadedData(array $dataToHandle, $uploaderId = 0, $torrentId = 0)
     {
-        $images = array();
+        $images = [];
         foreach ($dataToHandle as $bindata) {
             if (!$bindata) continue;
             $metadata = $this->di['utility.images']->readImageData($bindata);
@@ -189,7 +192,7 @@ class UploadCtrl extends BaseCtrl
             }
 
             $checksum = $isLegacy ? $metadata['checksum_legacy'] : $metadata['checksum'];
-            if(!$found) {
+            if (!$found) {
                 $savePath = $this->di['utility.images']->getSavePath($checksum . '.' . $metadata['extension']);
                 if (!$this->di['utility.images']->saveData($bindata, $savePath, false)) throw new GeneralException('Unable to save file');
             }

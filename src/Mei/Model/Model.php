@@ -1,20 +1,23 @@
 <?php
+
 namespace Mei\Model;
 
 use InvalidArgumentException;
+use Mei\Cache\IKeyStore;
 use Mei\Entity\IEntity;
+use Mei\Instrumentation\PDOInstrumentationWrapper;
 use Mei\Utilities\PDOParamMapper;
 use PDO;
 
 abstract class Model implements IModel
 {
     /**
-     * @var \Mei\Instrumentation\PDOInstrumentationWrapper
+     * @var PDOInstrumentationWrapper
      */
     protected $db;
 
     /**
-     * @var \Mei\Cache\IKeyStore
+     * @var IKeyStore
      */
     protected $cache;
 
@@ -39,7 +42,7 @@ abstract class Model implements IModel
     /**
      * Return an instance of the database object.
      *
-     * @return \Mei\Instrumentation\PDOInstrumentationWrapper
+     * @return PDOInstrumentationWrapper
      */
     protected function getDatabase()
     {
@@ -49,7 +52,7 @@ abstract class Model implements IModel
     /**
      * Return an instance of the cache object.
      *
-     * @return \Mei\Cache\IKeyStore
+     * @return IKeyStore
      */
     protected function getCache()
     {
@@ -73,21 +76,21 @@ abstract class Model implements IModel
     public function getEntitiesFromIds($ids)
     {
         if (!$ids) {
-            return array();
+            return [];
         }
-        return array_map(function($id) {
+        return array_map(function ($id) {
             return $this->getById($id);
         }, $ids);
     }
 
     /**
-     * @see \Mei\Model\IModel::getById()
      * @param array $id
      * @return IEntity
+     * @see \Mei\Model\IModel::getById()
      */
     public function getById($id)
     {
-        if (is_null($id) || $id === array() || !(is_array($id))) {
+        if (is_null($id) || $id === [] || !(is_array($id))) {
             return null;
         }
 
@@ -104,7 +107,9 @@ abstract class Model implements IModel
             $row = $entityCache->getRow();
         }
         if (!$row) {
-            $whereStr = implode(' AND ', array_map(function($col) { return "`$col` = :$col"; }, array_keys($id)));
+            $whereStr = implode(' AND ', array_map(function ($col) {
+                return "`$col` = :$col";
+            }, array_keys($id)));
 
             $attrs = $builder($entityCache)->getAttributes(); // we need to create mockup of entity first
 
@@ -113,9 +118,8 @@ abstract class Model implements IModel
             // select * from table where column like 'value' COLLATE utf8_bin
             $query = "SELECT * FROM `$table` WHERE $whereStr";
             $q = $this->getDatabase()->prepare($query);
-            foreach($id as $param => $value)
-            {
-                $q->bindValue(':'.$param, $value, PDOParamMapper::map($attrs[$param]));
+            foreach ($id as $param => $value) {
+                $q->bindValue(':' . $param, $value, PDOParamMapper::map($attrs[$param]));
             }
             $q->execute();
             $row = $q->fetch(PDO::FETCH_ASSOC);
@@ -133,9 +137,9 @@ abstract class Model implements IModel
     }
 
     /**
-     * @see \Mei\Model\IModel::createEntity()
      * @param array $arr
      * @return IEntity
+     * @see \Mei\Model\IModel::createEntity()
      */
     public function createEntity($arr)
     {
@@ -156,9 +160,9 @@ abstract class Model implements IModel
     }
 
     /**
-     * @see \Mei\Model\IModel::save()
      * @param IEntity $entity
      * @return IEntity
+     * @see \Mei\Model\IModel::save()
      */
     public function save(IEntity $entity)
     {
@@ -183,16 +187,15 @@ abstract class Model implements IModel
             $attrs = $entity->getAttributes();
             $cols = $vals = '';
             if ($values) {
-                $cols = '`'.implode('`, `', array_keys($values)).'`';
-                $vals = ':'.implode(', :', array_keys($values));
+                $cols = '`' . implode('`, `', array_keys($values)) . '`';
+                $vals = ':' . implode(', :', array_keys($values));
             }
 
             // this query is fine even if $cols/$vals are empty
             $sql = "INSERT INTO `$table` ($cols) VALUES ($vals)";
             $q = $this->getDatabase()->prepare($sql);
-            foreach($values as $param => $value)
-            {
-                $q->bindValue(':'.$param, $value, PDOParamMapper::map($attrs[$param]));
+            foreach ($values as $param => $value) {
+                $q->bindValue(':' . $param, $value, PDOParamMapper::map($attrs[$param]));
             }
             $q->execute();
 
@@ -255,10 +258,14 @@ abstract class Model implements IModel
 
             // there must be changed values if we reached here
             $cols = array_keys($values);
-            $cols = array_map(function($col) { return "`$col` = :$col"; }, $cols);
+            $cols = array_map(function ($col) {
+                return "`$col` = :$col";
+            }, $cols);
             $sql .= implode(', ', $cols);
 
-            $where = array_map(function($col) { return "`$col` = :$col"; }, $idAttr);
+            $where = array_map(function ($col) {
+                return "`$col` = :$col";
+            }, $idAttr);
             $where = implode(' AND ', $where);
 
             $sql .= " WHERE $where LIMIT 1";
@@ -267,9 +274,8 @@ abstract class Model implements IModel
             $values = array_merge($values, $id);
 
             $q = $this->getDatabase()->prepare($sql);
-            foreach($values as $param => $value)
-            {
-                $q->bindValue(':'.$param, $value, PDOParamMapper::map($attrs[$param]));
+            foreach ($values as $param => $value) {
+                $q->bindValue(':' . $param, $value, PDOParamMapper::map($attrs[$param]));
             }
             $q->execute();
 
@@ -281,9 +287,9 @@ abstract class Model implements IModel
     }
 
     /**
-     * @see \Mei\Model\IModel::delete()
      * @param IEntity $entity
      * @return IEntity
+     * @see \Mei\Model\IModel::delete()
      */
     public function delete(IEntity $entity)
     {
@@ -295,7 +301,7 @@ abstract class Model implements IModel
             throw new InvalidArgumentException("Unable to delete entity - primary key not set");
         }
 
-        $where = array();
+        $where = [];
         foreach (array_keys($id) as $k) {
             $where[] = "`$k` = :$k";
         }
@@ -305,9 +311,8 @@ abstract class Model implements IModel
 
         $sql = "DELETE FROM `$table` WHERE $where LIMIT 1";
         $q = $this->getDatabase()->prepare($sql);
-        foreach($id as $param => $value)
-        {
-            $q->bindValue(':'.$param, $value, PDOParamMapper::map($attrs[$param]));
+        foreach ($id as $param => $value) {
+            $q->bindValue(':' . $param, $value, PDOParamMapper::map($attrs[$param]));
         }
         $q->execute();
         $cache = $entity->getCacheable();

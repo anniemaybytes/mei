@@ -1,26 +1,29 @@
 <?php
+
 namespace Mei\Controller;
 
 use GuzzleHttp\Psr7\BufferStream;
 use Mei\Exception\NotFound;
 use Mei\Utilities\Time;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 class ServeCtrl extends BaseCtrl
 {
-    public static $legacySizes = array(
-        'small'     => array(80 , 150),
-        'front'     => array(200, 150),
-        'imgupl'    => array(120, 100),
-        'coverflow' => array(120, 100),
-        'imageupl'  => array(450, 450),
-        'groupimg'  => array(200, 400),
-    );
+    public static $legacySizes = [
+        'small' => [80, 150],
+        'front' => [200, 150],
+        'imgupl' => [120, 100],
+        'coverflow' => [120, 100],
+        'imageupl' => [450, 450],
+        'groupimg' => [200, 400],
+    ];
 
     /**
-     * @param \Slim\Http\Request $request
-     * @param \Slim\Http\Response $response
+     * @param Request $request
+     * @param Response $response
      * @param $args
-     * @return \Slim\Http\Response
+     * @return Response
      * @throws NotFound
      */
     public function serve($request, $response, $args)
@@ -38,11 +41,10 @@ class ServeCtrl extends BaseCtrl
             $info['height'] = self::$legacySizes[$hashInfo[0]][1];
             $info['crop'] = false;
             $info['name'] = $hashInfo[1];
-        }
-        elseif (isset($hashInfo[1])) {
+        } elseif (isset($hashInfo[1])) {
             $dimensions = explode('x', $hashInfo[1]);
             if (count($dimensions) == 2) {
-                $info['width']  = intval($dimensions[0]);
+                $info['width'] = intval($dimensions[0]);
                 $info['height'] = intval($dimensions[1]);
             }
             $info['crop'] = (isset($hashInfo[2]) && $hashInfo[2] == 'crop');
@@ -78,15 +80,15 @@ class ServeCtrl extends BaseCtrl
             :
             filemtime($this->di['utility.images']->getSavePath($savePath['filename'] . '.' . $this->di['utility.images']->mapExtension($savePath['extension'])));
 
-        /** @var \Slim\Http\Response $response */
+        /** @var Response $response */
         $response = $response->withHeader('Content-Type', $meta['mime']);
         $response = $response->withHeader('Content-Length', $meta['size']);
-        $response = $response->withHeader('Cache-Control', 'public, max-age='.(strtotime('+30 days')-time()));
+        $response = $response->withHeader('Cache-Control', 'public, max-age=' . (strtotime('+30 days') - time()));
         $response = $response->withHeader('ETag', '"' . $eTag . '"');
         $response = $response->withHeader('Expires', date('r', strtotime('+30 days')));
         $response = $response->withHeader('Last-Modified', date('r', $timeStamp));
 
-        if($request->getHeader('If-None-Match') != $eTag) { // does not match etag?
+        if ($request->getHeader('If-None-Match') != $eTag) { // does not match etag?
             $fh = new BufferStream();
             $fh->write($bindata);
             return $response->withBody($fh);

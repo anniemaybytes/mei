@@ -1,4 +1,5 @@
 <?php
+
 namespace Mei\Utilities;
 
 use Exception;
@@ -41,12 +42,14 @@ class Encryption
             try {
                 $data = base64_decode($encryptedData);
                 if ($data == false) return false;
-                $initVector = substr($data,0,16);
-                $unpaddedCryptedData = substr($data,16);
+                $initVector = substr($data, 0, 16);
+                $unpaddedCryptedData = substr($data, 16);
                 $r = trim(openssl_decrypt($unpaddedCryptedData, self::CIPHER, $this->encryptionKey, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $initVector));
-                if(!$r) return false;
+                if (!$r) return false;
                 return $r;
-            } catch(Exception $e) { return false; }
+            } catch (Exception $e) {
+                return false;
+            }
         } else {
             return "";
         }
@@ -55,9 +58,9 @@ class Encryption
     public function decryptString($encryptedData)
     {
         $result = $this->decrypt($encryptedData);
-        if(!$result) return false;
+        if (!$result) return false;
         $isUTF8 = preg_match('//u', $result);
-        if(!$isUTF8) return false;
+        if (!$isUTF8) return false;
         return $result;
     }
 

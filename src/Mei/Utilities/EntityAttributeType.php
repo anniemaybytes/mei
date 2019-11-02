@@ -1,7 +1,9 @@
 <?php
+
 namespace Mei\Utilities;
 
 use DateTime;
+use Exception;
 use InvalidArgumentException;
 
 class EntityAttributeType
@@ -11,7 +13,7 @@ class EntityAttributeType
      * @param string $type The type to convert to.
      * @param string $val The string to convert.
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public static function fromString($type, $val)
     {
@@ -53,7 +55,7 @@ class EntityAttributeType
      * @param string $type The type to convert from.
      * @param mixed $val The value to convert.
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public static function toString($type, $val)
     {

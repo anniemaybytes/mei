@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpInconsistentReturnPointsInspection */
+
 namespace Mei\Controller;
 
 use Exception;
@@ -11,21 +12,21 @@ use Tracy\Debugger;
 
 class ErrorCtrl extends BaseCtrl
 {
-    public static $STATUS_MESSAGES = array (
+    public static $STATUS_MESSAGES = [
         'default' => 'Internal Server Error',
-        404       => 'Not Found',
-        403       => 'Forbidden',
-        415       => 'Unsupported Media Type',
-    );
+        404 => 'Not Found',
+        403 => 'Forbidden',
+        415 => 'Unsupported Media Type',
+    ];
 
-    private function getData($status_code) {
-        $data = array();
+    private function getData($status_code)
+    {
+        $data = [];
         $data['status_code'] = $status_code;
 
         if (!isset(self::$STATUS_MESSAGES[$status_code])) {
             $data['status_message'] = self::$STATUS_MESSAGES['default'];
-        }
-        else {
+        } else {
             $data['status_message'] = self::$STATUS_MESSAGES[$status_code];
         }
 
@@ -51,7 +52,7 @@ class ErrorCtrl extends BaseCtrl
 
             if (is_subclass_of($exception, '\Mei\Exception\GeneralException')) {
                 $desc = $exception->getDescription();
-                if(strlen($desc) > 0) $data['status_message'] = $desc;
+                if (strlen($desc) > 0) $data['status_message'] = $desc;
             }
 
             $this->logError($request, $exception, $data);
@@ -72,17 +73,15 @@ class ErrorCtrl extends BaseCtrl
                 }
             }
 
-            if($this->config['site.errors'])
-            {
-                $response->getBody()->write($data['status_code'].' - '.$data['status_message']);
+            if ($this->config['site.errors']) {
+                $response->getBody()->write($data['status_code'] . ' - ' . $data['status_message']);
             }
 
             $response = $response->withHeader('Cache-Control', 'max-age=0');
             $response = $response->withHeader('Expires', date('r', 0));
 
             return $response->withStatus($statusCode);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             Debugger::log($e, Debugger::EXCEPTION);
         }
     }
@@ -94,17 +93,17 @@ class ErrorCtrl extends BaseCtrl
             return;
         }
 
-        Debugger::getBlueScreen()->addPanel(function() {
+        Debugger::getBlueScreen()->addPanel(function () {
             return [
                 'tab' => 'Cache hits',
                 'panel' => Debugger::dump($this->di['cache']->getCacheHits(), true),
             ];
         });
-        Debugger::getBlueScreen()->addPanel(function() {
+        Debugger::getBlueScreen()->addPanel(function () {
             return [
                 'tab' => 'Instrumentor',
                 'panel' => Debugger::dump($this->di['instrumentor']->getLog(), true),
-            ] ;
+            ];
         });
 
         Debugger::log($exception, Debugger::EXCEPTION);

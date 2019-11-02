@@ -1,15 +1,18 @@
 <?php
+
 namespace Mei\Controller;
 
 use Exception;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 class DeleteCtrl extends BaseCtrl
 {
     /**
-     * @param \Slim\Http\Request $request
-     * @param \Slim\Http\Response $response
+     * @param Request $request
+     * @param Response $response
      * @param $args
-     * @return \Slim\Http\Response
+     * @return Response
      */
     public function delete($request, $response, $args)
     {
@@ -18,19 +21,18 @@ class DeleteCtrl extends BaseCtrl
 
         $auth = $request->getParam('auth');
 
-        if(!hash_equals($auth, $this->config['api.auth_key'])) {
-            return $response->withJson(array('success' => false, 'reason' => 'access denied'))->withStatus(403);
+        if (!hash_equals($auth, $this->config['api.auth_key'])) {
+            return $response->withJson(['success' => false, 'reason' => 'access denied'])->withStatus(403);
         }
 
         $imgs = json_decode($request->getParam('imgs'));
         $success = count($imgs);
 
-        if(!$success) {
-            return $response->withJson(array('success' => false, 'reason' => 'imgs array was empty'))->withStatus(200);
+        if (!$success) {
+            return $response->withJson(['success' => false, 'reason' => 'imgs array was empty'])->withStatus(200);
         }
 
-        foreach($imgs as $img)
-        {
+        foreach ($imgs as $img) {
             $info = pathinfo($img);
             $fileEntity = $this->di['model.files_map']->getByFileName($info['filename'] . '.' . $info['extension']);
 
@@ -53,7 +55,7 @@ class DeleteCtrl extends BaseCtrl
                 ($domain . $this->di['router']->pathFor('serve:legacy', ['img' => $info['filename'] . '.' . $info['extension']]))
             ];
 
-            foreach(ServeCtrl::$legacySizes as $resInfo) // handling common resolutions + crop
+            foreach (ServeCtrl::$legacySizes as $resInfo) // handling common resolutions + crop
             {
                 $urls[] = ($domain . $this->di['router']->pathFor('serve', [
                         'img' => (
@@ -78,24 +80,24 @@ class DeleteCtrl extends BaseCtrl
                     ]));
             }
 
-            try{
+            try {
                 $this->di['model.files_map']->delete($fileEntity);
-                if(!$this->di['model.files_map']->getByKey($fileEntity->Key)) { // file does not exist anymore anywhere, remove it
+                if (!$this->di['model.files_map']->getByKey($fileEntity->Key)) { // file does not exist anymore anywhere, remove it
                     $savePath = pathinfo($fileEntity->Key);
                     $this->di['utility.images']->deleteImage($this->di['utility.images']->getSavePath($savePath['filename'] . '.' . $this->di['utility.images']->mapExtension($savePath['extension'])));
                 }
-            } catch(Exception $e) {
+            } catch (Exception $e) {
                 $success--;
                 continue;
             }
 
-            try{
+            try {
                 $this->di['utility.images']->clearCacheForImage($urls);
-            } catch(Exception $e) {
+            } catch (Exception $e) {
                 error_log("Caught $e");
             }
         }
 
-        return $response->withJson(array('success' => $success))->withStatus(200);
+        return $response->withJson(['success' => $success])->withStatus(200);
     }
 }

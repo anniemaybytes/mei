@@ -1,38 +1,40 @@
 <?php
+
 namespace Mei\Utilities;
 
-use \DateTime;
-use \DateInterval;
+use DateInterval;
+use DateTime;
+use Exception;
 
 class Time
 {
     const ZERO_SQLTIME = '0000-00-00 00:00:00';
 
-  /**
-   * Checks if a given DateTime object is non-zero
-   *
-   * @param \DateTime $datetime
-   * @return true if time not 0000-00-00 00:00:00
-   * @throws \Exception
-   */
+    /**
+     * Checks if a given DateTime object is non-zero
+     *
+     * @param DateTime $datetime
+     * @return true if time not 0000-00-00 00:00:00
+     * @throws Exception
+     */
     public static function timeIsNonZero($datetime)
     {
         $time = self::fromSql(self::ZERO_SQLTIME);
         return $datetime != $time;
     }
 
-  /**
-   * Constructs a DateTime object from an SQL time string.
-   *
-   * Time string format is 'Y-m-d H:i:s'
-   *
-   * @param $str
-   * @return DateTime
-   * @throws \Exception
-   */
+    /**
+     * Constructs a DateTime object from an SQL time string.
+     *
+     * Time string format is 'Y-m-d H:i:s'
+     *
+     * @param $str
+     * @return DateTime
+     * @throws Exception
+     */
     public static function fromSql($str)
     {
-        if(!$str) return self::fromSql(self::ZERO_SQLTIME);
+        if (!$str) return self::fromSql(self::ZERO_SQLTIME);
         return new DateTime($str);
     }
 
@@ -54,25 +56,25 @@ class Time
         return time();
     }
 
-  /**
-   * Returns the current time.
-   *
-   * @return \DateTime
-   * @throws \Exception
-   */
+    /**
+     * Returns the current time.
+     *
+     * @return DateTime
+     * @throws Exception
+     */
     public static function now()
     {
         return new DateTime();
     }
 
-  /**
-   * Converts the given time to an SQL time string.
-   *
-   * @param DateTime $t
-   * @param bool $fuzzy if true returns date only, time set to 0
-   * @return string
-   * @throws \Exception
-   */
+    /**
+     * Converts the given time to an SQL time string.
+     *
+     * @param DateTime $t
+     * @param bool $fuzzy if true returns date only, time set to 0
+     * @return string
+     * @throws Exception
+     */
     public static function sql(DateTime $t, $fuzzy = false)
     {
         if (!self::timeIsNonZero($t)) return self::ZERO_SQLTIME;

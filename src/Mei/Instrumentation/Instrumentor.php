@@ -1,4 +1,5 @@
 <?php
+
 namespace Mei\Instrumentation;
 
 use Exception;
@@ -6,12 +7,13 @@ use Exception;
 class Instrumentor
 {
     protected $enabled = true;
-    protected $eventLog = array();
+    protected $eventLog = [];
     protected $start;
     protected $end;
     protected $detailedMode = false;
 
-    public function __construct() {
+    public function __construct()
+    {
         if (isset($_SERVER['REQUEST_TIME_FLOAT']))
             $this->start = $_SERVER['REQUEST_TIME_FLOAT'];
         else
@@ -27,17 +29,17 @@ class Instrumentor
     {
         if (!$this->enabled) return null;
         $now = $this->now();
-        $myData = array(
+        $myData = [
             'name' => $event,
-            'data' => array(
+            'data' => [
                 'start' => $extraData
-            ),
-            'timing' => array(
+            ],
+            'timing' => [
                 'start' => $now
-            ),
-        );
+            ],
+        ];
         if ($this->detailedMode) {
-            $myData['stacktrace'] = array('start' => $this->generateStacktrace(), 'end' => null);
+            $myData['stacktrace'] = ['start' => $this->generateStacktrace(), 'end' => null];
         }
         $len = count($this->eventLog);
         $this->eventLog[intval($this->start) . '_' . ($len)] = $myData;
@@ -79,15 +81,15 @@ class Instrumentor
 
     public function getLog()
     {
-        if (!$this->enabled) return array();
+        if (!$this->enabled) return [];
         $this->end = $this->now();
-        $ret = array(
-            'timing' => array(
+        $ret = [
+            'timing' => [
                 'start' => $this->start,
                 'end' => $this->end
-            ),
+            ],
             'events' => $this->eventLog
-        );
+        ];
         return $ret;
     }
 

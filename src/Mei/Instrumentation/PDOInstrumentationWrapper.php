@@ -1,4 +1,5 @@
 <?php
+
 namespace Mei\Instrumentation;
 
 use Exception;
@@ -9,9 +10,9 @@ use Tracy\Debugger;
 class PDOInstrumentationWrapper
 {
     private $instrumentor;
-    /** @var $pdo PDO **/
+    /** @var $pdo PDO * */
     private $pdo;
-    private $transactionQueue = array();
+    private $transactionQueue = [];
 
     public function __construct($instrumentor, $pdo)
     {
@@ -23,7 +24,7 @@ class PDOInstrumentationWrapper
     {
         if ($this->transactionQueue) {
             Debugger::log('PDO transaction queue was not empty on destruct!', Debugger::WARNING);
-            while(count($this->transactionQueue) > 0) $this->rollBack();
+            while (count($this->transactionQueue) > 0) $this->rollBack();
         }
     }
 
@@ -35,7 +36,7 @@ class PDOInstrumentationWrapper
         $tid = $this->instrumentor->start('pdo:transaction'); // get tid
         array_push($this->transactionQueue, $tid); // ... and push it to array
 
-        if(!$this->pdo->inTransaction()) {
+        if (!$this->pdo->inTransaction()) {
             return $this->pdo->beginTransaction(); // creating new parent transaction
         } else {
             return $this->exec('SAVEPOINT tq_' . $tid); // creating new child transaction via savepoint
@@ -45,7 +46,7 @@ class PDOInstrumentationWrapper
     public function commit()
     {
         $tid = array_pop($this->transactionQueue);
-        if(count($this->transactionQueue) != 0) return true; // there are still transactions left, do nothing as theyll be commited by parent transaction
+        if (count($this->transactionQueue) != 0) return true; // there are still transactions left, do nothing as theyll be commited by parent transaction
 
         $res = $this->pdo->commit();
         $this->instrumentor->end($tid, 'commit');
@@ -55,7 +56,7 @@ class PDOInstrumentationWrapper
     public function rollBack()
     {
         $tid = array_pop($this->transactionQueue); // pop transactionId
-        if(count($this->transactionQueue) == 0) { // this is parent transaction, do transaction rollback
+        if (count($this->transactionQueue) == 0) { // this is parent transaction, do transaction rollback
             $res = $this->pdo->rollBack();
         } else {
             $res = $this->pdo->exec('ROLLBACK TO tq_' . $tid); // this is child transaction, rollback to savepoint
@@ -67,7 +68,7 @@ class PDOInstrumentationWrapper
 
     public function query($statement, $type = null, $type_arg = null, $ctorarg = null)
     {
-        $set = array($type, $type_arg, $ctorarg);
+        $set = [$type, $type_arg, $ctorarg];
         $n = 0;
         foreach ($set as $elem) {
             if (is_null($elem)) break;
@@ -97,9 +98,9 @@ class PDOInstrumentationWrapper
         return $res;
     }
 
-    public function prepare($statement, $driver_options = array())
+    public function prepare($statement, $driver_options = [])
     {
-        $hash = md5($statement.rand());
+        $hash = md5($statement . rand());
         $iid = $this->instrumentor->start('pdo:prepare:' . $hash, $statement);
         $res = new PDOStatementInstrumentationWrapper($this->instrumentor, $this->pdo->prepare($statement, $driver_options), $hash);
         $this->instrumentor->end($iid);
@@ -108,12 +109,12 @@ class PDOInstrumentationWrapper
 
     public function exec($statement, $retries = 3)
     {
-        $hash = md5($statement.rand());
-        $iid = $this->instrumentor->start('pdo:exec:'. $hash . '_' . $retries, $statement);
+        $hash = md5($statement . rand());
+        $iid = $this->instrumentor->start('pdo:exec:' . $hash . '_' . $retries, $statement);
         try {
             $res = $this->pdo->exec($statement);
         } catch (PDOException $e) {
-            if (!in_array($e->errorInfo[1], array(1213, 1205)) || $retries < 0) {
+            if (!in_array($e->errorInfo[1], [1213, 1205]) || $retries < 0) {
                 throw $e;
             }
             sleep(max([2, (3 - $retries) * 3])); // wait longer as attempts increase
@@ -130,12 +131,12 @@ class PDOInstrumentationWrapper
 
     private function makeCall($method, $args)
     {
-        return call_user_func_array(array($this->pdo, $method), $args);
+        return call_user_func_array([$this->pdo, $method], $args);
     }
 
     public function quote($string, $parameter_type = PDO::PARAM_STR)
     {
-        $iid = $this->instrumentor->start('pdo:quote:'. md5($string.$parameter_type), $string . '_' . $parameter_type);
+        $iid = $this->instrumentor->start('pdo:quote:' . md5($string . $parameter_type), $string . '_' . $parameter_type);
         $res = $this->pdo->quote($string, $parameter_type);
         $this->instrumentor->end($iid);
         return $res;

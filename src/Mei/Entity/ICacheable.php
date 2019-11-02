@@ -1,4 +1,5 @@
 <?php
+
 namespace Mei\Entity;
 
 use Mei\Cache\IKeyStore;

@@ -1,4 +1,5 @@
 <?php
+
 namespace Mei\Entity;
 
 use ArrayAccess;
@@ -30,7 +31,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     // array of arrays; each array represents one field;
     // first argument is the field name, 2nd is the type, 3rd is default value,
     // 4th if set to true denotes a primary key
-    protected static $columns = array();
+    protected static $columns = [];
 
     public function __construct(ICacheable $cache)
     {
@@ -56,7 +57,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
             throw new InvalidArgumentException("Expects array argument");
         }
 
-        $attributes = array();
+        $attributes = [];
 
         foreach ($columns as $val) {
             if (!is_array($val) || count($val) < 2) {
@@ -81,7 +82,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
             throw new InvalidArgumentException("Expects array argument");
         }
 
-        $defaults = array();
+        $defaults = [];
         foreach ($columns as $val) {
             if (!is_array($val) || count($val) < 2) {
                 throw new Exception("Invalid defaults set");
@@ -106,7 +107,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
             throw new InvalidArgumentException("Expects array argument");
         }
 
-        $ids = array();
+        $ids = [];
         foreach ($columns as $val) {
             if (!is_array($val) || count($val) < 2) {
                 throw new Exception("Invalid ID set");
@@ -123,7 +124,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     public function getId()
     {
         $ids = $this->getIdAttributes();
-        $id = array();
+        $id = [];
         foreach ($ids as $col) {
             if (is_null($this->getCacheable()) ||
                 is_null($this->mapper) ||
@@ -160,7 +161,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     public function getMappedValues()
     {
         $values = $this->getValues();
-        $mappedValues = array();
+        $mappedValues = [];
 
         foreach ($values as $attribute => $value) {
             $type = $this->getAttributes()[$attribute];
@@ -171,6 +172,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     }
 
     /**
+     * @param $new
      * @return IEntity
      */
     public function setNew($new)
@@ -215,7 +217,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
 
     public function generateCachedValue($key)
     {
-        return array();
+        return [];
     }
 
     /// \ArrayAccess implementation

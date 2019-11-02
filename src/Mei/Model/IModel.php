@@ -1,4 +1,5 @@
 <?php
+
 namespace Mei\Model;
 
 use Mei\Entity\IEntity;

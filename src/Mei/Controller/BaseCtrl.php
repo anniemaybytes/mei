@@ -1,5 +1,8 @@
 <?php
+
 namespace Mei\Controller;
+
+use Slim\Http\Environment;
 
 abstract class BaseCtrl
 {
@@ -11,7 +14,7 @@ abstract class BaseCtrl
     protected $config;
 
     /**
-     * @var \Slim\Http\Environment
+     * @var Environment
      */
     protected $environment;
 

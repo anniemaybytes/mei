@@ -1,9 +1,10 @@
 <?php
+
 namespace Mei\Utilities;
 
 class StringUtil
 {
-    public static function generateRandomString($len=32)
+    public static function generateRandomString($len = 32)
     {
         $charset = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         return self::randomize($charset, $len);

@@ -1,12 +1,14 @@
 <?php
+
 namespace Mei\Instrumentation;
 
 use PDOException;
+use PDOStatement;
 
 class PDOStatementInstrumentationWrapper
 {
     private $instrumentor;
-    /** @var $statement \PDOStatement **/
+    /** @var $statement PDOStatement * */
     private $statement;
     private $id;
 
@@ -30,12 +32,11 @@ class PDOStatementInstrumentationWrapper
         try {
             if (is_null($params)) {
                 $out = $this->statement->execute();
-            }
-            else {
+            } else {
                 $out = $this->statement->execute($params);
             }
         } catch (PDOException $e) {
-            if (!in_array($e->errorInfo[1], array(1213, 1205)) || $retries < 0) {
+            if (!in_array($e->errorInfo[1], [1213, 1205]) || $retries < 0) {
                 throw $e;
             }
             sleep(max([2, (3 - $retries) * 3])); // wait longer as attempts increase
@@ -48,25 +49,26 @@ class PDOStatementInstrumentationWrapper
 
     public function fetchAll()
     {
-        return call_user_func_array(array($this->statement, 'fetchAll'), func_get_args());
+        return call_user_func_array([$this->statement, 'fetchAll'], func_get_args());
     }
 
     public function bindValue()
     {
-        return call_user_func_array(array($this->statement, 'bindValue'), func_get_args());
+        return call_user_func_array([$this->statement, 'bindValue'], func_get_args());
     }
 
     public function fetch()
     {
-        return call_user_func_array(array($this->statement, 'fetch'), func_get_args());
+        return call_user_func_array([$this->statement, 'fetch'], func_get_args());
     }
 
     public function fetchColumn()
     {
-        return call_user_func_array(array($this->statement, 'fetchColumn'), func_get_args());
+        return call_user_func_array([$this->statement, 'fetchColumn'], func_get_args());
     }
 
-    private function makeCall($method, $args) {
-        return call_user_func_array(array($this->statement, $method), $args);
+    private function makeCall($method, $args)
+    {
+        return call_user_func_array([$this->statement, $method], $args);
     }
 }

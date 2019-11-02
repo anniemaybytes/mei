@@ -1,4 +1,5 @@
 <?php
+
 namespace Mei\Utilities;
 
 use Exception;
@@ -8,9 +9,9 @@ class ImageUtilities
 {
     private $config;
 
-    private static $allowedTypes = array ('image/jpeg' => 'jpg', 'image/gif'  => 'gif', 'image/png'  => 'png');
-    private static $allowedResizeRange = array('min' => 20, 'max' => 1000);
-    private static $allowedUrlScheme = array('http', 'https');
+    private static $allowedTypes = ['image/jpeg' => 'jpg', 'image/gif' => 'gif', 'image/png' => 'png'];
+    private static $allowedResizeRange = ['min' => 20, 'max' => 1000];
+    private static $allowedUrlScheme = ['http', 'https'];
 
     public function __construct($di)
     {
@@ -33,15 +34,15 @@ class ImageUtilities
 
         $mime = $data['mime'];
 
-        $data = array(
-            'extension'        => self::$allowedTypes[$mime],
-            'mime'             => $mime,
-            'checksum'         => hash('sha256', $bindata . $this->config['site.salt']),
-            'checksum_legacy'  => md5($bindata),
-            'width'            => $data[0],
-            'height'           => $data[1],
-            'size'             => strlen($bindata)
-        );
+        $data = [
+            'extension' => self::$allowedTypes[$mime],
+            'mime' => $mime,
+            'checksum' => hash('sha256', $bindata . $this->config['site.salt']),
+            'checksum_legacy' => md5($bindata),
+            'width' => $data[0],
+            'height' => $data[1],
+            'size' => strlen($bindata)
+        ];
 
         return $data ? $data : false;
     }
@@ -61,15 +62,14 @@ class ImageUtilities
 
     public function getDataFromUrl($url)
     {
-        if(!$url || !filter_var($url, FILTER_VALIDATE_URL)) return false;
+        if (!$url || !filter_var($url, FILTER_VALIDATE_URL)) return false;
 
         $scheme = parse_url($url, PHP_URL_SCHEME);
         $host = parse_url($url, PHP_URL_HOST);
 
-        if (in_array($scheme, self::$allowedUrlScheme))
-        {
+        if (in_array($scheme, self::$allowedUrlScheme)) {
             $curl = new Curl();
-            $curl->setoptArray(array(
+            $curl->setoptArray([
                 CURLOPT_URL => $url,
                 CURLOPT_ENCODING => 'UTF-8',
                 CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36',
@@ -82,8 +82,8 @@ class ImageUtilities
                 CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2,
                 CURLOPT_SSL_VERIFYHOST => 2,
                 CURLOPT_MAXREDIRS => 3,
-                CURLOPT_HTTPHEADER => array('Host: '.$host),
-            ));
+                CURLOPT_HTTPHEADER => ['Host: ' . $host],
+            ]);
 
             $content = $curl->exec();
             $content_length = $curl->getinfo(CURLINFO_CONTENT_LENGTH_DOWNLOAD);
@@ -129,8 +129,7 @@ class ImageUtilities
             $image->setImageCompressionQuality(90);
             $image->setOption('png:compression-level', 9);
             return $image;
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
     }
@@ -138,18 +137,18 @@ class ImageUtilities
     public function saveData($bindata, $savePath, $stripExif = true)
     {
         if (!$savePath || !$bindata) return false;
-        if(file_exists($savePath)) return true; // let code assume it succeeded
+        if (file_exists($savePath)) return true; // let code assume it succeeded
 
-        if($stripExif) {
+        if ($stripExif) {
             $bindata = $this->stripImage($this->readImage($bindata)); // strip image of EXIF, profiles and comments
         }
-        if($bindata instanceof Imagick) $bindata = $bindata->getImagesBlob();
-        if(!$bindata) return false;
+        if ($bindata instanceof Imagick) $bindata = $bindata->getImagesBlob();
+        if (!$bindata) return false;
 
         $dir = dirname($savePath);
         if (!is_dir($dir)) mkdir($dir, 0750, true);
         file_put_contents($savePath, $bindata);
-        if(!chmod($savePath, 0640)) return false;
+        if (!chmod($savePath, 0640)) return false;
         return true;
     }
 
@@ -164,12 +163,11 @@ class ImageUtilities
         try {
             $profiles = $image->getImageProfiles("icc", true);
             $image->stripImage();
-            if(!empty($profiles)) {
+            if (!empty($profiles)) {
                 $image->profileImage("icc", $profiles['icc']);
             }
             return $image;
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
     }
@@ -187,22 +185,20 @@ class ImageUtilities
 
         // check dimensions are valid
         if (!is_int($maxWidth) || !is_int($maxHeight) ||
-            min(array($maxWidth, $maxHeight)) < self::$allowedResizeRange['min'] ||
-            max(array($maxWidth, $maxHeight)) > self::$allowedResizeRange['max']) {
+            min([$maxWidth, $maxHeight]) < self::$allowedResizeRange['min'] ||
+            max([$maxWidth, $maxHeight]) > self::$allowedResizeRange['max']) {
             return false;
         }
 
         try {
             if ($crop) {
                 $image->cropThumbnailImage($maxWidth, $maxHeight);
-            }
-            else {
+            } else {
                 $image->thumbnailImage($maxWidth, $maxHeight, true);
             }
             $image->setImagePage(0, 0, 0, 0);
             return $image;
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
     }
@@ -216,7 +212,7 @@ class ImageUtilities
     {
         if (is_array($urls) && $this->config['cloudflare.enabled']) { // domain present
             $curl = new Curl();
-            $curl->setoptArray(array(
+            $curl->setoptArray([
                 CURLOPT_URL => 'https://api.cloudflare.com/client/v4/zones/' . $this->config['cloudflare.zone'] . '/purge_cache',
                 CURLOPT_ENCODING => 'UTF-8',
                 CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36',
@@ -235,7 +231,7 @@ class ImageUtilities
                 ],
                 CURLOPT_CUSTOMREQUEST => 'DELETE',
                 CURLOPT_POSTFIELDS => json_encode(["files" => $urls])
-            ));
+            ]);
 
             $result = $curl->exec();
             unset($curl);

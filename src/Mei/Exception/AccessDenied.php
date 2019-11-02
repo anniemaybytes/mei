@@ -1,4 +1,5 @@
 <?php
+
 namespace Mei\Exception;
 
 use Exception;

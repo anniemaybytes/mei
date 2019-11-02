@@ -1,4 +1,5 @@
 <?php
+
 namespace Mei\Utilities;
 
 use InvalidArgumentException;
@@ -11,11 +12,11 @@ class EntityAttributeMapper implements IAttributeMapper
     private $defaultValues; // stored in db string form
     private $changedAttributes;
 
-    public function __construct($attributeMap, $defaultValues = array())
+    public function __construct($attributeMap, $defaultValues = [])
     {
         $this->attributeMap = $attributeMap;
         $this->defaultValues = $defaultValues;
-        $this->changedAttributes = array();
+        $this->changedAttributes = [];
     }
 
     private function getAttributeValue(ICacheable $cache, $attribute)
@@ -95,12 +96,11 @@ class EntityAttributeMapper implements IAttributeMapper
 
     public function getChangedValues(ICacheable $cache)
     {
-        $values = array();
+        $values = [];
         foreach (array_keys($this->changedAttributes) as $attribute) {
             if ($this->isAttributeSet($cache, $attribute)) {
                 $values[$attribute] = $this->get($cache, $attribute);
-            }
-            else {
+            } else {
                 $values[$attribute] = null; // this is the case when a variable is unset
             }
 
@@ -110,7 +110,7 @@ class EntityAttributeMapper implements IAttributeMapper
 
     public function getValues(ICacheable $cache)
     {
-        $values = array();
+        $values = [];
         foreach (array_keys($this->attributeMap) as $attribute) {
             if ($this->isAttributeSet($cache, $attribute)) {
                 $values[$attribute] = $this->get($cache, $attribute);
@@ -126,7 +126,7 @@ class EntityAttributeMapper implements IAttributeMapper
 
     public function resetChangedAttributes()
     {
-        $this->changedAttributes = array();
+        $this->changedAttributes = [];
         return $this;
     }
 }

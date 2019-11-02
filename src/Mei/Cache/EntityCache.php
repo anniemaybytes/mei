@@ -1,4 +1,5 @@
 <?php
+
 namespace Mei\Cache;
 
 use InvalidArgumentException;
@@ -14,14 +15,14 @@ class EntityCache implements ICacheable
     private $dbRow;
     private $loadedValues;
 
-    public function __construct(IKeyStore $cache, $key, $id = array(), $duration = 3600)
+    public function __construct(IKeyStore $cache, $key, $id = [], $duration = 3600)
     {
         $this->setKey($key);
         $this->setId($id);
         $this->setCacheDuration($duration);
 
-        $this->dbRow = array();
-        $this->loadedValues = array();
+        $this->dbRow = [];
+        $this->loadedValues = [];
         $this->dirty = false;
 
         $this->loadCache($cache);
@@ -41,7 +42,7 @@ class EntityCache implements ICacheable
 
         $row = $this->getRow();
         if (!is_array($row)) {
-            $row = array();
+            $row = [];
         }
 
         $str = '';
@@ -114,10 +115,10 @@ class EntityCache implements ICacheable
 
     public function getData()
     {
-        $r = array(
-            'dbRow'         => $this->dbRow,
-            'loadedValues'  => $this->loadedValues,
-        );
+        $r = [
+            'dbRow' => $this->dbRow,
+            'loadedValues' => $this->loadedValues,
+        ];
 
         return $r;
     }

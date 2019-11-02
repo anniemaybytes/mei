@@ -1,9 +1,11 @@
 <?php
+
 namespace Mei;
 
 use Mei\Route as R;
-use Slim\App;
 use RunTracy\Helpers\Profiler\Profiler;
+use Slim\App;
+use Slim\Container;
 
 class Dispatcher extends Singleton
 {
@@ -37,7 +39,7 @@ class Dispatcher extends Singleton
     /**
      * Returns the container object
      *
-     * @return \Slim\Container
+     * @return Container
      */
     public static function di()
     {
@@ -70,9 +72,9 @@ class Dispatcher extends Singleton
         $app = new App($this->di);
 
         Profiler::start('initRoutes');
-        $routes = array(
+        $routes = [
             new R\Main($app),
-        );
+        ];
         $this->di['routes'] = $routes;
         Profiler::finish('initRoutes');
 
