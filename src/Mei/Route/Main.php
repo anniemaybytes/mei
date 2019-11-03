@@ -19,12 +19,12 @@ class Main extends Base
             $this->group('/upload', function () {
                 /** @var App $this */
                 $this->post('/account', UploadCtrl::class . ':account')->setName('upload:account');
-                $this->post('/screenshot/{torrentid}', UploadCtrl::class . ':screenshot')->setName('upload:screenshot');
+                $this->post('/screenshot/{torrentid:[0-9]+}', UploadCtrl::class . ':screenshot')->setName('upload:screenshot');
                 $this->post('/api', UploadCtrl::class . ':api')->setName('upload:api');
             });
             $this->post('/delete', DeleteCtrl::class . ':delete')->setName('delete');
-            $this->get('/{img}', ServeCtrl::class . ':serve')->setName('serve');
-            $this->get('/images/{img}', function ($request, $response, $args) { // legacy
+            $this->get('/{img:(?:[a-zA-Z0-9]{32}|[a-zA-Z0-9]{64}|[a-zA-Z0-9]{11})(?:-\d{2,3}x\d{2,3}(?:-crop)?)?\.[a-zA-Z]{3}}', ServeCtrl::class . ':serve')->setName('serve');
+            $this->get('/images/{img:[a-zA-Z0-9]{32}(?:-\d{2,3}x\d{2,3}(?:-crop)?)?\.[a-zA-Z]{3}}', function ($request, $response, $args) { // legacy
                 /** @var Container $this */
                 return $response->withRedirect($this->get('router')->pathFor('serve', ['img' => $args['img']]))->withStatus(301);
             })->setName('serve:legacy');
