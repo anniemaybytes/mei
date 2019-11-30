@@ -83,14 +83,13 @@ class Instrumentor
     {
         if (!$this->enabled) return [];
         $this->end = $this->now();
-        $ret = [
+        return [
             'timing' => [
                 'start' => $this->start,
                 'end' => $this->end
             ],
             'events' => $this->eventLog
         ];
-        return $ret;
     }
 
     public function detailedMode($detailed = null)

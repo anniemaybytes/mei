@@ -115,12 +115,10 @@ class EntityCache implements ICacheable
 
     public function getData()
     {
-        $r = [
+        return [
             'dbRow' => $this->dbRow,
             'loadedValues' => $this->loadedValues,
         ];
-
-        return $r;
     }
 
     public function setData($cached)

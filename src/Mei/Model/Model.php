@@ -131,9 +131,7 @@ abstract class Model implements IModel
             }
         }
 
-        $entity = $builder($entityCache);
-
-        return $entity;
+        return $builder($entityCache);
     }
 
     /**
