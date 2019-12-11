@@ -1,10 +1,8 @@
 <?php
 
-namespace Mei\Utilities;
+namespace Mei\Entity;
 
 use InvalidArgumentException;
-use Mei\Entity\IAttributeMapper;
-use Mei\Entity\ICacheable;
 
 class EntityAttributeMapper implements IAttributeMapper
 {

@@ -10,8 +10,6 @@ class NonPersistent implements IKeyStore
     protected $initInner;
     /** @var string $key_prefix */
     private $key_prefix;
-    /** @var bool $clear_on_get */
-    private $clear_on_get = false;
     /** @var array $cacheHits */
     private $cacheHits = [];
     /** @var int $time */
@@ -26,15 +24,7 @@ class NonPersistent implements IKeyStore
     public function get($key)
     {
         $start = $this->startCall();
-        $keyOld = $key;
         $key = $this->key_prefix . $key;
-
-        if ($this->clear_on_get) {
-            // clearing the cache~
-            $this->delete($keyOld);
-
-            return false;
-        }
 
         if (array_key_exists($key, $this->inner)) {
             $res = $this->inner['key'];
@@ -66,11 +56,6 @@ class NonPersistent implements IKeyStore
         $start = $this->startCall();
         $key = $this->key_prefix . $key;
 
-        if ($this->clear_on_get) {
-            // no-op
-            return false;
-        }
-
         $res = $this->inner[$key] = $value;
         $this->endCall($start);
 
@@ -93,11 +78,6 @@ class NonPersistent implements IKeyStore
         $start = $this->startCall();
         $key = $this->key_prefix . $key;
 
-        if ($this->clear_on_get) {
-            // no-op
-            return $initial;
-        }
-
         $value = $this->get($key);
         if ($value === false) { // key does not exists yet, create it with $initial.
             $value = $initial;
@@ -117,22 +97,6 @@ class NonPersistent implements IKeyStore
     public function touch($key, $expiry = 3600)
     {
         return true;
-    }
-
-    public function setClearOnGet($val)
-    {
-        $this->clear_on_get = (bool)$val;
-    }
-
-    public function getStats()
-    {
-        return [];
-    }
-
-    public function flush()
-    {
-        unset($this->inner);
-        $this->inner = $this->initInner; // reset inner to init status
     }
 
     public function getEntityCache($key, $id = [], $duration = 0)

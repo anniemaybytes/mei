@@ -12,8 +12,8 @@ Vagrant.configure(2) do |config|
   config.vm.graceful_halt_timeout = 30
 
   # network
-  config.vm.network "forwarded_port", guest: 80, host_ip: "127.0.0.1", host: 7080
-  config.vm.network "forwarded_port", guest: 3306, host_ip: "127.0.0.1", host: 7306
+  config.vm.network "forwarded_port", guest: 443, host_ip: "127.0.0.1", host: 7443 # nginx
+  config.vm.network "forwarded_port", guest: 3306, host_ip: "127.0.0.1", host: 7306 # mariadb
 
   # synced folders
   config.vm.synced_folder "./", "/code",

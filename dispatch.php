@@ -4,6 +4,7 @@ define('BASE_ROOT', __DIR__);
 define('ERROR_REPORTING', E_ALL & ~(E_STRICT | E_NOTICE | E_WARNING | E_DEPRECATED));
 require_once BASE_ROOT . '/vendor/autoload.php'; // set up autoloading
 
+use Mei\Dispatcher;
 use RunTracy\Helpers\Profiler\Profiler;
 use RunTracy\Middlewares\TracyMiddleware;
 use Tracy\Debugger;
@@ -14,7 +15,7 @@ error_reporting(ERROR_REPORTING);
 Profiler::enable();
 Profiler::start('App');
 Profiler::start('initApp');
-$app = \Mei\Dispatcher::app();
+$app = Dispatcher::app();
 Profiler::finish('initApp');
 
 $di = $app->getContainer();
@@ -35,9 +36,9 @@ if ($di['config']['mode'] == 'production') { // tracy resets error_reporting to 
 Debugger::$maxDepth = 5;
 Debugger::$maxLength = 250;
 Debugger::$logSeverity = ERROR_REPORTING;
-Debugger::$reservedMemorySize = 3000000; // 5 megabytes because we increase depth for bluescreen
-Debugger::getBlueScreen()->maxDepth = 5;
-Debugger::getBlueScreen()->maxLength = 250;
+Debugger::$reservedMemorySize = 5000000; // 5 megabytes because we increase depth for bluescreen
+Debugger::getBlueScreen()->maxDepth = 7;
+Debugger::getBlueScreen()->maxLength = 520;
 
 // add middleware
 // note that the order is important; middleware gets executed as an onion, so

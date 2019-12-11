@@ -47,26 +47,6 @@ class PDOStatementInstrumentationWrapper
         return $out;
     }
 
-    public function fetchAll()
-    {
-        return call_user_func_array([$this->statement, 'fetchAll'], func_get_args());
-    }
-
-    public function bindValue()
-    {
-        return call_user_func_array([$this->statement, 'bindValue'], func_get_args());
-    }
-
-    public function fetch()
-    {
-        return call_user_func_array([$this->statement, 'fetch'], func_get_args());
-    }
-
-    public function fetchColumn()
-    {
-        return call_user_func_array([$this->statement, 'fetchColumn'], func_get_args());
-    }
-
     private function makeCall($method, $args)
     {
         return call_user_func_array([$this->statement, $method], $args);

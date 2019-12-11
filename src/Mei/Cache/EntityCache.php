@@ -110,7 +110,7 @@ class EntityCache implements ICacheable
     private function getCacheKey()
     {
         if (!$this->id) return false;
-        return sprintf("%s_%s", $this->key, $this->id);
+        return sprintf("orm-%s_%s", $this->key, $this->id);
     }
 
     public function getData()

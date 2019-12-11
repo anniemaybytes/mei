@@ -97,7 +97,7 @@ class DependencyInjection
             throw new Exception\NotFound('Route Not Found');
         };
 
-        unset($di['phpErrorHandler']); // php 7.0+ only - this will disable default Slim error handler and allow Tracy to catch PHP errors
+        unset($di['phpErrorHandler']);
         if ($config['mode'] != 'development') {
             $di['errorHandler'] = function ($di) {
                 $ctrl = new Controller\ErrorCtrl($di);

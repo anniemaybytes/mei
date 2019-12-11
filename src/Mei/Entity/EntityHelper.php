@@ -1,6 +1,6 @@
 <?php
 
-namespace Mei\Utilities;
+namespace Mei\Entity;
 
 class EntityHelper
 {

@@ -8,8 +8,8 @@ use Exception;
 use InvalidArgumentException;
 use IteratorAggregate;
 use JsonSerializable;
-use Mei\Utilities\EntityAttributeMapper as Mapper;
-use Mei\Utilities\EntityAttributeType as Type;
+use Mei\Entity\EntityAttributeMapper as Mapper;
+use Mei\Entity\EntityAttributeType as Type;
 
 abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, IteratorAggregate
 {

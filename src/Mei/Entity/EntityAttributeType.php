@@ -1,10 +1,11 @@
 <?php
 
-namespace Mei\Utilities;
+namespace Mei\Entity;
 
 use DateTime;
 use Exception;
 use InvalidArgumentException;
+use Mei\Utilities\Time;
 
 class EntityAttributeType
 {

@@ -41,11 +41,5 @@ interface IKeyStore
 
     public function touch($key, $expiry = 3600);
 
-    public function setClearOnGet($val);
-
-    public function getStats();
-
-    public function flush();
-
     public function getEntityCache($key, $id = [], $duration = 3600);
 }
