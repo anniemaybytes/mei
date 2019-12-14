@@ -12,7 +12,7 @@
         "slim/slim": "^3.0",
         "guzzlehttp/psr7": "^1.6.1",
         "robmorgan/phinx": "^0.9.2",
-        "glpi-project/runtracy": "dev-master#108717538935c702884c5ee362aa4cc1863c0049",
+        "tracy/tracy": "^2.7",
         "ext-xml": "*",
         "ext-json": "*",
         "ext-gd": "*",
@@ -26,7 +26,8 @@
     },
     "autoload": {
         "psr-0": {
-            "Mei": "src/"
+            "Mei": "src/",
+            "RunTracy": "src/"
         }
     }
 }

@@ -4,74 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "90b0d598bb757e0bd3f795dc88c4c93b",
+    "content-hash": "91db3cdbfc381e1ad27c17385284e749",
     "packages": [
-        {
-            "name": "glpi-project/runtracy",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/glpi-project/runtracy.git",
-                "reference": "108717538935c702884c5ee362aa4cc1863c0049"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/glpi-project/runtracy/zipball/108717538935c702884c5ee362aa4cc1863c0049",
-                "reference": "108717538935c702884c5ee362aa4cc1863c0049",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.5.0",
-                "slim/slim": "~3.7",
-                "tracy/tracy": "~2.4"
-            },
-            "require-dev": {
-                "doctrine/orm": "^2.5",
-                "illuminate/database": "^5.3",
-                "j4mie/idiorm": "^1.5",
-                "phpunit/phpunit": "^5.7",
-                "satooshi/php-coveralls": "1.*",
-                "slim/twig-view": "~2.1",
-                "squizlabs/php_codesniffer": "^2.5",
-                "twig/twig": "~1.24"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "RunTracy\\": "src/RunTracy"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "Vladimir",
-                    "email": "1f7.wizard@gmail.com",
-                    "homepage": "http://runcmf.ru"
-                }
-            ],
-            "description": "Slim Framework Debugger",
-            "keywords": [
-                "Doctrine DBAL",
-                "Eloquent ORM",
-                "Idorm",
-                "PTY Terminal",
-                "debug bar",
-                "debugbar",
-                "debugger",
-                "illuminate database",
-                "profiler",
-                "runtracy",
-                "slim 3",
-                "slim framework",
-                "slim3",
-                "tracy",
-                "twig"
-            ],
-            "time": "2019-03-13T08:13:25+00:00"
-        },
         {
             "name": "guzzlehttp/psr7",
             "version": "1.6.1",
@@ -1078,9 +1012,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "glpi-project/runtracy": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

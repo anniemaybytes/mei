@@ -16,29 +16,7 @@ class DependencyInjection
                     'addContentLengthHeader' => !($config['mode'] == 'development'),
                     'displayErrorDetails' => ($config['mode'] == 'development'),
                     'determineRouteBeforeAppMiddleware' => true,
-                    'tracy' => [
-                        'showPhpInfoPanel' => 0,
-                        'showSlimRouterPanel' => 1,
-                        'showSlimEnvironmentPanel' => 1,
-                        'showSlimRequestPanel' => 1,
-                        'showSlimResponsePanel' => 1,
-                        'showSlimContainer' => 1,
-                        'showTwigPanel' => 0,
-                        'showProfilerPanel' => 1,
-                        'showVendorVersionsPanel' => 0,
-                        'showIncludedFiles' => 1,
-                        'showConsolePanel' => 0,
-                        'showXDebugHelper' => 0,
-                        'configs' => [
-                            'ProfilerPanel' => [
-                                'show' => [
-                                    'memoryUsageChart' => 1,
-                                    'shortProfiles' => false,
-                                    'timeLines' => true
-                                ]
-                            ]
-                        ]
-                    ]
+                    'xdebugHelperIdeKey' => 'mei-image-server',
                 ]
             ];
         }
