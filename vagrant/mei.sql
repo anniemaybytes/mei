@@ -7,3 +7,5 @@ create table files_map
 	Protected int not null,
 	TorrentId int not null
 );
+
+create index `Key` on files_map (`Key`);

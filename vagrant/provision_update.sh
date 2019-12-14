@@ -8,9 +8,9 @@ echo Copying over configs...
 cd /vagrantroot/configs
 cp -av * /
 chmod 755 /etc/mysql/my.cnf
-sudo chown -R root:root /etc/mysql/{,mariadb.}conf.d
-sudo chmod -R 644 /etc/mysql/{,mariadb.}conf.d/
-sudo chmod +x /etc/mysql/{,mariadb.}conf.d/
+chown -R root:root /etc/mysql/{,mariadb.}conf.d
+chmod -R 644 /etc/mysql/{,mariadb.}conf.d/
+chmod +x /etc/mysql/{,mariadb.}conf.d/
 echo never > /sys/kernel/mm/transparent_hugepage/defrag
 echo never > /sys/kernel/mm/transparent_hugepage/enabled
 
