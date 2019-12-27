@@ -2,18 +2,30 @@
 
 namespace Mei\Instrumentation;
 
-use Exception;
+use BadFunctionCallException;
 use PDO;
 use PDOException;
+use PDOStatement;
 use Tracy\Debugger;
 
+/**
+ * Class PDOInstrumentationWrapper
+ *
+ * @package Mei\Instrumentation
+ */
 class PDOInstrumentationWrapper
 {
     private $instrumentor;
-    /** @var $pdo PDO * */
+    /** @var PDO $pdo * */
     private $pdo;
     private $transactionQueue = [];
 
+    /**
+     * PDOInstrumentationWrapper constructor.
+     *
+     * @param $instrumentor
+     * @param $pdo
+     */
     public function __construct($instrumentor, $pdo)
     {
         $this->instrumentor = $instrumentor;
@@ -24,13 +36,18 @@ class PDOInstrumentationWrapper
     {
         if ($this->transactionQueue) {
             Debugger::log('PDO transaction queue was not empty on destruct!', Debugger::WARNING);
-            while (count($this->transactionQueue) > 0) $this->rollBack();
+            while (count($this->transactionQueue) > 0) {
+                $this->rollBack();
+            }
         }
     }
 
     // this implements nested transactions - a savepoint is created within parent transaction to which child transaction can rollback to
     // however if code or query would to fail, a parent transaction will be rollbacked fully along with all child transactions regardless of where the issue was
     // even if child transaction was already commited (commiting child transaction just removes it from queue stack)
+    /**
+     * @return bool|false|int
+     */
     public function beginTransaction()
     {
         $tid = $this->instrumentor->start('pdo:transaction'); // get tid
@@ -43,16 +60,24 @@ class PDOInstrumentationWrapper
         }
     }
 
+    /**
+     * @return bool
+     */
     public function commit()
     {
         $tid = array_pop($this->transactionQueue);
-        if (count($this->transactionQueue) != 0) return true; // there are still transactions left, do nothing as theyll be commited by parent transaction
+        if (count($this->transactionQueue) != 0) {
+            return true;
+        } // there are still transactions left, do nothing as theyll be commited by parent transaction
 
         $res = $this->pdo->commit();
         $this->instrumentor->end($tid, 'commit');
         return $res;
     }
 
+    /**
+     * @return bool|false|int
+     */
     public function rollBack()
     {
         $tid = array_pop($this->transactionQueue); // pop transactionId
@@ -66,12 +91,22 @@ class PDOInstrumentationWrapper
         return $res;
     }
 
+    /**
+     * @param $statement
+     * @param null $type
+     * @param null $type_arg
+     * @param null $ctorarg
+     *
+     * @return false|PDOStatement
+     */
     public function query($statement, $type = null, $type_arg = null, $ctorarg = null)
     {
         $set = [$type, $type_arg, $ctorarg];
         $n = 0;
         foreach ($set as $elem) {
-            if (is_null($elem)) break;
+            if (is_null($elem)) {
+                break;
+            }
             $n++;
         }
 
@@ -90,7 +125,9 @@ class PDOInstrumentationWrapper
                 $res = $this->pdo->query($statement, $type, $type_arg, $ctorarg);
                 break;
             default:
-                throw new Exception("PDOInstrumentationWrapper can't handle query with " . $n . " additional arguments");
+                throw new BadFunctionCallException(
+                    "PDOInstrumentationWrapper can't handle query with " . $n . " additional arguments"
+                );
                 break;
         }
         $this->instrumentor->end($iid);
@@ -98,15 +135,31 @@ class PDOInstrumentationWrapper
         return $res;
     }
 
+    /**
+     * @param $statement
+     * @param array $driver_options
+     *
+     * @return PDOStatementInstrumentationWrapper
+     */
     public function prepare($statement, $driver_options = [])
     {
         $hash = md5($statement . rand());
         $iid = $this->instrumentor->start('pdo:prepare:' . $hash, $statement);
-        $res = new PDOStatementInstrumentationWrapper($this->instrumentor, $this->pdo->prepare($statement, $driver_options), $hash);
+        $res = new PDOStatementInstrumentationWrapper(
+            $this->instrumentor,
+            $this->pdo->prepare($statement, $driver_options),
+            $hash
+        );
         $this->instrumentor->end($iid);
         return $res;
     }
 
+    /**
+     * @param $statement
+     * @param int $retries
+     *
+     * @return false|int
+     */
     public function exec($statement, $retries = 3)
     {
         $hash = md5($statement . rand());
@@ -124,19 +177,40 @@ class PDOInstrumentationWrapper
         return $res;
     }
 
+    /**
+     * @param $method
+     * @param $args
+     *
+     * @return mixed
+     */
     public function __call($method, $args)
     {
         return $this->makeCall($method, $args);
     }
 
+    /**
+     * @param $method
+     * @param $args
+     *
+     * @return mixed
+     */
     private function makeCall($method, $args)
     {
         return call_user_func_array([$this->pdo, $method], $args);
     }
 
+    /**
+     * @param $string
+     * @param int $parameter_type
+     *
+     * @return false|string
+     */
     public function quote($string, $parameter_type = PDO::PARAM_STR)
     {
-        $iid = $this->instrumentor->start('pdo:quote:' . md5($string . $parameter_type), $string . '_' . $parameter_type);
+        $iid = $this->instrumentor->start(
+            'pdo:quote:' . md5($string . $parameter_type),
+            $string . '_' . $parameter_type
+        );
         $res = $this->pdo->quote($string, $parameter_type);
         $this->instrumentor->end($iid);
         return $res;

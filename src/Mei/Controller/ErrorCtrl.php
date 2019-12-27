@@ -10,6 +10,11 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use Tracy\Debugger;
 
+/**
+ * Class ErrorCtrl
+ *
+ * @package Mei\Controller
+ */
 class ErrorCtrl extends BaseCtrl
 {
     public static $STATUS_MESSAGES = [
@@ -19,6 +24,11 @@ class ErrorCtrl extends BaseCtrl
         415 => 'Unsupported Media Type',
     ];
 
+    /**
+     * @param $status_code
+     *
+     * @return array
+     */
     private function getData($status_code)
     {
         $data = [];
@@ -33,6 +43,13 @@ class ErrorCtrl extends BaseCtrl
         return $data;
     }
 
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param $exception
+     *
+     * @return Response
+     */
     public function handleException(Request $request, Response $response, $exception)
     {
         // make sure we don't throw an exception
@@ -52,7 +69,9 @@ class ErrorCtrl extends BaseCtrl
 
             if (is_subclass_of($exception, '\Mei\Exception\GeneralException')) {
                 $desc = $exception->getDescription();
-                if (strlen($desc) > 0) $data['status_message'] = $desc;
+                if (strlen($desc) > 0) {
+                    $data['status_message'] = $desc;
+                }
             }
 
             $this->logError($request, $exception, $data);
@@ -86,25 +105,17 @@ class ErrorCtrl extends BaseCtrl
         }
     }
 
+    /**
+     * @param Request $request
+     * @param Exception $exception
+     * @param $data
+     */
     private function logError(Request $request, Exception $exception, $data)
     {
         // don't log 404s
         if ($data['status_code'] == 404 || $data['status_code'] == 403 || $data['status_code'] == 415) {
             return;
         }
-
-        Debugger::getBlueScreen()->addPanel(function () {
-            return [
-                'tab' => 'Cache hits',
-                'panel' => Debugger::dump($this->di['cache']->getCacheHits(), true),
-            ];
-        });
-        Debugger::getBlueScreen()->addPanel(function () {
-            return [
-                'tab' => 'Instrumentor',
-                'panel' => Debugger::dump($this->di['instrumentor']->getLog(), true),
-            ];
-        });
 
         Debugger::log($exception, Debugger::EXCEPTION);
     }

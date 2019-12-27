@@ -6,12 +6,18 @@ use Exception;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
+/**
+ * Class DeleteCtrl
+ *
+ * @package Mei\Controller
+ */
 class DeleteCtrl extends BaseCtrl
 {
     /**
      * @param Request $request
      * @param Response $response
      * @param $args
+     *
      * @return Response
      */
     public function delete($request, $response, $args)
@@ -51,40 +57,66 @@ class DeleteCtrl extends BaseCtrl
             $uri = $request->getUri();
             $domain = $uri->getScheme() . '://' . $uri->getHost();
             $urls = [
-                ($domain . $this->di['router']->pathFor('serve', ['img' => $info['filename'] . '.' . $info['extension']])),
-                ($domain . $this->di['router']->pathFor('serve:legacy', ['img' => $info['filename'] . '.' . $info['extension']]))
+                ($domain . $this->di['router']->pathFor(
+                        'serve',
+                        ['img' => $info['filename'] . '.' . $info['extension']]
+                    )),
+                ($domain . $this->di['router']->pathFor(
+                        'serve:legacy',
+                        ['img' => $info['filename'] . '.' . $info['extension']]
+                    ))
             ];
 
             foreach (ServeCtrl::$legacySizes as $resInfo) // handling common resolutions + crop
             {
-                $urls[] = ($domain . $this->di['router']->pathFor('serve', [
-                        'img' => (
-                            $info['filename'] . '-' . $resInfo[0] . 'x' . $resInfo[1] . '.' . $info['extension']
-                        )
-                    ]));
-                $urls[] = ($domain . $this->di['router']->pathFor('serve:legacy', [
-                        'img' => (
-                            $info['filename'] . '-' . $resInfo[0] . 'x' . $resInfo[1] . '.' . $info['extension']
-                        )
-                    ]));
+                $urls[] = ($domain . $this->di['router']->pathFor(
+                        'serve',
+                        [
+                            'img' => (
+                                $info['filename'] . '-' . $resInfo[0] . 'x' . $resInfo[1] . '.' . $info['extension']
+                            )
+                        ]
+                    ));
+                $urls[] = ($domain . $this->di['router']->pathFor(
+                        'serve:legacy',
+                        [
+                            'img' => (
+                                $info['filename'] . '-' . $resInfo[0] . 'x' . $resInfo[1] . '.' . $info['extension']
+                            )
+                        ]
+                    ));
 
-                $urls[] = ($domain . $this->di['router']->pathFor('serve', [
-                        'img' => (
-                            $info['filename'] . '-' . $resInfo[0] . 'x' . $resInfo[1] . '-crop.' . $info['extension']
-                        )
-                    ]));
-                $urls[] = ($domain . $this->di['router']->pathFor('serve:legacy', [
-                        'img' => (
-                            $info['filename'] . '-' . $resInfo[0] . 'x' . $resInfo[1] . '-crop.' . $info['extension']
-                        )
-                    ]));
+                $urls[] = ($domain . $this->di['router']->pathFor(
+                        'serve',
+                        [
+                            'img' => (
+                                $info['filename'] . '-' . $resInfo[0] . 'x' . $resInfo[1] . '-crop.' . $info['extension']
+                            )
+                        ]
+                    ));
+                $urls[] = ($domain . $this->di['router']->pathFor(
+                        'serve:legacy',
+                        [
+                            'img' => (
+                                $info['filename'] . '-' . $resInfo[0] . 'x' . $resInfo[1] . '-crop.' . $info['extension']
+                            )
+                        ]
+                    ));
             }
 
             try {
                 $this->di['model.files_map']->delete($fileEntity);
-                if (!$this->di['model.files_map']->getByKey($fileEntity->Key)) { // file does not exist anymore anywhere, remove it
+                if (!$this->di['model.files_map']->getByKey(
+                    $fileEntity->Key
+                )) { // file does not exist anymore anywhere, remove it
                     $savePath = pathinfo($fileEntity->Key);
-                    $this->di['utility.images']->deleteImage($this->di['utility.images']->getSavePath($savePath['filename'] . '.' . $this->di['utility.images']->mapExtension($savePath['extension'])));
+                    $this->di['utility.images']->deleteImage(
+                        $this->di['utility.images']->getSavePath(
+                            $savePath['filename'] . '.' . $this->di['utility.images']->mapExtension(
+                                $savePath['extension']
+                            )
+                        )
+                    );
                 }
             } catch (Exception $e) {
                 $success--;

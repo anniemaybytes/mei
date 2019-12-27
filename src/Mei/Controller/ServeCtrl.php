@@ -2,12 +2,18 @@
 
 namespace Mei\Controller;
 
+use Exception;
 use GuzzleHttp\Psr7\BufferStream;
 use Mei\Exception\NotFound;
 use Mei\Utilities\Time;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
+/**
+ * Class ServeCtrl
+ *
+ * @package Mei\Controller
+ */
 class ServeCtrl extends BaseCtrl
 {
     public static $legacySizes = [
@@ -23,8 +29,10 @@ class ServeCtrl extends BaseCtrl
      * @param Request $request
      * @param Response $response
      * @param $args
+     *
      * @return Response
      * @throws NotFound
+     * @throws Exception
      */
     public function serve($request, $response, $args)
     {
@@ -57,14 +65,23 @@ class ServeCtrl extends BaseCtrl
         }
 
         $savePath = pathinfo($fileEntity->Key);
-        $bindata = $this->di['utility.images']->getDataFromPath($this->di['utility.images']->getSavePath($savePath['filename'] . '.' . $this->di['utility.images']->mapExtension($savePath['extension'])));
+        $bindata = $this->di['utility.images']->getDataFromPath(
+            $this->di['utility.images']->getSavePath(
+                $savePath['filename'] . '.' . $this->di['utility.images']->mapExtension($savePath['extension'])
+            )
+        );
         if (!$bindata) {
             throw new NotFound('Image Not Found');
         }
 
         // resize if necessary
         if (isset($info['width'])) {
-            $bindata = $this->di['utility.images']->resizeImage($this->di['utility.images']->readImage($bindata), $info['width'], $info['height'], $info['crop']);
+            $bindata = $this->di['utility.images']->resizeImage(
+                $this->di['utility.images']->readImage($bindata),
+                $info['width'],
+                $info['height'],
+                $info['crop']
+            );
         }
 
         $meta = $this->di['utility.images']->readImageData($bindata);
@@ -78,7 +95,11 @@ class ServeCtrl extends BaseCtrl
             ?
             $fileEntity->UploadTime->getTimestamp()
             :
-            filemtime($this->di['utility.images']->getSavePath($savePath['filename'] . '.' . $this->di['utility.images']->mapExtension($savePath['extension'])));
+            filemtime(
+                $this->di['utility.images']->getSavePath(
+                    $savePath['filename'] . '.' . $this->di['utility.images']->mapExtension($savePath['extension'])
+                )
+            );
 
         /** @var Response $response */
         $response = $response->withHeader('Content-Type', $meta['mime']);

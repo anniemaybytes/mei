@@ -6,14 +6,20 @@ use DateInterval;
 use DateTime;
 use Exception;
 
+/**
+ * Class Time
+ *
+ * @package Mei\Utilities
+ */
 class Time
 {
-    const ZERO_SQLTIME = '0000-00-00 00:00:00';
+    public const ZERO_SQLTIME = '0000-00-00 00:00:00';
 
     /**
      * Checks if a given DateTime object is non-zero
      *
      * @param DateTime $datetime
+     *
      * @return true if time not 0000-00-00 00:00:00
      * @throws Exception
      */
@@ -29,12 +35,15 @@ class Time
      * Time string format is 'Y-m-d H:i:s'
      *
      * @param $str
+     *
      * @return DateTime
      * @throws Exception
      */
     public static function fromSql($str)
     {
-        if (!$str) return self::fromSql(self::ZERO_SQLTIME);
+        if (!$str) {
+            return self::fromSql(self::ZERO_SQLTIME);
+        }
         return new DateTime($str);
     }
 
@@ -44,6 +53,7 @@ class Time
      * Unix timestamp format is 'U'
      *
      * @param $str
+     *
      * @return DateTime
      */
     public static function fromEpoch($str)
@@ -51,6 +61,9 @@ class Time
         return DateTime::createFromFormat('U', $str);
     }
 
+    /**
+     * @return int
+     */
     public static function getEpoch()
     {
         return time();
@@ -72,14 +85,19 @@ class Time
      *
      * @param DateTime $t
      * @param bool $fuzzy if true returns date only, time set to 0
+     *
      * @return string
      * @throws Exception
      */
     public static function sql(DateTime $t, $fuzzy = false)
     {
-        if (!self::timeIsNonZero($t)) return self::ZERO_SQLTIME;
+        if (!self::timeIsNonZero($t)) {
+            return self::ZERO_SQLTIME;
+        }
         $format = 'Y-m-d H:i:s';
-        if ($fuzzy) $format = 'Y-m-d 00:00:00';
+        if ($fuzzy) {
+            $format = 'Y-m-d 00:00:00';
+        }
         return $t->format($format);
     }
 
@@ -89,6 +107,7 @@ class Time
      *  interval('+1 year');
      *
      * @param $s
+     *
      * @return DateInterval
      */
     public static function interval($s)

@@ -2,14 +2,34 @@
 
 namespace Mei\Utilities;
 
+use Exception;
+
+/**
+ * Class StringUtil
+ *
+ * @package Mei\Utilities
+ */
 class StringUtil
 {
+    /**
+     * @param int $len
+     *
+     * @return string
+     * @throws Exception
+     */
     public static function generateRandomString($len = 32)
     {
         $charset = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         return self::randomize($charset, $len);
     }
 
+    /**
+     * @param $ok
+     * @param $len
+     *
+     * @return string
+     * @throws Exception
+     */
     public static function randomize($ok, $len)
     {
         $token = '';
@@ -21,11 +41,21 @@ class StringUtil
         return str_shuffle($token);
     }
 
+    /**
+     * @param $string
+     *
+     * @return string
+     */
     public static function base64UrlEncode($string)
     {
         return strtr(base64_encode($string), '+/', '-_');
     }
 
+    /**
+     * @param $string
+     *
+     * @return false|string
+     */
     public static function base64UrlDecode($string)
     {
         return base64_decode(strtr($string, '-_', '+/'));

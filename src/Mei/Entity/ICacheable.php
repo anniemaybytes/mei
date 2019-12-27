@@ -13,12 +13,14 @@ interface ICacheable
 {
     /**
      * Get the row used to represent the entity
+     *
      * @return array of string
      */
     public function getRow();
 
     /**
      * Set the row used to represent the entity
+     *
      * @param array $row
      *
      * @return ICacheable
@@ -27,12 +29,14 @@ interface ICacheable
 
     /**
      * Get the value stored against $key
+     *
      * @param string $key
      */
     public function getLoaded($key);
 
     /**
      * Set the value stored against $key to $value
+     *
      * @param string $key
      * @param $value
      *
@@ -42,6 +46,7 @@ interface ICacheable
 
     /**
      * Set the key under which similar entries are stored
+     *
      * @param string $key
      *
      * @return ICacheable
@@ -50,6 +55,7 @@ interface ICacheable
 
     /**
      * Set the cache duration
+     *
      * @param string $duration
      *
      * @return ICacheable
@@ -58,6 +64,7 @@ interface ICacheable
 
     /**
      * Set the unique identifier
+     *
      * @param $id
      *
      * @return ICacheable
@@ -71,12 +78,14 @@ interface ICacheable
 
     /**
      * Store the values into cache
+     *
      * @param IKeyStore $cache
      */
     public function save(IKeyStore $cache);
 
     /**
      * Delete the values from cache
+     *
      * @param IKeyStore $cache
      */
     public function delete(IKeyStore $cache);
@@ -90,6 +99,7 @@ interface ICacheable
      * Set the data that gets loaded from cache
      *
      * @param $cache
+     *
      * @return ICacheable
      */
     public function setData($cache);

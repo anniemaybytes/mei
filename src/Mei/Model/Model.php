@@ -2,6 +2,7 @@
 
 namespace Mei\Model;
 
+use Exception;
 use InvalidArgumentException;
 use Mei\Cache\IKeyStore;
 use Mei\Entity\IEntity;
@@ -9,6 +10,11 @@ use Mei\Instrumentation\PDOInstrumentationWrapper;
 use Mei\Utilities\PDOParamMapper;
 use PDO;
 
+/**
+ * Class Model
+ *
+ * @package Mei\Model
+ */
 abstract class Model implements IModel
 {
     /**
@@ -30,6 +36,12 @@ abstract class Model implements IModel
 
     protected $inTransaction;
 
+    /**
+     * Model constructor.
+     *
+     * @param $di
+     * @param callable $entityBuilder
+     */
     public function __construct($di, callable $entityBuilder)
     {
         $this->db = $di['db'];
@@ -67,24 +79,38 @@ abstract class Model implements IModel
     abstract public function getTableName();
 
     // needs to be run immediately after a SELECT SQL_CALC_FOUND_ROWS statement
+
+    /**
+     * @return mixed
+     * @throws Exception
+     */
     public function getFoundRows()
     {
         $q = $this->getDatabase()->query('SELECT FOUND_ROWS()');
         return $q->fetchColumn();
     }
 
+    /**
+     * @param $ids
+     *
+     * @return array
+     */
     public function getEntitiesFromIds($ids)
     {
         if (!$ids) {
             return [];
         }
-        return array_map(function ($id) {
-            return $this->getById($id);
-        }, $ids);
+        return array_map(
+            function ($id) {
+                return $this->getById($id);
+            },
+            $ids
+        );
     }
 
     /**
      * @param array $id
+     *
      * @return IEntity
      * @see \Mei\Model\IModel::getById()
      */
@@ -107,9 +133,15 @@ abstract class Model implements IModel
             $row = $entityCache->getRow();
         }
         if (!$row) {
-            $whereStr = implode(' AND ', array_map(function ($col) {
-                return "`$col` = :$col";
-            }, array_keys($id)));
+            $whereStr = implode(
+                ' AND ',
+                array_map(
+                    function ($col) {
+                        return "`$col` = :$col";
+                    },
+                    array_keys($id)
+                )
+            );
 
             $attrs = $builder($entityCache)->getAttributes(); // we need to create mockup of entity first
 
@@ -136,6 +168,7 @@ abstract class Model implements IModel
 
     /**
      * @param array $arr
+     *
      * @return IEntity
      * @see \Mei\Model\IModel::createEntity()
      */
@@ -159,6 +192,7 @@ abstract class Model implements IModel
 
     /**
      * @param IEntity $entity
+     *
      * @return IEntity
      * @see \Mei\Model\IModel::save()
      */
@@ -220,7 +254,6 @@ abstract class Model implements IModel
             }
 
             return $entity;
-
         } else { // the entity is an old entity getting updated
             // nothing to change - return entity as is
             if (!$entity->hasChanged()) {
@@ -237,7 +270,9 @@ abstract class Model implements IModel
             $attrs = $entity->getAttributes();
 
             if (count($values) == 0) {
-                throw new InvalidArgumentException('Unable to save entity - nothing was changed, but marked as changed');
+                throw new InvalidArgumentException(
+                    'Unable to save entity - nothing was changed, but marked as changed'
+                );
             }
 
             // prevent changing primary key, since this could result in overwriting
@@ -256,14 +291,20 @@ abstract class Model implements IModel
 
             // there must be changed values if we reached here
             $cols = array_keys($values);
-            $cols = array_map(function ($col) {
-                return "`$col` = :$col";
-            }, $cols);
+            $cols = array_map(
+                function ($col) {
+                    return "`$col` = :$col";
+                },
+                $cols
+            );
             $sql .= implode(', ', $cols);
 
-            $where = array_map(function ($col) {
-                return "`$col` = :$col";
-            }, $idAttr);
+            $where = array_map(
+                function ($col) {
+                    return "`$col` = :$col";
+                },
+                $idAttr
+            );
             $where = implode(' AND ', $where);
 
             $sql .= " WHERE $where LIMIT 1";
@@ -286,6 +327,7 @@ abstract class Model implements IModel
 
     /**
      * @param IEntity $entity
+     *
      * @return IEntity
      * @see \Mei\Model\IModel::delete()
      */
@@ -318,11 +360,19 @@ abstract class Model implements IModel
         return $entity;
     }
 
+    /**
+     * @param $id
+     *
+     * @return IEntity|mixed
+     */
     public function deleteById($id)
     {
         return $this->delete($this->getById($id));
     }
 
+    /**
+     * @return bool|false|int
+     */
     public function beginTransaction()
     {
         // if we indicate we want to use a transaction, stop using cache
@@ -330,12 +380,18 @@ abstract class Model implements IModel
         return $this->getDatabase()->beginTransaction();
     }
 
+    /**
+     * @return bool
+     */
     public function commit()
     {
         $this->inTransaction = false;
         return $this->getDatabase()->commit();
     }
 
+    /**
+     * @return bool|false|int
+     */
     public function rollBack()
     {
         $this->inTransaction = false;

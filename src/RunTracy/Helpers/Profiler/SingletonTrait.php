@@ -28,7 +28,7 @@ trait SingletonTrait
     {
         $self = get_called_class();
         if (!isset(self::$instances[$self])) {
-            self::$instances[$self] = new $self;
+            self::$instances[$self] = new $self();
         }
         return self::$instances[$self];
     }

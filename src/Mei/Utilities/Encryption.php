@@ -4,14 +4,24 @@ namespace Mei\Utilities;
 
 use Exception;
 
+/**
+ * Class Encryption
+ *
+ * @package Mei\Utilities
+ */
 class Encryption
 {
-    const CIPHER = 'aes-256-cbc';
+    private const CIPHER = 'aes-256-cbc';
 
     protected $di;
     protected $encryptionKey;
     protected $config;
 
+    /**
+     * Encryption constructor.
+     *
+     * @param $di
+     */
     public function __construct($di)
     {
         $this->di = $di;
@@ -19,6 +29,12 @@ class Encryption
         $this->encryptionKey = md5($this->config['api.auth_key']);
     }
 
+    /**
+     * @param $plainData
+     *
+     * @return string
+     * @throws Exception
+     */
     public function encrypt($plainData)
     {
         srand();
@@ -26,26 +42,52 @@ class Encryption
         // we need to manually pad data for compatibility with mcrypt
         $paddedData = $plainData;
         if (strlen($paddedData) % 32) {
-            $paddedData = str_pad($paddedData,
-                strlen($paddedData) + 32 - strlen($paddedData) % 32, "\0");
+            $paddedData = str_pad(
+                $paddedData,
+                strlen($paddedData) + 32 - strlen($paddedData) % 32,
+                "\0"
+            );
         }
 
         $initVector = random_bytes(16);
-        $cryptoStr = openssl_encrypt($paddedData, self::CIPHER, $this->encryptionKey, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $initVector);
+        $cryptoStr = openssl_encrypt(
+            $paddedData,
+            self::CIPHER,
+            $this->encryptionKey,
+            OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING,
+            $initVector
+        );
 
         return base64_encode($initVector . $cryptoStr);
     }
 
+    /**
+     * @param $encryptedData
+     *
+     * @return bool|string
+     */
     public function decrypt($encryptedData)
     {
         if ($encryptedData != "") {
             try {
                 $data = base64_decode($encryptedData);
-                if ($data == false) return false;
+                if ($data == false) {
+                    return false;
+                }
                 $initVector = substr($data, 0, 16);
                 $unpaddedCryptedData = substr($data, 16);
-                $r = trim(openssl_decrypt($unpaddedCryptedData, self::CIPHER, $this->encryptionKey, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $initVector));
-                if (!$r) return false;
+                $r = trim(
+                    openssl_decrypt(
+                        $unpaddedCryptedData,
+                        self::CIPHER,
+                        $this->encryptionKey,
+                        OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING,
+                        $initVector
+                    )
+                );
+                if (!$r) {
+                    return false;
+                }
                 return $r;
             } catch (Exception $e) {
                 return false;
@@ -55,20 +97,40 @@ class Encryption
         }
     }
 
+    /**
+     * @param $encryptedData
+     *
+     * @return bool|string
+     */
     public function decryptString($encryptedData)
     {
         $result = $this->decrypt($encryptedData);
-        if (!$result) return false;
+        if (!$result) {
+            return false;
+        }
         $isUTF8 = preg_match('//u', $result);
-        if (!$isUTF8) return false;
+        if (!$isUTF8) {
+            return false;
+        }
         return $result;
     }
 
+    /**
+     * @param $plainData
+     *
+     * @return string
+     * @throws Exception
+     */
     public function encryptUrl($plainData)
     {
         return StringUtil::base64UrlEncode($this->encrypt($plainData));
     }
 
+    /**
+     * @param $encryptedData
+     *
+     * @return bool|string
+     */
     public function decryptUrl($encryptedData)
     {
         return $this->decrypt(StringUtil::base64UrlDecode($encryptedData));

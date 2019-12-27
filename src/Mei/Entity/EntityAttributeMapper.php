@@ -4,12 +4,23 @@ namespace Mei\Entity;
 
 use InvalidArgumentException;
 
+/**
+ * Class EntityAttributeMapper
+ *
+ * @package Mei\Entity
+ */
 class EntityAttributeMapper implements IAttributeMapper
 {
     private $attributeMap;
     private $defaultValues; // stored in db string form
     private $changedAttributes;
 
+    /**
+     * EntityAttributeMapper constructor.
+     *
+     * @param $attributeMap
+     * @param array $defaultValues
+     */
     public function __construct($attributeMap, $defaultValues = [])
     {
         $this->attributeMap = $attributeMap;
@@ -17,6 +28,12 @@ class EntityAttributeMapper implements IAttributeMapper
         $this->changedAttributes = [];
     }
 
+    /**
+     * @param ICacheable $cache
+     * @param $attribute
+     *
+     * @return mixed
+     */
     private function getAttributeValue(ICacheable $cache, $attribute)
     {
         $values = $cache->getRow();
@@ -31,6 +48,13 @@ class EntityAttributeMapper implements IAttributeMapper
         throw new InvalidArgumentException("Tried to get attribute that hasn't been set");
     }
 
+    /**
+     * @param ICacheable $cache
+     * @param $attribute
+     * @param $value
+     *
+     * @return ICacheable
+     */
     private function setAttributeValue(ICacheable $cache, $attribute, $value)
     {
         $values = $cache->getRow();
@@ -44,10 +68,18 @@ class EntityAttributeMapper implements IAttributeMapper
         return $cache->setRow($values);
     }
 
+    /**
+     * @param ICacheable $cache
+     * @param $attribute
+     *
+     * @return mixed
+     */
     public function get(ICacheable $cache, $attribute)
     {
         if (!array_key_exists($attribute, $this->attributeMap)) {
-            throw new InvalidArgumentException("Tried to get unknown key name '$attribute' - not in allowed attributes");
+            throw new InvalidArgumentException(
+                "Tried to get unknown key name '$attribute' - not in allowed attributes"
+            );
         }
 
         return $this->getAttributeValue($cache, $attribute);
@@ -55,9 +87,11 @@ class EntityAttributeMapper implements IAttributeMapper
 
     /**
      * Sets the attribute's value
+     *
      * @param ICacheable $cache
      * @param $attribute
      * @param $value
+     *
      * @return ICacheable
      */
     public function set(ICacheable $cache, $attribute, $value)
@@ -69,6 +103,12 @@ class EntityAttributeMapper implements IAttributeMapper
         return $this->setAttributeValue($cache, $attribute, $value);
     }
 
+    /**
+     * @param ICacheable $cache
+     * @param $attribute
+     *
+     * @return bool|mixed
+     */
     public function isAttributeSet(ICacheable $cache, $attribute)
     {
         $values = $cache->getRow();
@@ -83,6 +123,12 @@ class EntityAttributeMapper implements IAttributeMapper
         return false;
     }
 
+    /**
+     * @param ICacheable $cache
+     * @param $attribute
+     *
+     * @return ICacheable
+     */
     public function unsetAttribute(ICacheable $cache, $attribute)
     {
         $values = $cache->getRow();
@@ -92,6 +138,11 @@ class EntityAttributeMapper implements IAttributeMapper
         return $cache->setRow($values);
     }
 
+    /**
+     * @param ICacheable $cache
+     *
+     * @return array
+     */
     public function getChangedValues(ICacheable $cache)
     {
         $values = [];
@@ -101,11 +152,15 @@ class EntityAttributeMapper implements IAttributeMapper
             } else {
                 $values[$attribute] = null; // this is the case when a variable is unset
             }
-
         }
         return $values;
     }
 
+    /**
+     * @param ICacheable $cache
+     *
+     * @return array
+     */
     public function getValues(ICacheable $cache)
     {
         $values = [];
@@ -117,11 +172,19 @@ class EntityAttributeMapper implements IAttributeMapper
         return $values;
     }
 
+    /**
+     * @param ICacheable $cache
+     *
+     * @return bool
+     */
     public function hasChanged(ICacheable $cache)
     {
         return (count($this->changedAttributes) > 0);
     }
 
+    /**
+     * @return $this|ICacheable
+     */
     public function resetChangedAttributes()
     {
         $this->changedAttributes = [];

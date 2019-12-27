@@ -14,14 +14,14 @@ use RunTracy\Helpers\Profiler\Exception\ProfilerException;
  */
 class SimpleProfiler
 {
-    const START_LABEL = 'start_label'; // string
-    const START_TIME = 'start_time'; // float start time in seconds
-    const START_MEMORY_USAGE = 'start_memory_usage'; // int amount of used memory at start in bytes
-    const FINISH_LABEL = 'finish_label'; // string
-    const FINISH_TIME = 'finish_time'; // float finish time in seconds
-    const FINISH_MEMORY_USAGE = 'finish_memory_usage'; // int amount of used memory at finish in bytes
-    const TIME_OFFSET = 'time_offset'; // float time offset in seconds
-    const MEMORY_USAGE_OFFSET = 'memory_usage_offset'; // int amount of memory usage offset in bytes
+    public const START_LABEL = 'start_label'; // string
+    public const START_TIME = 'start_time'; // float start time in seconds
+    public const START_MEMORY_USAGE = 'start_memory_usage'; // int amount of used memory at start in bytes
+    public const FINISH_LABEL = 'finish_label'; // string
+    public const FINISH_TIME = 'finish_time'; // float finish time in seconds
+    public const FINISH_MEMORY_USAGE = 'finish_memory_usage'; // int amount of used memory at finish in bytes
+    public const TIME_OFFSET = 'time_offset'; // float time offset in seconds
+    public const MEMORY_USAGE_OFFSET = 'memory_usage_offset'; // int amount of memory usage offset in bytes
 
     /**
      * @var bool
@@ -36,12 +36,13 @@ class SimpleProfiler
     /**
      * memory_get_usage
      *
-     * @var boolean
+     * @var bool
      */
     protected static $realUsage = false;
 
     /**
      * Enable profiler
+     *
      * @param bool $realUsage
      */
     public static function enable($realUsage = false)
@@ -67,7 +68,7 @@ class SimpleProfiler
     }
 
     /**
-     * @return boolean true if use realUsage memory, , otherwise false
+     * @return bool true if use realUsage memory, , otherwise false
      */
     public static function isMemRealUsage()
     {
@@ -79,6 +80,7 @@ class SimpleProfiler
      *
      * @param string $labelOrFormat
      * @param mixed $args [optional]
+     *
      * @return bool true on success or false on failure
      */
     public static function start($labelOrFormat = null, $args = null)
@@ -87,7 +89,6 @@ class SimpleProfiler
             if ($args === null) {
                 $label = $labelOrFormat;
             } else {
-                /** @noinspection SpellCheckingInspection */
                 $label = call_user_func_array('sprintf', func_get_args());
             }
 
@@ -117,6 +118,7 @@ class SimpleProfiler
      *
      * @param string $labelOrFormat
      * @param mixed $args [optional]
+     *
      * @return bool|Profile profile on success or false on failure
      * @throws ProfilerException
      */
@@ -134,7 +136,6 @@ class SimpleProfiler
             if ($args === null) {
                 $label = $labelOrFormat;
             } else {
-                /** @noinspection SpellCheckingInspection */
                 $label = call_user_func_array('sprintf', func_get_args());
             }
 

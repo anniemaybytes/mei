@@ -2,11 +2,18 @@
 
 namespace Mei;
 
+use Exception;
 use Mei\Route as R;
+use RunTracy\Helpers\Profiler\Exception\ProfilerException;
 use RunTracy\Helpers\Profiler\Profiler;
 use Slim\App;
 use Slim\Container;
 
+/**
+ * Class Dispatcher
+ *
+ * @package Mei
+ */
 class Dispatcher extends Singleton
 {
     /** @var App $app */
@@ -26,11 +33,19 @@ class Dispatcher extends Singleton
         return self::getInstance()->app;
     }
 
+    /**
+     * @param $key
+     *
+     * @return mixed
+     */
     public static function config($key)
     {
         return self::getInstance()->config[$key];
     }
 
+    /**
+     * @return mixed
+     */
     public static function getConfig()
     {
         return self::getInstance()->config;
@@ -46,6 +61,10 @@ class Dispatcher extends Singleton
         return self::getInstance()->di;
     }
 
+    /**
+     * @throws ProfilerException
+     * @throws Exception
+     */
     private function initConfig()
     {
         Profiler::start('initConfig');
@@ -58,6 +77,9 @@ class Dispatcher extends Singleton
         $this->config = $config;
     }
 
+    /**
+     * @throws ProfilerException
+     */
     private function initDependencyInjection()
     {
         Profiler::start('initDependencyInjection');
@@ -67,6 +89,9 @@ class Dispatcher extends Singleton
         $this->di = $di;
     }
 
+    /**
+     * @throws ProfilerException
+     */
     private function initApplication()
     {
         $app = new App($this->di);
@@ -81,6 +106,13 @@ class Dispatcher extends Singleton
         $this->app = $app;
     }
 
+    /**
+     * Dispatcher constructor.
+     *
+     * @param $args
+     *
+     * @throws ProfilerException
+     */
     protected function __construct($args)
     {
         $this->initConfig();

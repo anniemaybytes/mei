@@ -7,11 +7,21 @@ use RunTracy\Helpers\Profiler\Profiler;
 use RunTracy\Helpers\Profiler\ProfilerService;
 use Tracy\IBarPanel;
 
+/**
+ * Class ProfilerPanel
+ *
+ * @package RunTracy\Helpers
+ */
 class ProfilerPanel implements IBarPanel
 {
 
     private $profilerService;
 
+    /**
+     * ProfilerPanel constructor.
+     *
+     * @param array $config
+     */
     public function __construct(array $config = [])
     {
         $this->profilerService = ProfilerService::getInstance();
@@ -50,48 +60,50 @@ class ProfilerPanel implements IBarPanel
         $table .= '<table><tr><td colspan="4" style="text-align: center">' . $this->getMemoryChart() . '</td></tr>
             <tr><th>Start</th><th>Finish</th><th>Time (effective)</th><th>Memory change (effective)</th></tr>';
 
-        $this->profilerService->iterateProfiles(function (Profile $profile) use (&$table) {
-            if (($profile->meta[ProfilerService::TIME_LINE_ACTIVE] +
-                    $profile->meta[ProfilerService::TIME_LINE_INACTIVE]) < 1) {
-                return /* continue */ ;
-            }
-            if ($profile->meta[Profiler::START_LABEL] == $profile->meta[Profiler::FINISH_LABEL]) {
-                /** @noinspection PhpFormatFunctionParametersMismatchInspection */
-                $labels = sprintf(
-                    '<td colspan="2">%s</td>',
-                    $profile->meta[Profiler::START_LABEL],
-                    $profile->meta[Profiler::FINISH_LABEL]
-                );
-            } else {
-                $labels = sprintf(
-                    '<td>%s</td><td>%s</td>',
-                    $profile->meta[Profiler::START_LABEL],
-                    $profile->meta[Profiler::FINISH_LABEL]
-                );
-            }
+        $this->profilerService->iterateProfiles(
+            function (Profile $profile) use (&$table) {
+                if (($profile->meta[ProfilerService::TIME_LINE_ACTIVE] +
+                        $profile->meta[ProfilerService::TIME_LINE_INACTIVE]) < 1) {
+                    return /* continue */ ;
+                }
+                if ($profile->meta[Profiler::START_LABEL] == $profile->meta[Profiler::FINISH_LABEL]) {
+                    /** @noinspection PhpFormatFunctionParametersMismatchInspection */
+                    $labels = sprintf(
+                        '<td colspan="2">%s</td>',
+                        $profile->meta[Profiler::START_LABEL],
+                        $profile->meta[Profiler::FINISH_LABEL]
+                    );
+                } else {
+                    $labels = sprintf(
+                        '<td>%s</td><td>%s</td>',
+                        $profile->meta[Profiler::START_LABEL],
+                        $profile->meta[Profiler::FINISH_LABEL]
+                    );
+                }
 
-            $table .= sprintf(
-                '<tr>%s<td>%d&nbsp;ms (%d&nbsp;ms)</td><td>%d&nbsp;kB (%d&nbsp;kB)</td></tr>',
-                $labels,
-                $profile->absoluteDuration * 1000,
-                $profile->duration * 1000,
-                $profile->absoluteMemoryUsageChange / 1024,
-                $profile->memoryUsageChange / 1024
-            );
+                $table .= sprintf(
+                    '<tr>%s<td>%d&nbsp;ms (%d&nbsp;ms)</td><td>%d&nbsp;kB (%d&nbsp;kB)</td></tr>',
+                    $labels,
+                    $profile->absoluteDuration * 1000,
+                    $profile->duration * 1000,
+                    $profile->absoluteMemoryUsageChange / 1024,
+                    $profile->memoryUsageChange / 1024
+                );
 
-            $table .= sprintf(
-                '<tr class="tracy-addons-profiler-hidden"><td colspan="4"></td></tr><tr><td colspan="4">' .
-                '<span class="tracy-addons-profiler-bar" style="width:%d%%;background-color:#cccccc;"></span>' .
-                '<span class="tracy-addons-profiler-bar" style="width:%d%%;background-color:#3987d4;"></span>' .
-                '<span class="tracy-addons-profiler-bar" style="width:%s%%;background-color:#6ba9e6;"></span>' .
-                '<span class="tracy-addons-profiler-bar" style="width:%s%%;background-color:#cccccc;"></span>' .
-                '</td></tr>',
-                $profile->meta[ProfilerService::TIME_LINE_BEFORE],
-                $profile->meta[ProfilerService::TIME_LINE_ACTIVE],
-                $profile->meta[ProfilerService::TIME_LINE_INACTIVE],
-                $profile->meta[ProfilerService::TIME_LINE_AFTER]
-            );
-        });
+                $table .= sprintf(
+                    '<tr class="tracy-addons-profiler-hidden"><td colspan="4"></td></tr><tr><td colspan="4">' .
+                    '<span class="tracy-addons-profiler-bar" style="width:%d%%;background-color:#cccccc;"></span>' .
+                    '<span class="tracy-addons-profiler-bar" style="width:%d%%;background-color:#3987d4;"></span>' .
+                    '<span class="tracy-addons-profiler-bar" style="width:%s%%;background-color:#6ba9e6;"></span>' .
+                    '<span class="tracy-addons-profiler-bar" style="width:%s%%;background-color:#cccccc;"></span>' .
+                    '</td></tr>',
+                    $profile->meta[ProfilerService::TIME_LINE_BEFORE],
+                    $profile->meta[ProfilerService::TIME_LINE_ACTIVE],
+                    $profile->meta[ProfilerService::TIME_LINE_INACTIVE],
+                    $profile->meta[ProfilerService::TIME_LINE_AFTER]
+                );
+            }
+        );
 
         $table .= '</table>';
 
@@ -101,6 +113,9 @@ class ProfilerPanel implements IBarPanel
         );
     }
 
+    /**
+     * @return string
+     */
     private function getMemoryChart()
     {
         $colors = [
@@ -164,7 +179,6 @@ class ProfilerPanel implements IBarPanel
                 &$lines,
                 &$points
             ) {
-
                 if ($firstIteration) {
                     $memoryChart .= sprintf(
                         '<text x="%d" y="%d" font-size="%d">%d kB</text>',

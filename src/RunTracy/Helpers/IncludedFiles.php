@@ -4,10 +4,18 @@ namespace RunTracy\Helpers;
 
 use Tracy\IBarPanel;
 
+/**
+ * Class IncludedFiles
+ *
+ * @package RunTracy\Helpers
+ */
 class IncludedFiles implements IBarPanel
 {
     private $icon = '';
 
+    /**
+     * @return string
+     */
     public function getTab()
     {
         $this->icon = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" width="16px" ' .
@@ -33,6 +41,9 @@ class IncludedFiles implements IBarPanel
         </span>';
     }
 
+    /**
+     * @return string
+     */
     public function getPanel()
     {
         $files = get_included_files();
@@ -53,11 +64,17 @@ class IncludedFiles implements IBarPanel
         </div>';
     }
 
+    /**
+     * @return string
+     */
     protected function getHeader()
     {
         return '<thead><tr><th><b>Count</b></th><th>File</th></tr></thead>';
     }
 
+    /**
+     * @return string
+     */
     protected function getBaseRow()
     {
         return '<tr><td>%s</td><td>%s</td></tr>';

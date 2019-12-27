@@ -44,6 +44,7 @@ interface IEntity
 
     /**
      * @param ICacheable $cacheable
+     *
      * @return IEntity
      */
     public function setCacheable(ICacheable $cacheable);
@@ -84,6 +85,7 @@ interface IEntity
 
     /**
      * @param bool $new
+     *
      * @return IEntity
      */
     public function setNew($new);
@@ -104,13 +106,16 @@ interface IEntity
 
     /**
      * Reset the entity state, for example after the entity is saved
+     *
      * @param ICacheable $cacheable
+     *
      * @return IEntity
      */
     public function reset(ICacheable $cacheable);
 
     /**
      * Get the value for the given key, generating it if needed
+     *
      * @param $key
      */
     public function getCachedValue($key);

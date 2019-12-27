@@ -2,8 +2,13 @@
 
 namespace Mei\Instrumentation;
 
-use Exception;
+use RuntimeException;
 
+/**
+ * Class Instrumentor
+ *
+ * @package Mei\Instrumentation
+ */
 class Instrumentor
 {
     protected $enabled = true;
@@ -14,20 +19,32 @@ class Instrumentor
 
     public function __construct()
     {
-        if (isset($_SERVER['REQUEST_TIME_FLOAT']))
+        if (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
             $this->start = $_SERVER['REQUEST_TIME_FLOAT'];
-        else
+        } else {
             $this->start = microtime(true);
+        }
     }
 
+    /**
+     * @return float|string
+     */
     private function now()
     {
         return microtime(true);
     }
 
+    /**
+     * @param $event
+     * @param null $extraData
+     *
+     * @return string|null
+     */
     public function start($event, $extraData = null)
     {
-        if (!$this->enabled) return null;
+        if (!$this->enabled) {
+            return null;
+        }
         $now = $this->now();
         $myData = [
             'name' => $event,
@@ -46,11 +63,17 @@ class Instrumentor
         return intval($this->start) . '_' . ($len); // event ID
     }
 
+    /**
+     * @param $event_id
+     * @param null $extraData
+     */
     public function end($event_id, $extraData = null)
     {
-        if (!$this->enabled) return;
+        if (!$this->enabled) {
+            return;
+        }
         if (!array_key_exists($event_id, $this->eventLog)) {
-            throw new Exception("Trying to end event that hasn't happened");
+            throw new RuntimeException("Trying to end event that hasn't happened");
         }
 
         $now = $this->now();
@@ -64,6 +87,13 @@ class Instrumentor
         }
     }
 
+    /**
+     * @param $event
+     * @param $extraData
+     * @param null $func
+     *
+     * @return mixed
+     */
     public function wrap($event, $extraData, $func = null)
     {
         // convenience, for omitting extra_data
@@ -79,9 +109,14 @@ class Instrumentor
         return $res;
     }
 
+    /**
+     * @return array
+     */
     public function getLog()
     {
-        if (!$this->enabled) return [];
+        if (!$this->enabled) {
+            return [];
+        }
         $this->end = $this->now();
         return [
             'timing' => [
@@ -92,20 +127,37 @@ class Instrumentor
         ];
     }
 
+    /**
+     * @param null $detailed
+     *
+     * @return bool
+     */
     public function detailedMode($detailed = null)
     {
-        if (is_null($detailed)) return $this->detailedMode;
+        if (is_null($detailed)) {
+            return $this->detailedMode;
+        }
         $this->detailedMode = (bool)$detailed;
         return $this->detailedMode;
     }
 
+    /**
+     * @param null $enabled
+     *
+     * @return bool
+     */
     public function enabled($enabled = null)
     {
-        if (is_null($enabled)) return $this->enabled;
+        if (is_null($enabled)) {
+            return $this->enabled;
+        }
         $this->enabled = (bool)$enabled;
         return $this->enabled;
     }
 
+    /**
+     * @return array
+     */
     protected function generateStacktrace()
     {
         return debug_backtrace();

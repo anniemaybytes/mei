@@ -4,18 +4,32 @@ namespace RunTracy\Helpers;
 
 use Tracy\IBarPanel;
 
+/**
+ * Class SlimEnvironmentPanel
+ *
+ * @package RunTracy\Helpers
+ */
 class SlimEnvironmentPanel implements IBarPanel
 {
     private $content;
     private $ver;
     private $icon;
 
+    /**
+     * SlimEnvironmentPanel constructor.
+     *
+     * @param null $data
+     * @param array $ver
+     */
     public function __construct($data = null, array $ver = [])
     {
         $this->content = $data;
         $this->ver = $ver;
     }
 
+    /**
+     * @return string
+     */
     public function getTab()
     {
         $this->icon = '<svg enable-background="new 0 0 32 32" height="32px" version="1.1" viewBox="0 0 32 32" ' .
@@ -32,6 +46,9 @@ class SlimEnvironmentPanel implements IBarPanel
         return '<span title="Slim Http Environment">' . $this->icon . '</span>';
     }
 
+    /**
+     * @return string
+     */
     public function getPanel()
     {
         return '<h1>' . $this->icon . ' Slim ' . $this->ver['slim'] . ' Http Environment:</h1>

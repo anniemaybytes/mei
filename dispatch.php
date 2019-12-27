@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 define('BASE_ROOT', __DIR__);
 define('ERROR_REPORTING', E_ALL & ~(E_STRICT | E_NOTICE | E_WARNING | E_DEPRECATED));
@@ -21,24 +21,60 @@ Profiler::finish('initApp');
 $di = $app->getContainer();
 
 // this will take care of internal proxy for file_get_contents however it is recommended to use \Tentacles\Utilities\Curl
-if($di['config']['proxy']) {
-    stream_context_set_default([
-        'http' => [
-            'proxy' => $di['config']['proxy']
+if ($di['config']['proxy']) {
+    stream_context_set_default(
+        [
+            'http' => [
+                'proxy' => $di['config']['proxy']
+            ]
         ]
-    ]);
+    );
 }
 
-Debugger::enable($di['config']['mode'] == 'development' ? Debugger::DEVELOPMENT : Debugger::PRODUCTION, BASE_ROOT . '/logs');
-if ($di['config']['mode'] == 'production') { // tracy resets error_reporting to E_ALL when it's enabled, silence it on production please
-    error_reporting(ERROR_REPORTING);
-}
 Debugger::$maxDepth = 5;
 Debugger::$maxLength = 250;
 Debugger::$logSeverity = ERROR_REPORTING;
 Debugger::$reservedMemorySize = 5000000; // 5 megabytes because we increase depth for bluescreen
+Debugger::enable(
+    $di['config']['mode'] == 'development' ? Debugger::DEVELOPMENT : Debugger::PRODUCTION,
+    BASE_ROOT . '/logs'
+);
+if ($di['config']['mode'] == 'production') { // tracy resets error_reporting to E_ALL when it's enabled, silence it on production please
+    error_reporting(ERROR_REPORTING);
+}
+
 Debugger::getBlueScreen()->maxDepth = 7;
 Debugger::getBlueScreen()->maxLength = 520;
+array_push(
+    Debugger::getBlueScreen()->keysToHide,
+    'CSRF',
+    'SERVER_ADDR',
+    'REMOTE_ADDR',
+    '_tracy'
+);
+
+Debugger::getBlueScreen()->addPanel(
+    function ($e) use ($di) {
+        if ($e) {
+            return null;
+        }
+        return [
+            'tab' => 'Cache hits',
+            'panel' => Debugger::dump($di['cache']->getCacheHits(), true),
+        ];
+    }
+);
+Debugger::getBlueScreen()->addPanel(
+    function ($e) use ($di) {
+        if ($e) {
+            return null;
+        }
+        return [
+            'tab' => 'Instrumentor',
+            'panel' => Debugger::dump($di['instrumentor']->getLog(), true),
+        ];
+    }
+);
 
 // add middleware
 // note that the order is important; middleware gets executed as an onion, so

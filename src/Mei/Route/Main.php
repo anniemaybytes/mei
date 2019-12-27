@@ -8,9 +8,15 @@ use Mei\Controller\UploadCtrl;
 use Slim\App;
 use Slim\Container;
 
+/**
+ * Class Main
+ *
+ * @package Mei\Route
+ */
 class Main extends Base
 {
     protected function addRoutes()
+        /** @formatter:off */
     {
         $app = $this->app;
 
@@ -34,4 +40,5 @@ class Main extends Base
             })->setName('serve:legacy');
         });
     }
+    /** @formatter:on */
 }

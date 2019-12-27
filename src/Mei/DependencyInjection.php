@@ -3,11 +3,24 @@
 namespace Mei;
 
 use PDO;
+use RunTracy\Helpers\Profiler\Exception\ProfilerException;
 use RunTracy\Helpers\Profiler\Profiler;
 use Slim\Container;
 
+/**
+ * Class DependencyInjection
+ *
+ * @package Mei
+ */
 class DependencyInjection
 {
+    /**
+     * @param $config
+     * @param array $args
+     *
+     * @return mixed|Container
+     * @throws ProfilerException
+     */
     public static function get($config, $args = [])
     {
         if (!$args) {
@@ -46,7 +59,8 @@ class DependencyInjection
                 $dsn .= "host={$config['db.hostname']};port={$config['db.port']};";
             }
 
-            $o = new PDO($dsn, $config['db.username'],
+            $o = new PDO(
+                $dsn, $config['db.username'],
                 $config['db.password'],
                 [
                     PDO::ATTR_PERSISTENT => false,
@@ -81,12 +95,21 @@ class DependencyInjection
                 $ctrl = new Controller\ErrorCtrl($di);
                 return [$ctrl, 'handleException'];
             };
-        } else unset($di['errorHandler']);
+        } else {
+            unset($di['errorHandler']);
+        }
 
         return $di;
     }
 
+    /**
+     * @param $di
+     *
+     * @return mixed
+     * @throws ProfilerException
+     */
     private static function setUtilities($di)
+        /** @formatter:off */
     {
         Profiler::start('setUtilities');
 
@@ -105,9 +128,16 @@ class DependencyInjection
         Profiler::finish('setUtilities');
 
         return $di;
-    }
+    } /** @formatter:on */
 
+    /**
+     * @param $di
+     *
+     * @return mixed
+     * @throws ProfilerException
+     */
     private static function setModels($di)
+        /** @formatter:off */
     {
         Profiler::start('setModels');
 
@@ -121,4 +151,5 @@ class DependencyInjection
 
         return $di;
     }
+    /** @formatter:on */
 }

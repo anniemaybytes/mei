@@ -4,18 +4,32 @@ namespace RunTracy\Helpers;
 
 use Tracy\IBarPanel;
 
+/**
+ * Class SlimRequestPanel
+ *
+ * @package RunTracy\Helpers
+ */
 class SlimRequestPanel implements IBarPanel
 {
     private $content;
     private $ver;
     private $icon;
 
+    /**
+     * SlimRequestPanel constructor.
+     *
+     * @param null $data
+     * @param array $ver
+     */
     public function __construct($data = null, array $ver = [])
     {
         $this->content = $data;
         $this->ver = $ver;
     }
 
+    /**
+     * @return string
+     */
     public function getTab()
     {
         $this->icon = '<svg enable-background="new 0 0 64 64" height="16px" version="1.1" viewBox="0 0 64 64" ' .
@@ -30,6 +44,9 @@ class SlimRequestPanel implements IBarPanel
         return '<span title="Slim Http Request">' . $this->icon . '</span>';
     }
 
+    /**
+     * @return string
+     */
     public function getPanel()
     {
         return '<h1>' . $this->icon . ' Slim ' . $this->ver['slim'] . ' Request:</h1>

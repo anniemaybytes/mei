@@ -37,9 +37,30 @@ interface IKeyStore
      */
     public function delete($key);
 
+    /**
+     * @param $key
+     * @param int $n
+     * @param int $initial
+     * @param int $expiry
+     *
+     * @return mixed
+     */
     public function increment($key, $n = 1, $initial = 1, $expiry = 0);
 
+    /**
+     * @param $key
+     * @param int $expiry
+     *
+     * @return mixed
+     */
     public function touch($key, $expiry = 3600);
 
+    /**
+     * @param $key
+     * @param array $id
+     * @param int $duration
+     *
+     * @return mixed
+     */
     public function getEntityCache($key, $id = [], $duration = 3600);
 }

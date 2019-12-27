@@ -2,27 +2,38 @@
 
 namespace Mei;
 
-use Exception;
+use BadMethodCallException;
 
+/**
+ * Class Singleton
+ *
+ * @package Mei
+ */
 class Singleton
 {
     private static $instances = [];
 
+    /**
+     * Singleton constructor.
+     *
+     * @param $args
+     */
     protected function __construct($args)
     {
-
     }
 
     protected function __clone()
     {
-
     }
 
     public function __wakeup()
     {
-        throw new Exception("Cannot unserialize singleton");
+        throw new BadMethodCallException("Cannot unserialize singleton");
     }
 
+    /**
+     * @return mixed
+     */
     public static function getInstance()
     {
         $cls = get_called_class(); // late-static-bound class name

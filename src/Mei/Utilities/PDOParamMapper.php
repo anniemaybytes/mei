@@ -4,8 +4,18 @@ namespace Mei\Utilities;
 
 use PDO;
 
+/**
+ * Class PDOParamMapper
+ *
+ * @package Mei\Utilities
+ */
 class PDOParamMapper
 {
+    /**
+     * @param $entityAttrType
+     *
+     * @return int
+     */
     public static function map($entityAttrType)
     {
         switch ($entityAttrType) {

@@ -4,18 +4,32 @@ namespace RunTracy\Helpers;
 
 use Tracy\IBarPanel;
 
+/**
+ * Class SlimContainerPanel
+ *
+ * @package RunTracy\Helpers
+ */
 class SlimContainerPanel implements IBarPanel
 {
     private $content;
     private $ver;
     private $icon;
 
+    /**
+     * SlimContainerPanel constructor.
+     *
+     * @param null $data
+     * @param array $ver
+     */
     public function __construct($data = null, array $ver = [])
     {
         $this->content = $data;
         $this->ver = $ver;
     }
 
+    /**
+     * @return string
+     */
     public function getTab()
     {
         $this->icon = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="Layer_1" x="0px" y="0px" ' .
@@ -34,6 +48,9 @@ class SlimContainerPanel implements IBarPanel
         return '<span title="Slim Container">' . $this->icon . '</span>';
     }
 
+    /**
+     * @return string
+     */
     public function getPanel()
     {
         return '<h1>' . $this->icon . ' Slim ' . $this->ver['slim'] . ' Container:</h1>

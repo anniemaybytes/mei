@@ -5,13 +5,25 @@ namespace Mei\Instrumentation;
 use PDOException;
 use PDOStatement;
 
+/**
+ * Class PDOStatementInstrumentationWrapper
+ *
+ * @package Mei\Instrumentation
+ */
 class PDOStatementInstrumentationWrapper
 {
     private $instrumentor;
-    /** @var $statement PDOStatement * */
+    /** @var PDOStatement $statement * */
     private $statement;
     private $id;
 
+    /**
+     * PDOStatementInstrumentationWrapper constructor.
+     *
+     * @param $instrumentor
+     * @param $pdostatement
+     * @param $id
+     */
     public function __construct($instrumentor, $pdostatement, $id)
     {
         $this->instrumentor = $instrumentor;
@@ -19,11 +31,23 @@ class PDOStatementInstrumentationWrapper
         $this->id = $id;
     }
 
+    /**
+     * @param $method
+     * @param $args
+     *
+     * @return mixed
+     */
     public function __call($method, $args)
     {
         return $this->makeCall($method, $args);
     }
 
+    /**
+     * @param null $params
+     * @param int $retries
+     *
+     * @return bool|null
+     */
     public function execute($params = null, $retries = 3)
     {
         $iid = $this->instrumentor->start('pdostatement:execute:' . $this->id . '_' . $retries, $params);
@@ -47,6 +71,12 @@ class PDOStatementInstrumentationWrapper
         return $out;
     }
 
+    /**
+     * @param $method
+     * @param $args
+     *
+     * @return mixed
+     */
     private function makeCall($method, $args)
     {
         return call_user_func_array([$this->statement, $method], $args);

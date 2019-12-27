@@ -13,10 +13,10 @@ use JsonSerializable;
  */
 class Profile implements JsonSerializable
 {
-    const ABSOLUTE_DURATION = "absolute_duration";
-    const DURATION = "duration";
-    const ABSOLUTE_MEMORY_USAGE_CHANGE = "absolute_memory_usage_change";
-    const MEMORY_USAGE_CHANGE = "memory_usage_change";
+    public const ABSOLUTE_DURATION = "absolute_duration";
+    public const DURATION = "duration";
+    public const ABSOLUTE_MEMORY_USAGE_CHANGE = "absolute_memory_usage_change";
+    public const MEMORY_USAGE_CHANGE = "memory_usage_change";
 
     /**
      * @var array

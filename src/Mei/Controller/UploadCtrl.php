@@ -11,12 +11,18 @@ use Mei\Utilities\Time;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
+/**
+ * Class UploadCtrl
+ *
+ * @package Mei\Controller
+ */
 class UploadCtrl extends BaseCtrl
 {
     /**
      * @param Request $request
      * @param Response $response
      * @param $args
+     *
      * @return Response
      * @throws Exception
      */
@@ -29,23 +35,35 @@ class UploadCtrl extends BaseCtrl
          * tvalue: (valid until)
          **/
         $token = json_decode($this->di['utility.encryption']->decryptString($request->getParam('token')), true);
-        if (!$token || $token['method'] !== 'account' || time() > $token['tvalid']) throw new AccessDenied;
+        if (!$token || $token['method'] !== 'account' || time() > $token['tvalid']) {
+            throw new AccessDenied();
+        }
 
         $dataToHandle = [];
 
         $files = $request->getUploadedFiles();
         $url = $request->getParam('url');
-        if (!$files && !$url) throw new GeneralException('No files to upload found');
+        if (!$files && !$url) {
+            throw new GeneralException('No files to upload found');
+        }
 
         foreach ($files as $fileArray) {
-            if (!$fileArray) continue;
+            if (!$fileArray) {
+                continue;
+            }
             foreach ($fileArray as $file) {
-                if (!$file->file) continue; // empty file?
-                if ($file->getSize() > $this->config['site.max_filesize']) continue;
+                if (!$file->file) {
+                    continue;
+                } // empty file?
+                if ($file->getSize() > $this->config['site.max_filesize']) {
+                    continue;
+                }
                 $dataToHandle[] = $file->getStream()->getContents();
             }
         }
-        if ($url) $dataToHandle[] = $this->di['utility.images']->getDataFromUrl($url);
+        if ($url) {
+            $dataToHandle[] = $this->di['utility.images']->getDataFromUrl($url);
+        }
 
         try {
             $images = $this->processUploadedData($dataToHandle, $token['ident']);
@@ -60,10 +78,23 @@ class UploadCtrl extends BaseCtrl
             /** @var Response $response */
             return $response->withStatus(303)->withHeader('Location', "{$this->config['api.redirect']}{$urlString}");
         } else {
-            throw new NoImages('No processed images found. Possibly file was more than ' . $this->config['site.max_filesize'] . ' bytes?');
+            throw new NoImages(
+                'No processed images found. Possibly file was more than ' . $this->config['site.max_filesize'] . ' bytes?'
+            );
         }
     }
 
+    /**
+     * @param $request
+     * @param $response
+     * @param $args
+     *
+     * @return Response
+     * @throws AccessDenied
+     * @throws GeneralException
+     * @throws NoImages
+     * @throws Exception
+     */
     public function screenshot($request, $response, $args)
     {
         /**
@@ -73,21 +104,33 @@ class UploadCtrl extends BaseCtrl
          * tvalue: (valid until)
          **/
         $token = json_decode($this->di['utility.encryption']->decryptString($request->getParam('token')), true);
-        if (!$token || $token['method'] !== 'screenshot' || time() > $token['tvalid']) throw new AccessDenied;
+        if (!$token || $token['method'] !== 'screenshot' || time() > $token['tvalid']) {
+            throw new AccessDenied();
+        }
 
         $files = $request->getUploadedFiles();
-        if (!$files) throw new GeneralException('No files to upload found');
+        if (!$files) {
+            throw new GeneralException('No files to upload found');
+        }
 
         $imageData = [];
         foreach ($files as $fileArray) {
-            if (!$fileArray) continue;
+            if (!$fileArray) {
+                continue;
+            }
             foreach ($fileArray as $file) {
-                if (!$file->file) continue;
-                if ($file->getSize() > $this->config['site.max_filesize']) continue;
+                if (!$file->file) {
+                    continue;
+                }
+                if ($file->getSize() > $this->config['site.max_filesize']) {
+                    continue;
+                }
                 $bindata = $file->getStream()->getContents();
                 $metadata = $this->di['utility.images']->readImageData($bindata);
 
-                if (!$metadata || $metadata['mime'] != 'image/png') continue;
+                if (!$metadata || $metadata['mime'] != 'image/png') {
+                    continue;
+                }
 
                 $imageData[] = $bindata;
             }
@@ -110,7 +153,9 @@ class UploadCtrl extends BaseCtrl
             /** @var Response $response */
             return $response->withStatus(303)->withHeader('Location', "{$this->config['api.redirect']}{$urlString}");
         } else {
-            throw new NoImages('No processed images found. Possibly file was more than ' . $this->config['site.max_filesize'] . ' bytes or image was not PNG?');
+            throw new NoImages(
+                'No processed images found. Possibly file was more than ' . $this->config['site.max_filesize'] . ' bytes or image was not PNG?'
+            );
         }
     }
 
@@ -118,6 +163,7 @@ class UploadCtrl extends BaseCtrl
      * @param Request $request
      * @param Response $response
      * @param $args
+     *
      * @return Response
      * @throws Exception
      */
@@ -125,7 +171,9 @@ class UploadCtrl extends BaseCtrl
     {
         $auth = $request->getParam('auth');
 
-        if (!hash_equals($auth, $this->config['api.auth_key'])) throw new AccessDenied;
+        if (!hash_equals($auth, $this->config['api.auth_key'])) {
+            throw new AccessDenied();
+        }
 
         $dataToHandle = [];
 
@@ -139,19 +187,29 @@ class UploadCtrl extends BaseCtrl
 
         if ($file) {
             $fileDecoded = base64_decode($file);
-            if (strlen($fileDecoded) <= $this->config['site.max_filesize']) $dataToHandle[] = $fileDecoded;
+            if (strlen($fileDecoded) <= $this->config['site.max_filesize']) {
+                $dataToHandle[] = $fileDecoded;
+            }
         }
 
         foreach ($files as $fileArray) {
-            if (!$fileArray) continue;
+            if (!$fileArray) {
+                continue;
+            }
             foreach ($fileArray as $file) {
-                if (!$file->file) continue; // empty file?
-                if ($file->getSize() > $this->config['site.max_filesize']) continue;
+                if (!$file->file) {
+                    continue;
+                } // empty file?
+                if ($file->getSize() > $this->config['site.max_filesize']) {
+                    continue;
+                }
                 $dataToHandle[] = $file->getStream()->getContents();
             }
         }
 
-        if (!$file && !$url && !$files) throw new GeneralException('No files to upload found');
+        if (!$file && !$url && !$files) {
+            throw new GeneralException('No files to upload found');
+        }
 
         try {
             $images = $this->processUploadedData($dataToHandle);
@@ -165,15 +223,28 @@ class UploadCtrl extends BaseCtrl
             $response->getBody()->write(json_encode($images));
             return $response->withStatus(201);
         } else {
-            throw new NoImages('No processed images found. Possibly file was more than ' . $this->config['site.max_filesize'] . ' bytes?');
+            throw new NoImages(
+                'No processed images found. Possibly file was more than ' . $this->config['site.max_filesize'] . ' bytes?'
+            );
         }
     }
 
+    /**
+     * @param array $dataToHandle
+     * @param int $uploaderId
+     * @param int $torrentId
+     *
+     * @return array
+     * @throws GeneralException
+     * @throws Exception
+     */
     private function processUploadedData(array $dataToHandle, $uploaderId = 0, $torrentId = 0)
     {
         $images = [];
         foreach ($dataToHandle as $bindata) {
-            if (!$bindata) continue;
+            if (!$bindata) {
+                continue;
+            }
             $metadata = $this->di['utility.images']->readImageData($bindata);
 
             // invalid data, or not allowed format
@@ -186,7 +257,9 @@ class UploadCtrl extends BaseCtrl
             if ($this->di['model.files_map']->getByKey($metadata['checksum'] . '.' . $metadata['extension'])) {
                 $found = true;
                 $isLegacy = false;
-            } else if ($this->di['model.files_map']->getByKey($metadata['checksum_legacy'] . '.' . $metadata['extension'])) {
+            } elseif ($this->di['model.files_map']->getByKey(
+                $metadata['checksum_legacy'] . '.' . $metadata['extension']
+            )) {
                 $found = true;
                 $isLegacy = true;
             }
@@ -194,18 +267,22 @@ class UploadCtrl extends BaseCtrl
             $checksum = $isLegacy ? $metadata['checksum_legacy'] : $metadata['checksum'];
             if (!$found) {
                 $savePath = $this->di['utility.images']->getSavePath($checksum . '.' . $metadata['extension']);
-                if (!$this->di['utility.images']->saveData($bindata, $savePath, false)) throw new GeneralException('Unable to save file');
+                if (!$this->di['utility.images']->saveData($bindata, $savePath, false)) {
+                    throw new GeneralException('Unable to save file');
+                }
             }
 
             $filename = StringUtil::generateRandomString(11) . '.' . $metadata['extension'];
-            $newImage = $this->di['model.files_map']->createEntity([
-                'Key' => $checksum . '.' . $metadata['extension'],
-                'FileName' => $filename,
-                'UploaderId' => $uploaderId,
-                'TorrentId' => $torrentId,
-                'Protected' => 0,
-                'UploadTime' => Time::now()
-            ]);
+            $newImage = $this->di['model.files_map']->createEntity(
+                [
+                    'Key' => $checksum . '.' . $metadata['extension'],
+                    'FileName' => $filename,
+                    'UploaderId' => $uploaderId,
+                    'TorrentId' => $torrentId,
+                    'Protected' => 0,
+                    'UploadTime' => Time::now()
+                ]
+            );
             $this->di['model.files_map']->save($newImage);
             array_push($images, $filename);
         }

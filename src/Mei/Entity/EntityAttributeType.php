@@ -7,12 +7,19 @@ use Exception;
 use InvalidArgumentException;
 use Mei\Utilities\Time;
 
+/**
+ * Class EntityAttributeType
+ *
+ * @package Mei\Entity
+ */
 class EntityAttributeType
 {
     /**
      * Converts a value from string to a given type.
+     *
      * @param string $type The type to convert to.
      * @param string $val The string to convert.
+     *
      * @return mixed
      * @throws Exception
      */
@@ -53,8 +60,10 @@ class EntityAttributeType
 
     /**
      * Converts a value from a given type to a string.
+     *
      * @param string $type The type to convert from.
      * @param mixed $val The value to convert.
+     *
      * @return string
      * @throws Exception
      */

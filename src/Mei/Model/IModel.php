@@ -31,6 +31,7 @@ interface IModel
      * Return null if no entity is found, or if the id is invalid
      *
      * @param array $id
+     *
      * @return IEntity | null
      */
     public function getById($id);
@@ -40,6 +41,7 @@ interface IModel
      * The entity must return true to isNew and false to hasChanged
      *
      * @param array $arr array of entity attribute-value pairs
+     *
      * @return IEntity
      */
     public function createEntity($arr);
@@ -50,6 +52,7 @@ interface IModel
      * This method must return the resulting entity.
      *
      * @param IEntity $entity
+     *
      * @return IEntity
      */
     public function save(IEntity $entity);
@@ -60,9 +63,15 @@ interface IModel
      * This method must return back entity given as parameter.
      *
      * @param IEntity $entity
+     *
      * @return IEntity
      */
     public function delete(IEntity $entity);
 
+    /**
+     * @param $id
+     *
+     * @return mixed
+     */
     public function deleteById($id);
 }

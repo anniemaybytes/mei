@@ -2,6 +2,11 @@
 
 namespace RunTracy\Helpers\Profiler;
 
+/**
+ * Class Profiler
+ *
+ * @package RunTracy\Helpers\Profiler
+ */
 class Profiler extends AdvancedProfiler
 {
     /**

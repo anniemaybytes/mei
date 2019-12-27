@@ -2,6 +2,11 @@
 
 namespace Mei\Entity;
 
+/**
+ * Class FilesMap
+ *
+ * @package Mei\Entity
+ */
 class FilesMap extends Entity
 {
     protected static $columns = [
