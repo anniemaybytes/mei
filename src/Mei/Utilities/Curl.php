@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Utilities;
 
@@ -19,14 +19,17 @@ use function curl_setopt_array;
  */
 class Curl
 {
-    private $curl = null;
+    /**
+     * @var false|resource $curl
+     */
+    private $curl = false;
 
     /**
      * Curl constructor.
      *
-     * @param null $url
+     * @param string|null $url
      */
-    public function __construct($url = null)
+    public function __construct(string $url)
     {
         $this->curl = curl_init($url);
     }
@@ -42,7 +45,7 @@ class Curl
      *
      * @return bool
      */
-    public function setopt($option, $value)
+    public function setopt($option, $value): bool
     {
         return curl_setopt($this->curl, $option, $value);
     }
@@ -52,17 +55,17 @@ class Curl
      *
      * @return mixed
      */
-    public function getinfo($option)
+    public function getInfo($option)
     {
         return curl_getinfo($this->curl, $option);
     }
 
     /**
-     * @param $options
+     * @param array $options
      *
      * @return bool
      */
-    public function setoptArray($options)
+    public function setoptArray(array $options): bool
     {
         return curl_setopt_array($this->curl, $options);
     }
@@ -72,7 +75,7 @@ class Curl
      *
      * @return bool|string
      */
-    public function exec($proxyOverride = false)
+    public function exec(bool $proxyOverride = false)
     {
         if (!$proxyOverride) { // override proxy
             $this->setopt(
@@ -88,7 +91,7 @@ class Curl
     /**
      * @return string
      */
-    public function error()
+    public function error(): string
     {
         return curl_error($this->curl);
     }

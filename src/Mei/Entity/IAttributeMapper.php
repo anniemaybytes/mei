@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Entity;
 
@@ -10,43 +10,43 @@ interface IAttributeMapper
 {
     /**
      * @param ICacheable $cache
-     * @param $attribute
+     * @param string $attribute
      *
      * @return mixed
      */
-    public function get(ICacheable $cache, $attribute);
+    public function get(ICacheable $cache, string $attribute);
 
     /**
      * @param ICacheable $cache
-     * @param $attribute
+     * @param string $attribute
      * @param $value
      *
      * @return ICacheable
      */
-    public function set(ICacheable $cache, $attribute, $value);
+    public function set(ICacheable $cache, string $attribute, $value);
 
     /**
      * @param ICacheable $cache
-     * @param $attribute
+     * @param string $attribute
      *
-     * @return mixed
+     * @return bool
      */
-    public function isAttributeSet(ICacheable $cache, $attribute);
+    public function isAttributeSet(ICacheable $cache, string $attribute);
 
     /**
      * @param ICacheable $cache
-     * @param $attribute
+     * @param string $attribute
      *
      * @return ICacheable
      */
-    public function unsetAttribute(ICacheable $cache, $attribute);
+    public function unsetAttribute(ICacheable $cache, string $attribute);
 
     /**
      * Get a list of the attributes whose values have been changed, and their values
      *
      * @param ICacheable $cache
      *
-     * @return array of string
+     * @return string[]
      */
     public function getChangedValues(ICacheable $cache);
 
@@ -55,7 +55,7 @@ interface IAttributeMapper
      *
      * @param ICacheable $cache
      *
-     * @return array of string
+     * @return string[]
      */
     public function getValues(ICacheable $cache);
 

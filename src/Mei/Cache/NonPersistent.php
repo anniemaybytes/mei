@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Cache;
 
@@ -26,7 +26,7 @@ class NonPersistent implements IKeyStore
      * @param $array
      * @param $key_prefix
      */
-    public function __construct($array, $key_prefix)
+    public function __construct(array $array, string $key_prefix)
     {
         $this->inner = $array;
         $this->key_prefix = $key_prefix;
@@ -37,7 +37,7 @@ class NonPersistent implements IKeyStore
      *
      * @return bool|mixed
      */
-    public function get($key)
+    public function get(string $key)
     {
         $start = $this->startCall();
         $key = $this->key_prefix . $key;
@@ -60,7 +60,7 @@ class NonPersistent implements IKeyStore
     /**
      * @return array
      */
-    public function getCacheHits()
+    public function getCacheHits(): array
     {
         return $this->cacheHits;
     }
@@ -68,19 +68,19 @@ class NonPersistent implements IKeyStore
     /**
      * @return int
      */
-    public function getExecutionTime()
+    public function getExecutionTime(): int
     {
         return $this->time;
     }
 
     /**
-     * @param $key
+     * @param string $key
      * @param $value
      * @param int $expiry
      *
      * @return mixed
      */
-    public function set($key, $value, $expiry = 3600)
+    public function set(string $key, $value, int $expiry = 10800)
     {
         $start = $this->startCall();
         $key = $this->key_prefix . $key;
@@ -92,30 +92,27 @@ class NonPersistent implements IKeyStore
     }
 
     /**
-     * @param $key
+     * @param string $key
      *
-     * @return bool
      */
-    public function delete($key)
+    public function delete(string $key)
     {
         $start = $this->startCall();
         $key = $this->key_prefix . $key;
 
         unset($this->inner[$key]);
         $this->endCall($start);
-
-        return true;
     }
 
     /**
-     * @param $key
+     * @param string $key
      * @param int $n
      * @param int $initial
      * @param int $expiry
      *
      * @return bool|int|mixed
      */
-    public function increment($key, $n = 1, $initial = 1, $expiry = 0)
+    public function increment(string $key, int $n = 1, int $initial = 1, int $expiry = 0)
     {
         $start = $this->startCall();
         $key = $this->key_prefix . $key;
@@ -137,24 +134,21 @@ class NonPersistent implements IKeyStore
     }
 
     /**
-     * @param $key
+     * @param string $key
      * @param int $expiry
-     *
-     * @return bool|mixed
      */
-    public function touch($key, $expiry = 3600)
+    public function touch(string $key, int $expiry = 10800)
     {
-        return true;
     }
 
     /**
-     * @param $key
+     * @param string $key
      * @param array $id
      * @param int $duration
      *
      * @return EntityCache|mixed
      */
-    public function getEntityCache($key, $id = [], $duration = 0)
+    public function getEntityCache(string $key, array $id = [], int $duration = 0)
     {
         return new EntityCache($this, $key, $id, $duration);
     }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Model;
 
@@ -34,7 +34,7 @@ interface IModel
      *
      * @return IEntity | null
      */
-    public function getById($id);
+    public function getById(array $id);
 
     /**
      * Return an entity created from the provided array
@@ -44,7 +44,7 @@ interface IModel
      *
      * @return IEntity
      */
-    public function createEntity($arr);
+    public function createEntity(array $arr);
 
     /**
      * Save the entity handled by the model.
@@ -69,9 +69,9 @@ interface IModel
     public function delete(IEntity $entity);
 
     /**
-     * @param $id
+     * @param array $id
      *
      * @return mixed
      */
-    public function deleteById($id);
+    public function deleteById(array $id);
 }

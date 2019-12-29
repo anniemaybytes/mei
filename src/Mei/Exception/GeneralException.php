@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Exception;
 
@@ -11,6 +11,7 @@ use Exception;
  */
 class GeneralException extends Exception
 {
+    /** @var string|null $description */
     private $description;
 
     /**
@@ -18,27 +19,27 @@ class GeneralException extends Exception
      *
      * @param $description
      */
-    public function __construct($description)
+    public function __construct(?string $description = null)
     {
         $this->description = $description;
         parent::__construct();
     }
 
     /**
-     * @param $description
+     * @param string $description
      *
      * @return $this
      */
-    public function setDescription($description)
+    public function setDescription(string $description): self
     {
         $this->description = $description;
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }

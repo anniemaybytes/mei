@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Model;
 
@@ -9,6 +9,7 @@ use Mei\Entity\IEntity;
 use Mei\Instrumentation\PDOInstrumentationWrapper;
 use Mei\Utilities\PDOParamMapper;
 use PDO;
+use Slim\Container;
 
 /**
  * Class Model
@@ -27,6 +28,9 @@ abstract class Model implements IModel
      */
     protected $cache;
 
+    /**
+     * @var Container $di
+     */
     protected $di;
 
     /**
@@ -34,19 +38,22 @@ abstract class Model implements IModel
      */
     protected $entityBuilder;
 
+    /**
+     * @var bool $inTransaction
+     */
     protected $inTransaction;
 
     /**
      * Model constructor.
      *
-     * @param $di
+     * @param Container $di
      * @param callable $entityBuilder
      */
-    public function __construct($di, callable $entityBuilder)
+    public function __construct(Container $di, callable $entityBuilder)
     {
-        $this->db = $di['db'];
-        $this->cache = $di['cache'];
         $this->di = $di;
+        $this->db = $this->di['db'];
+        $this->cache = $this->di['cache'];
         $this->entityBuilder = $entityBuilder;
         $this->inTransaction = false;
     }
@@ -56,7 +63,7 @@ abstract class Model implements IModel
      *
      * @return PDOInstrumentationWrapper
      */
-    protected function getDatabase()
+    protected function getDatabase(): PDOInstrumentationWrapper
     {
         return $this->db;
     }
@@ -66,7 +73,7 @@ abstract class Model implements IModel
      *
      * @return IKeyStore
      */
-    protected function getCache()
+    protected function getCache(): IKeyStore
     {
         return $this->cache;
     }
@@ -81,21 +88,21 @@ abstract class Model implements IModel
     // needs to be run immediately after a SELECT SQL_CALC_FOUND_ROWS statement
 
     /**
-     * @return mixed
+     * @return int
      * @throws Exception
      */
-    public function getFoundRows()
+    public function getFoundRows(): int
     {
         $q = $this->getDatabase()->query('SELECT FOUND_ROWS()');
-        return $q->fetchColumn();
+        return (int)$q->fetchColumn();
     }
 
     /**
-     * @param $ids
+     * @param array|null $ids
      *
      * @return array
      */
-    public function getEntitiesFromIds($ids)
+    public function getEntitiesFromIds(?array $ids)
     {
         if (!$ids) {
             return [];
@@ -109,12 +116,12 @@ abstract class Model implements IModel
     }
 
     /**
-     * @param array $id
+     * @param array|null $id
      *
-     * @return IEntity
+     * @return mixed|IEntity
      * @see \Mei\Model\IModel::getById()
      */
-    public function getById($id)
+    public function getById(?array $id)
     {
         if (is_null($id) || $id === [] || !(is_array($id))) {
             return null;
@@ -169,10 +176,10 @@ abstract class Model implements IModel
     /**
      * @param array $arr
      *
-     * @return IEntity
+     * @return mixed|IEntity
      * @see \Mei\Model\IModel::createEntity()
      */
-    public function createEntity($arr)
+    public function createEntity(array $arr)
     {
         if (!is_array($arr)) {
             throw new InvalidArgumentException("createEntity expects array as argument");
@@ -361,17 +368,17 @@ abstract class Model implements IModel
     }
 
     /**
-     * @param $id
+     * @param array $id
      *
      * @return IEntity|mixed
      */
-    public function deleteById($id)
+    public function deleteById(array $id)
     {
         return $this->delete($this->getById($id));
     }
 
     /**
-     * @return bool|false|int
+     * @return bool|int
      */
     public function beginTransaction()
     {
@@ -383,14 +390,14 @@ abstract class Model implements IModel
     /**
      * @return bool
      */
-    public function commit()
+    public function commit(): bool
     {
         $this->inTransaction = false;
         return $this->getDatabase()->commit();
     }
 
     /**
-     * @return bool|false|int
+     * @return bool|int
      */
     public function rollBack()
     {

@@ -1,8 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Utilities;
 
 use Exception;
+use Slim\Container;
 
 /**
  * Class Encryption
@@ -20,9 +21,9 @@ class Encryption
     /**
      * Encryption constructor.
      *
-     * @param $di
+     * @param Container $di
      */
-    public function __construct($di)
+    public function __construct(Container $di)
     {
         $this->di = $di;
         $this->config = $di['config'];
@@ -30,12 +31,12 @@ class Encryption
     }
 
     /**
-     * @param $plainData
+     * @param string|null $plainData
      *
      * @return string
      * @throws Exception
      */
-    public function encrypt($plainData)
+    public function encrypt(?string $plainData): string
     {
         srand();
 
@@ -62,17 +63,17 @@ class Encryption
     }
 
     /**
-     * @param $encryptedData
+     * @param string|null $encryptedData
      *
-     * @return bool|string
+     * @return string
      */
-    public function decrypt($encryptedData)
+    public function decrypt(?string $encryptedData): string
     {
-        if ($encryptedData != "") {
+        if (is_string($encryptedData)) {
             try {
                 $data = base64_decode($encryptedData);
                 if ($data == false) {
-                    return false;
+                    return "";
                 }
                 $initVector = substr($data, 0, 16);
                 $unpaddedCryptedData = substr($data, 16);
@@ -86,11 +87,11 @@ class Encryption
                     )
                 );
                 if (!$r) {
-                    return false;
+                    return "";
                 }
                 return $r;
             } catch (Exception $e) {
-                return false;
+                return "";
             }
         } else {
             return "";
@@ -98,40 +99,40 @@ class Encryption
     }
 
     /**
-     * @param $encryptedData
+     * @param string $encryptedData
      *
-     * @return bool|string
+     * @return string
      */
-    public function decryptString($encryptedData)
+    public function decryptString(string $encryptedData): string
     {
         $result = $this->decrypt($encryptedData);
-        if (!$result) {
-            return false;
+        if (!strlen($result)) {
+            return "";
         }
         $isUTF8 = preg_match('//u', $result);
         if (!$isUTF8) {
-            return false;
+            return "";
         }
         return $result;
     }
 
     /**
-     * @param $plainData
+     * @param string $plainData
      *
      * @return string
      * @throws Exception
      */
-    public function encryptUrl($plainData)
+    public function encryptUrl(string $plainData): string
     {
         return StringUtil::base64UrlEncode($this->encrypt($plainData));
     }
 
     /**
-     * @param $encryptedData
+     * @param string $encryptedData
      *
-     * @return bool|string
+     * @return string
      */
-    public function decryptUrl($encryptedData)
+    public function decryptUrl($encryptedData): string
     {
         return $this->decrypt(StringUtil::base64UrlDecode($encryptedData));
     }

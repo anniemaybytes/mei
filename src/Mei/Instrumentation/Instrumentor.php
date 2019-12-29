@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Instrumentation;
 
@@ -11,36 +11,41 @@ use RuntimeException;
  */
 class Instrumentor
 {
+    /** @var bool $enabled */
     protected $enabled = true;
+    /** @var array $eventLog */
     protected $eventLog = [];
+    /** @var float $start */
     protected $start;
+    /** @var float $end */
     protected $end;
+    /** @var bool $detailedMode */
     protected $detailedMode = false;
 
     public function __construct()
     {
         if (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
-            $this->start = $_SERVER['REQUEST_TIME_FLOAT'];
+            $this->start = (float)$_SERVER['REQUEST_TIME_FLOAT'];
         } else {
-            $this->start = microtime(true);
+            $this->start = $this->now();
         }
     }
 
     /**
-     * @return float|string
+     * @return float
      */
-    private function now()
+    private function now(): float
     {
         return microtime(true);
     }
 
     /**
-     * @param $event
-     * @param null $extraData
+     * @param string $event
+     * @param mixed $extraData
      *
      * @return string|null
      */
-    public function start($event, $extraData = null)
+    public function start(string $event, $extraData = null): ?string
     {
         if (!$this->enabled) {
             return null;
@@ -64,20 +69,20 @@ class Instrumentor
     }
 
     /**
-     * @param $event_id
-     * @param null $extraData
+     * @param string $event
+     * @param mixed $extraData
      */
-    public function end($event_id, $extraData = null)
+    public function end(string $event, $extraData = null)
     {
         if (!$this->enabled) {
             return;
         }
-        if (!array_key_exists($event_id, $this->eventLog)) {
+        if (!array_key_exists($event, $this->eventLog)) {
             throw new RuntimeException("Trying to end event that hasn't happened");
         }
 
         $now = $this->now();
-        $log = &$this->eventLog[$event_id];
+        $log = &$this->eventLog[$event];
         $log['timing']['end'] = $now;
         $log['data']['end'] = $extraData;
         $log['timing']['period'] = $now - $log['timing']['start'];
@@ -88,13 +93,13 @@ class Instrumentor
     }
 
     /**
-     * @param $event
-     * @param $extraData
-     * @param null $func
+     * @param string $event
+     * @param mixed $extraData
+     * @param callable $func
      *
      * @return mixed
      */
-    public function wrap($event, $extraData, $func = null)
+    public function wrap(string $event, $extraData = null, ?callable $func = null)
     {
         // convenience, for omitting extra_data
         if (is_null($func)) {
@@ -112,7 +117,7 @@ class Instrumentor
     /**
      * @return array
      */
-    public function getLog()
+    public function getLog(): array
     {
         if (!$this->enabled) {
             return [];
@@ -128,11 +133,11 @@ class Instrumentor
     }
 
     /**
-     * @param null $detailed
+     * @param bool|null $detailed
      *
      * @return bool
      */
-    public function detailedMode($detailed = null)
+    public function detailedMode(?bool $detailed = null): bool
     {
         if (is_null($detailed)) {
             return $this->detailedMode;
@@ -142,11 +147,11 @@ class Instrumentor
     }
 
     /**
-     * @param null $enabled
+     * @param bool|null $enabled
      *
      * @return bool
      */
-    public function enabled($enabled = null)
+    public function enabled(?bool $enabled = null): bool
     {
         if (is_null($enabled)) {
             return $this->enabled;
@@ -158,7 +163,7 @@ class Instrumentor
     /**
      * @return array
      */
-    protected function generateStacktrace()
+    protected function generateStacktrace(): array
     {
         return debug_backtrace();
     }

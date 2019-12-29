@@ -1,5 +1,7 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
 
+declare(strict_types=1);
+
 define('BASE_ROOT', __DIR__);
 define('ERROR_REPORTING', E_ALL & ~(E_STRICT | E_NOTICE | E_WARNING | E_DEPRECATED));
 require_once BASE_ROOT . '/vendor/autoload.php'; // set up autoloading
@@ -19,17 +21,6 @@ $app = Dispatcher::app();
 Profiler::finish('initApp');
 
 $di = $app->getContainer();
-
-// this will take care of internal proxy for file_get_contents however it is recommended to use \Tentacles\Utilities\Curl
-if ($di['config']['proxy']) {
-    stream_context_set_default(
-        [
-            'http' => [
-                'proxy' => $di['config']['proxy']
-            ]
-        ]
-    );
-}
 
 Debugger::$maxDepth = 5;
 Debugger::$maxLength = 250;

@@ -1,13 +1,13 @@
-<?php /** @noinspection PhpInconsistentReturnPointsInspection */
+<?php declare(strict_types=1);
 
 namespace Mei\Controller;
 
-use Exception;
 use Mei\Exception\AccessDenied;
 use Mei\Exception\NoImages;
 use Mei\Exception\NotFound;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Throwable;
 use Tracy\Debugger;
 
 /**
@@ -25,19 +25,19 @@ class ErrorCtrl extends BaseCtrl
     ];
 
     /**
-     * @param $status_code
+     * @param $statusCode
      *
      * @return array
      */
-    private function getData($status_code)
+    private function getData($statusCode): array
     {
         $data = [];
-        $data['status_code'] = $status_code;
+        $data['status_code'] = $statusCode;
 
-        if (!isset(self::$STATUS_MESSAGES[$status_code])) {
+        if (!isset(self::$STATUS_MESSAGES[$statusCode])) {
             $data['status_message'] = self::$STATUS_MESSAGES['default'];
         } else {
-            $data['status_message'] = self::$STATUS_MESSAGES[$status_code];
+            $data['status_message'] = self::$STATUS_MESSAGES[$statusCode];
         }
 
         return $data;
@@ -46,13 +46,12 @@ class ErrorCtrl extends BaseCtrl
     /**
      * @param Request $request
      * @param Response $response
-     * @param $exception
+     * @param Throwable $exception
      *
      * @return Response
      */
-    public function handleException(Request $request, Response $response, $exception)
+    public function handleException(Request $request, Response $response, Throwable $exception): Response
     {
-        // make sure we don't throw an exception
         try {
             $statusCode = 500;
             if ($exception instanceof NotFound) {
@@ -100,17 +99,17 @@ class ErrorCtrl extends BaseCtrl
             $response = $response->withHeader('Expires', date('r', 0));
 
             return $response->withStatus($statusCode);
-        } catch (Exception $e) {
-            Debugger::log($e, Debugger::EXCEPTION);
+        } catch (Throwable $e) {
+            return (new FatalErrorCtrl($this->di))->handleError($request, $response, $e);
         }
     }
 
     /**
      * @param Request $request
-     * @param Exception $exception
-     * @param $data
+     * @param Throwable $exception
+     * @param array $data
      */
-    private function logError(Request $request, Exception $exception, $data)
+    private function logError(Request $request, Throwable $exception, array $data)
     {
         // don't log 404s
         if ($data['status_code'] == 404 || $data['status_code'] == 403 || $data['status_code'] == 415) {

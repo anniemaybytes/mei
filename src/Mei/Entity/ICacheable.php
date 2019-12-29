@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Entity;
 
@@ -14,7 +14,7 @@ interface ICacheable
     /**
      * Get the row used to represent the entity
      *
-     * @return array of string
+     * @return string[]
      */
     public function getRow();
 
@@ -23,16 +23,16 @@ interface ICacheable
      *
      * @param array $row
      *
-     * @return ICacheable
+     * @return self
      */
-    public function setRow($row);
+    public function setRow(array $row);
 
     /**
      * Get the value stored against $key
      *
      * @param string $key
      */
-    public function getLoaded($key);
+    public function getLoaded(string $key);
 
     /**
      * Set the value stored against $key to $value
@@ -40,36 +40,36 @@ interface ICacheable
      * @param string $key
      * @param $value
      *
-     * @return ICacheable
+     * @return self
      */
-    public function setLoaded($key, $value);
+    public function setLoaded(string $key, $value);
 
     /**
      * Set the key under which similar entries are stored
      *
      * @param string $key
      *
-     * @return ICacheable
+     * @return self
      */
-    public function setKey($key);
+    public function setKey(string $key);
 
     /**
      * Set the cache duration
      *
-     * @param string $duration
+     * @param int $duration
      *
-     * @return ICacheable
+     * @return self
      */
-    public function setCacheDuration($duration);
+    public function setCacheDuration(int $duration);
 
     /**
      * Set the unique identifier
      *
-     * @param $id
+     * @param array $id
      *
-     * @return ICacheable
+     * @return self
      */
-    public function setId($id);
+    public function setId(array $id);
 
     /**
      * Get the unique identifier
@@ -98,9 +98,9 @@ interface ICacheable
     /**
      * Set the data that gets loaded from cache
      *
-     * @param $cache
+     * @param array $cache
      *
      * @return ICacheable
      */
-    public function setData($cache);
+    public function setData(array $cache);
 }

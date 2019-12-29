@@ -1,10 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Utilities;
 
 use Exception;
 use Imagick;
 use ImagickException;
+use Slim\Container;
+use Tracy\Debugger;
 
 /**
  * Class ImageUtilities
@@ -22,19 +24,19 @@ class ImageUtilities
     /**
      * ImageUtilities constructor.
      *
-     * @param $di
+     * @param Container $di
      */
-    public function __construct($di)
+    public function __construct(Container $di)
     {
         $this->config = $di['config'];
     }
 
     /**
-     * @param $extension
+     * @param string $extension
      *
      * @return string
      */
-    public static function mapExtension($extension)
+    public static function mapExtension(string $extension): string
     {
         $extension = strtolower($extension);
         if ($extension == 'jpeg') {
@@ -45,11 +47,11 @@ class ImageUtilities
     }
 
     /**
-     * @param $bindata
+     * @param string $bindata
      *
-     * @return array|bool|false
+     * @return array|bool
      */
-    public function readImageData($bindata)
+    public function readImageData(string $bindata)
     {
         $data = @getimagesizefromstring($bindata);
         if (!$data || !isset($data['mime'])) {
@@ -75,12 +77,12 @@ class ImageUtilities
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @param int $depth
      *
      * @return bool|string
      */
-    public function getSavePath($name, $depth = 3)
+    public function getSavePath(string $name, int $depth = 3)
     {
         if ($depth >= 32) {
             return false;
@@ -96,11 +98,11 @@ class ImageUtilities
     }
 
     /**
-     * @param $url
+     * @param string $url
      *
      * @return bool|string
      */
-    public function getDataFromUrl($url)
+    public function getDataFromUrl(string $url)
     {
         if (!$url || !filter_var($url, FILTER_VALIDATE_URL)) {
             return false;
@@ -110,10 +112,9 @@ class ImageUtilities
         $host = parse_url($url, PHP_URL_HOST);
 
         if (in_array($scheme, self::$allowedUrlScheme)) {
-            $curl = new Curl();
+            $curl = new Curl($url);
             $curl->setoptArray(
                 [
-                    CURLOPT_URL => $url,
                     CURLOPT_ENCODING => 'UTF-8',
                     CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36',
                     CURLOPT_RETURNTRANSFER => true,
@@ -130,8 +131,8 @@ class ImageUtilities
             );
 
             $content = $curl->exec();
-            $content_length = $curl->getinfo(CURLINFO_CONTENT_LENGTH_DOWNLOAD);
-            $respcode = $curl->getinfo(CURLINFO_HTTP_CODE);
+            $content_length = $curl->getInfo(CURLINFO_CONTENT_LENGTH_DOWNLOAD);
+            $respcode = $curl->getInfo(CURLINFO_HTTP_CODE);
             unset($curl);
 
             if (!$content_length) {
@@ -154,11 +155,11 @@ class ImageUtilities
     }
 
     /**
-     * @param $path
+     * @param string $path
      *
-     * @return bool|false|string
+     * @return bool|string
      */
-    public function getDataFromPath($path)
+    public function getDataFromPath(string $path)
     {
         if (!$path) {
             return false;
@@ -177,11 +178,11 @@ class ImageUtilities
     }
 
     /**
-     * @param $bindata
+     * @param string $bindata
      *
      * @return bool|Imagick
      */
-    public function readImage($bindata)
+    public function readImage(string $bindata)
     {
         $data = self::readImageData($bindata);
         if (!$data) {
@@ -193,7 +194,7 @@ class ImageUtilities
             $image->readImageBlob($bindata);
             $image->setImageFormat($data['extension']);
             $image->setImageCompressionQuality(90);
-            $image->setOption('png:compression-level', 9);
+            $image->setOption('png:compression-level', '9');
             return $image;
         } catch (Exception $e) {
             return false;
@@ -201,14 +202,14 @@ class ImageUtilities
     }
 
     /**
-     * @param $bindata
-     * @param $savePath
+     * @param string|null $bindata
+     * @param string $savePath
      * @param bool $stripExif
      *
      * @return bool
      * @throws ImagickException
      */
-    public function saveData($bindata, $savePath, $stripExif = true)
+    public function saveData(?string $bindata, string $savePath, bool $stripExif = true): bool
     {
         if (!$savePath || !$bindata) {
             return false;
@@ -243,7 +244,7 @@ class ImageUtilities
      *
      * @return bool|Imagick
      */
-    private function stripImage($image)
+    private function stripImage(Imagick $image)
     {
         if (!$image) {
             return false;
@@ -263,13 +264,13 @@ class ImageUtilities
 
     /**
      * @param Imagick $image
-     * @param $maxWidth
-     * @param $maxHeight
+     * @param int $maxWidth
+     * @param int $maxHeight
      * @param bool $crop
      *
      * @return bool|Imagick
      */
-    public function resizeImage($image, $maxWidth, $maxHeight, $crop = false)
+    public function resizeImage(Imagick $image, int $maxWidth, int $maxHeight, bool $crop = false)
     {
         if (!$image) {
             return false;
@@ -296,25 +297,26 @@ class ImageUtilities
     }
 
     /**
-     * @param $path
+     * @param string $path
      *
      * @return bool
      */
-    public function deleteImage($path)
+    public function deleteImage(string $path): bool
     {
         return rename($path, $this->config['site.deleted_root'] . '/' . basename($path));
     }
 
     /**
-     * @param $urls
+     * @param array $urls
      */
-    public function clearCacheForImage($urls)
+    public function clearCacheForImage(array $urls)
     {
         if (is_array($urls) && $this->config['cloudflare.enabled']) { // domain present
-            $curl = new Curl();
+            $curl = new Curl(
+                'https://api.cloudflare.com/client/v4/zones/' . $this->config['cloudflare.zone'] . '/purge_cache'
+            );
             $curl->setoptArray(
                 [
-                    CURLOPT_URL => 'https://api.cloudflare.com/client/v4/zones/' . $this->config['cloudflare.zone'] . '/purge_cache',
                     CURLOPT_ENCODING => 'UTF-8',
                     CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36',
                     CURLOPT_RETURNTRANSFER => true,
@@ -339,7 +341,9 @@ class ImageUtilities
             unset($curl);
 
             $result = json_decode($result, true);
-            if (!$result['success']) error_log('Failed to clear cache for ' . implode(', ', $urls));
+            if (!$result['success']) {
+                Debugger::log('Failed to clear cache for ' . implode(', ', $urls));
+            }
         }
     }
 }

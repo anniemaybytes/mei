@@ -1,8 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Model;
-
-use Mei\Entity\IEntity;
 
 /**
  * Class FilesMap
@@ -20,11 +18,11 @@ class FilesMap extends Model
     }
 
     /**
-     * @param $key
+     * @param string $key
      *
-     * @return IEntity
+     * @return \Mei\Entity\FilesMap
      */
-    public function getByKey($key)
+    public function getByKey(string $key): ?\Mei\Entity\FilesMap
     {
         return $this->getById(['Key' => $key]);
     }
@@ -32,9 +30,9 @@ class FilesMap extends Model
     /**
      * @param $key
      *
-     * @return IEntity
+     * @return \Mei\Entity\FilesMap
      */
-    public function getByFileName($key)
+    public function getByFileName($key): ?\Mei\Entity\FilesMap
     {
         return $this->getById(['FileName' => $key]);
     }

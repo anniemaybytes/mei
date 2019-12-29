@@ -1,7 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Controller;
 
+use Slim\Container;
 use Slim\Http\Environment;
 
 /**
@@ -11,6 +12,7 @@ use Slim\Http\Environment;
  */
 abstract class BaseCtrl
 {
+    /** @var Container $di */
     protected $di;
 
     /**
@@ -23,13 +25,10 @@ abstract class BaseCtrl
      */
     protected $environment;
 
-    /**
-     * @param $di
-     */
-    public function setDependencies($di)
+    public function setDependencies()
     {
-        $this->config = $di['config'];
-        $this->environment = $di['environment'];
+        $this->config = $this->di['config'];
+        $this->environment = $this->di['environment'];
     }
 
     /**
@@ -37,10 +36,10 @@ abstract class BaseCtrl
      *
      * @param $di
      */
-    public function __construct($di)
+    public function __construct(Container &$di)
     {
-        $this->di = $di;
+        $this->di = &$di;
 
-        $this->setDependencies($di);
+        $this->setDependencies();
     }
 }

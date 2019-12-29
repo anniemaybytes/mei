@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei;
 
@@ -19,8 +19,10 @@ class Dispatcher extends Singleton
     /** @var App $app */
     private $app;
 
+    /** @var array $config */
     private $config;
 
+    /** @var Container $di */
     private $di;
 
     /**
@@ -28,7 +30,7 @@ class Dispatcher extends Singleton
      *
      * @return App
      */
-    public static function app()
+    public static function app(): App
     {
         return self::getInstance()->app;
     }
@@ -44,9 +46,9 @@ class Dispatcher extends Singleton
     }
 
     /**
-     * @return mixed
+     * @return array
      */
-    public static function getConfig()
+    public static function getConfig(): array
     {
         return self::getInstance()->config;
     }
@@ -56,7 +58,7 @@ class Dispatcher extends Singleton
      *
      * @return Container
      */
-    public static function di()
+    public static function &di(): Container
     {
         return self::getInstance()->di;
     }
@@ -83,10 +85,8 @@ class Dispatcher extends Singleton
     private function initDependencyInjection()
     {
         Profiler::start('initDependencyInjection');
-        $di = DependencyInjection::get($this->config);
+        $this->di = DependencyInjection::get($this->config);
         Profiler::finish('initDependencyInjection');
-
-        $this->di = $di;
     }
 
     /**

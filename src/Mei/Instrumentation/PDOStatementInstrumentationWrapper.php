@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Instrumentation;
 
@@ -12,19 +12,21 @@ use PDOStatement;
  */
 class PDOStatementInstrumentationWrapper
 {
+    /** @var Instrumentor */
     private $instrumentor;
     /** @var PDOStatement $statement * */
     private $statement;
+    /** @var string $id */
     private $id;
 
     /**
      * PDOStatementInstrumentationWrapper constructor.
      *
-     * @param $instrumentor
-     * @param $pdostatement
-     * @param $id
+     * @param Instrumentor $instrumentor
+     * @param PDOStatement $pdostatement
+     * @param string $id
      */
-    public function __construct($instrumentor, $pdostatement, $id)
+    public function __construct(Instrumentor $instrumentor, PDOStatement $pdostatement, string $id)
     {
         $this->instrumentor = $instrumentor;
         $this->statement = $pdostatement;
@@ -43,12 +45,12 @@ class PDOStatementInstrumentationWrapper
     }
 
     /**
-     * @param null $params
+     * @param array|null $params
      * @param int $retries
      *
      * @return bool|null
      */
-    public function execute($params = null, $retries = 3)
+    public function execute(?array $params = null, int $retries = 3): ?bool
     {
         $iid = $this->instrumentor->start('pdostatement:execute:' . $this->id . '_' . $retries, $params);
         $out = null;

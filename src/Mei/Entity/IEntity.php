@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Entity;
 
@@ -14,14 +14,14 @@ interface IEntity
      * If an attribute does not have a default value, it should not be included
      * in the array.
      *
-     * @return array of string
+     * @return string[]
      */
     public function getDefaults();
 
     /**
      * Get an array of entity attributes as key and their type as value
      *
-     * @return array of string
+     * @return string[]
      */
     public function getAttributes();
 
@@ -29,7 +29,7 @@ interface IEntity
      * Get an array of the attributes used to uniquely identify the entity.
      * This array can also be empty.
      *
-     * @return array of string
+     * @return string[]
      */
     public function getIdAttributes();
 
@@ -59,7 +59,7 @@ interface IEntity
      * The attribute is the key and the new value is the value.
      * The value should be a string representation usable in SQL.
      *
-     * @return array of string
+     * @return string[]
      */
     public function getChangedValues();
 
@@ -69,7 +69,7 @@ interface IEntity
      * If an attribute is not set, it should not be part of the array.
      * The value should be a string representation usable in SQL.
      *
-     * @return array of string
+     * @return string[]
      */
     public function getValues();
 
@@ -79,7 +79,7 @@ interface IEntity
      * If an attribute is not set, it should not be part of the array.
      * The value should be a php value.
      *
-     * @return array of mixed
+     * @return mixed[]
      */
     public function getMappedValues();
 
@@ -88,7 +88,7 @@ interface IEntity
      *
      * @return IEntity
      */
-    public function setNew($new);
+    public function setNew(bool $new);
 
     /**
      * Check if the entity needs to be persisted (it is new)
@@ -118,5 +118,5 @@ interface IEntity
      *
      * @param $key
      */
-    public function getCachedValue($key);
+    public function getCachedValue(string $key);
 }

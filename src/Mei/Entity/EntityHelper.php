@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Entity;
 
@@ -10,11 +10,11 @@ namespace Mei\Entity;
 class EntityHelper
 {
     /**
-     * @param $d
+     * @param object $d
      *
-     * @return mixed
+     * @return array
      */
-    public static function objectToArray($d)
+    public static function objectToArray($d): array
     {
         return json_decode(json_encode($d), true);
     }

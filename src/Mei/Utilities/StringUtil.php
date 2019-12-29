@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Utilities;
 
@@ -17,7 +17,7 @@ class StringUtil
      * @return string
      * @throws Exception
      */
-    public static function generateRandomString($len = 32)
+    public static function generateRandomString(int $len = 32): string
     {
         $charset = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         return self::randomize($charset, $len);
@@ -30,7 +30,7 @@ class StringUtil
      * @return string
      * @throws Exception
      */
-    public static function randomize($ok, $len)
+    public static function randomize(string $ok, int $len): string
     {
         $token = '';
         $max = mb_strlen($ok, '8bit') - 1;
@@ -46,8 +46,11 @@ class StringUtil
      *
      * @return string
      */
-    public static function base64UrlEncode($string)
+    public static function base64UrlEncode(?string $string): string
     {
+        if (is_null($string)) {
+            return '';
+        }
         return strtr(base64_encode($string), '+/', '-_');
     }
 
@@ -58,6 +61,7 @@ class StringUtil
      */
     public static function base64UrlDecode($string)
     {
+        if (is_null($string)) return '';
         return base64_decode(strtr($string, '-_', '+/'));
     }
 }

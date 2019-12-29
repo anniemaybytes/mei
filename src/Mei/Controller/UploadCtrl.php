@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Controller;
 
@@ -21,12 +21,12 @@ class UploadCtrl extends BaseCtrl
     /**
      * @param Request $request
      * @param Response $response
-     * @param $args
+     * @param array $args
      *
      * @return Response
      * @throws Exception
      */
-    public function account($request, $response, $args)
+    public function account(Request $request, Response $response, array $args): Response
     {
         /**
          * token:
@@ -85,9 +85,9 @@ class UploadCtrl extends BaseCtrl
     }
 
     /**
-     * @param $request
-     * @param $response
-     * @param $args
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
      *
      * @return Response
      * @throws AccessDenied
@@ -95,7 +95,7 @@ class UploadCtrl extends BaseCtrl
      * @throws NoImages
      * @throws Exception
      */
-    public function screenshot($request, $response, $args)
+    public function screenshot(Request $request, Response $response, array $args): Response
     {
         /**
          * token:
@@ -137,7 +137,7 @@ class UploadCtrl extends BaseCtrl
         }
 
         try {
-            $images = $this->processUploadedData($imageData, $token['ident'], $args['torrentid']);
+            $images = $this->processUploadedData($imageData, $token['ident'], (int)$args['torrentid']);
         } catch (Exception $e) {
             throw $e;
         }
@@ -145,12 +145,11 @@ class UploadCtrl extends BaseCtrl
         if ($images) {
             $qs = [
                 'action' => 'takeupload',
-                'torrentid' => $args['torrentid'],
+                'torrentid' => (int)$args['torrentid'],
                 'imgs' => $this->di['utility.encryption']->encryptUrl(implode('|', $images))
             ];
             $urlString = '?' . http_build_query($qs);
 
-            /** @var Response $response */
             return $response->withStatus(303)->withHeader('Location', "{$this->config['api.redirect']}{$urlString}");
         } else {
             throw new NoImages(
@@ -162,12 +161,12 @@ class UploadCtrl extends BaseCtrl
     /**
      * @param Request $request
      * @param Response $response
-     * @param $args
+     * @param array $args
      *
      * @return Response
      * @throws Exception
      */
-    public function api($request, $response, $args)
+    public function api(Request $request, Response $response, array $args): Response
     {
         $auth = $request->getParam('auth');
 
@@ -238,7 +237,7 @@ class UploadCtrl extends BaseCtrl
      * @throws GeneralException
      * @throws Exception
      */
-    private function processUploadedData(array $dataToHandle, $uploaderId = 0, $torrentId = 0)
+    private function processUploadedData(array $dataToHandle, int $uploaderId = 0, int $torrentId = 0): array
     {
         $images = [];
         foreach ($dataToHandle as $bindata) {

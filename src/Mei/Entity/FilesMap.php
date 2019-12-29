@@ -1,10 +1,18 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Entity;
+
+use DateTime;
 
 /**
  * Class FilesMap
  *
+ * @property string $Key
+ * @property string $FileName
+ * @property int $UploaderId
+ * @property int $TorrentId
+ * @property DateTime $UploadTime
+ * @property int $Protected
  * @package Mei\Entity
  */
 class FilesMap extends Entity

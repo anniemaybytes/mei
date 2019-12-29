@@ -1,8 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei;
 
 use Exception;
+use RuntimeException;
 
 /**
  * Class ConfigLoader
@@ -12,12 +13,13 @@ use Exception;
 class ConfigLoader
 {
     /**
-     * @param $array
-     * @param $prefix
+     * @param array $array
+     * @param string $prefix
+     * @param bool $deep
      *
      * @return array
      */
-    private static function parseArray($array, $prefix)
+    private static function parseArray(array $array, string $prefix, bool $deep = false): array
     {
         $output = [];
 
@@ -26,9 +28,9 @@ class ConfigLoader
         }
 
         foreach ($array as $k => $v) {
-            if (is_array($v) && !isset($v[0])) {
-                // if it's a subarray, and it *looks* associative
-                $output = array_merge($output, self::parseArray($v, $prefix . $k));
+            if (is_array($v) && !isset($v[0]) && !$deep) {
+                // if it's a subarray, and it *looks* associative and is not deep
+                $output = array_merge($output, self::parseArray($v, $prefix . $k, true));
             } else {
                 $output[$prefix . $k] = $v;
             }
@@ -37,16 +39,16 @@ class ConfigLoader
     }
 
     /**
-     * @param $path
+     * @param string $path
      *
      * @return array
      * @throws Exception
      */
-    private static function loadFile($path)
+    private static function loadFile(string $path): array
     {
         // load it as an ini
         if (!file_exists($path)) {
-            throw new Exception("Couldn't find config file $path");
+            throw new RuntimeException("Couldn't find config file $path");
         }
         $parsedFile = parse_ini_file($path, true);
 
@@ -59,7 +61,7 @@ class ConfigLoader
      * @return array
      * @throws Exception
      */
-    public static function load($configPath = 'config/')
+    public static function load(string $configPath = 'config/'): array
     {
         if ($configPath[0] !== '/' && strpos($configPath, '://') === false) {
             $configPath = BASE_ROOT . '/' . $configPath;

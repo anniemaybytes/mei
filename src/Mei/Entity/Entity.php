@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Entity;
 
@@ -6,7 +6,6 @@ use ArrayAccess;
 use ArrayIterator;
 use DomainException;
 use Exception;
-use InvalidArgumentException;
 use IteratorAggregate;
 use JsonSerializable;
 use Mei\Entity\EntityAttributeMapper as Mapper;
@@ -63,10 +62,10 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     /**
      * Get an array of entity attributes as key and their type as value
      *
-     * @return array of string
+     * @return string[]
      * @throws Exception
      */
-    public function getAttributes()
+    public function getAttributes(): array
     {
         return static::getAttributesFromColumns(static::$columns);
     }
@@ -76,12 +75,8 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
      *
      * @return array
      */
-    public static function getAttributesFromColumns($columns)
+    public static function getAttributesFromColumns(array $columns): array
     {
-        if (!is_array($columns)) {
-            throw new InvalidArgumentException("Expects array argument");
-        }
-
         $attributes = [];
 
         foreach ($columns as $val) {
@@ -101,24 +96,20 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
      * If an attribute does not have a default value, it should not be included
      * in the array.
      *
-     * @return array of string
+     * @return string[]
      */
-    public function getDefaults()
+    public function getDefaults(): array
     {
         return static::getDefaultsFromColumns(static::$columns);
     }
 
     /**
-     * @param $columns
+     * @param array $columns
      *
      * @return array
      */
-    public static function getDefaultsFromColumns($columns)
+    public static function getDefaultsFromColumns(array $columns): array
     {
-        if (!is_array($columns)) {
-            throw new InvalidArgumentException("Expects array argument");
-        }
-
         $defaults = [];
         foreach ($columns as $val) {
             if (!is_array($val) || count($val) < 2) {
@@ -137,26 +128,20 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
      * Get an array of the attributes used to uniquely identify the entity.
      * This array can also be empty.
      *
-     * @return array of string
+     * @return string[]
      */
-    public function getIdAttributes()
+    public function getIdAttributes(): array
     {
         return static::getIdAttributesFromColumns(static::$columns);
     }
 
     /**
-     * @param $columns
+     * @param array $columns
      *
      * @return array
-     * @throws InvalidArgumentException
-     * @throws DomainException
      */
-    public static function getIdAttributesFromColumns($columns)
+    public static function getIdAttributesFromColumns(array $columns): array
     {
-        if (!is_array($columns)) {
-            throw new InvalidArgumentException("Expects array argument");
-        }
-
         $ids = [];
         foreach ($columns as $val) {
             if (!is_array($val) || count($val) < 2) {
@@ -178,7 +163,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
      *
      * @return array|null
      */
-    public function getId()
+    public function getId(): ?array
     {
         $ids = $this->getIdAttributes();
         $id = [];
@@ -197,9 +182,9 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     /**
      * @param ICacheable $cacheable
      *
-     * @return $this|IEntity
+     * @return $this
      */
-    public function setCacheable(ICacheable $cacheable)
+    public function setCacheable(ICacheable $cacheable): self
     {
         $this->cache = $cacheable;
         return $this;
@@ -208,7 +193,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     /**
      * @return ICacheable
      */
-    public function getCacheable()
+    public function getCacheable(): ICacheable
     {
         return $this->cache;
     }
@@ -216,7 +201,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     /**
      * @return array
      */
-    public function getChangedValues()
+    public function getChangedValues(): array
     {
         return $this->mapper->getChangedValues($this->getCacheable());
     }
@@ -224,7 +209,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     /**
      * @return array
      */
-    public function getValues()
+    public function getValues(): array
     {
         return $this->mapper->getValues($this->getCacheable());
     }
@@ -235,17 +220,17 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
      * If an attribute is not set, it should not be part of the array.
      * The value should be a php value.
      *
-     * @return array of mixed
+     * @return mixed[]
      * @throws Exception
      */
-    public function getMappedValues()
+    public function getMappedValues(): array
     {
         $values = $this->getValues();
         $mappedValues = [];
 
         foreach ($values as $attribute => $value) {
             $type = $this->getAttributes()[$attribute];
-            $mappedValues[$attribute] = Type::fromString($type, $value);
+            $mappedValues[$attribute] = Type::fromTo($type, $value);
         }
 
         return $mappedValues;
@@ -254,9 +239,9 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     /**
      * @param $new
      *
-     * @return IEntity
+     * @return $this|mixed
      */
-    public function setNew($new)
+    public function setNew(bool $new): self
     {
         $this->new = $new;
         return $this;
@@ -265,7 +250,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     /**
      * @return bool
      */
-    public function isNew()
+    public function isNew(): bool
     {
         return $this->new;
     }
@@ -273,7 +258,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     /**
      * @return bool
      */
-    public function hasChanged()
+    public function hasChanged(): bool
     {
         return $this->mapper->hasChanged($this->getCacheable());
     }
@@ -283,10 +268,10 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
      *
      * @param ICacheable $cache
      *
-     * @return IEntity
+     * @return $this|mixed
      * @throws Exception
      */
-    public function reset(ICacheable $cache)
+    public function reset(ICacheable $cache): self
     {
         $this->new = false;
         $this->mapper = new Mapper($this->getAttributes(), $this->getDefaults());
@@ -300,11 +285,11 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     }
 
     /**
-     * @param $key
+     * @param string $key
      *
      * @return array
      */
-    public function getCachedValue($key)
+    public function getCachedValue(string $key): array
     {
         $value = $this->getCacheable()->getLoaded($key);
         if (is_null($value)) {
@@ -316,11 +301,11 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     }
 
     /**
-     * @param $key
+     * @param string $key
      *
      * @return array
      */
-    public function generateCachedValue($key)
+    public function generateCachedValue(string $key): array
     {
         return [];
     }
@@ -330,9 +315,9 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     /**
      * @param mixed $offset
      *
-     * @return bool|mixed
+     * @return bool
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return $this->__isset($offset);
     }
@@ -340,7 +325,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     /**
      * @param mixed $offset
      *
-     * @return $this|IEntity|void
+     * @return mixed|IEntity|void
      */
     public function offsetUnset($offset)
     {
@@ -362,7 +347,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
      * @param mixed $offset
      * @param mixed $value
      *
-     * @return $this|IEntity|void
+     * @return mixed|IEntity|void
      * @throws Exception
      */
     public function offsetSet($offset, $value)
@@ -371,50 +356,50 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     }
 
     /**
-     * @param $attribute
+     * @param string $attribute
      *
-     * @return mixed
+     * @return bool
      */
-    public function __isset($attribute)
+    public function __isset(string $attribute): bool
     {
         return $this->mapper->isAttributeSet($this->getCacheable(), $attribute);
     }
 
     /**
-     * @param $attribute
+     * @param string $attribute
      *
-     * @return $this|IEntity
+     * @return mixed|IEntity
      */
-    public function __unset($attribute)
+    public function __unset(string $attribute)
     {
         $cache = $this->mapper->unsetAttribute($this->getCacheable(), $attribute);
         return $this->setCacheable($cache);
     }
 
     /**
-     * @param $attribute
+     * @param string $attribute
      *
      * @return mixed|null
      * @throws Exception
      */
-    public function __get($attribute)
+    public function __get(string $attribute)
     {
         if (!$this->__isset($attribute)) {
             return null;
         }
         $value = $this->mapper->get($this->getCacheable(), $attribute);
         $type = $this->getAttributes()[$attribute];
-        return Type::fromString($type, $value);
+        return Type::fromTo($type, $value);
     }
 
     /**
-     * @param $attribute
+     * @param string $attribute
      * @param $value
      *
-     * @return $this|IEntity
+     * @return mixed|IEntity
      * @throws Exception
      */
-    public function __set($attribute, $value)
+    public function __set(string $attribute, $value)
     {
         $attributes = $this->getAttributes();
         // note that we can't use isset here - might be setting an attribute that

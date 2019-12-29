@@ -1,10 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Controller;
 
 use Exception;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Tracy\Debugger;
 
 /**
  * Class DeleteCtrl
@@ -16,11 +17,11 @@ class DeleteCtrl extends BaseCtrl
     /**
      * @param Request $request
      * @param Response $response
-     * @param $args
+     * @param array $args
      *
      * @return Response
      */
-    public function delete($request, $response, $args)
+    public function delete(Request $request, Response $response, array $args): Response
     {
         // dont abort if client disconnects
         ignore_user_abort(true);
@@ -120,13 +121,13 @@ class DeleteCtrl extends BaseCtrl
                 }
             } catch (Exception $e) {
                 $success--;
-                continue;
+                Debugger::log($e, Debugger::EXCEPTION);
             }
 
             try {
                 $this->di['utility.images']->clearCacheForImage($urls);
             } catch (Exception $e) {
-                error_log("Caught $e");
+                Debugger::log($e, Debugger::EXCEPTION);
             }
         }
 

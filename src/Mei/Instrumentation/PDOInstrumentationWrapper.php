@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Instrumentation;
 
@@ -15,18 +15,20 @@ use Tracy\Debugger;
  */
 class PDOInstrumentationWrapper
 {
+    /** @var Instrumentor $instrumentor */
     private $instrumentor;
     /** @var PDO $pdo * */
     private $pdo;
+    /** @var array $transactionQueue */
     private $transactionQueue = [];
 
     /**
      * PDOInstrumentationWrapper constructor.
      *
-     * @param $instrumentor
-     * @param $pdo
+     * @param Instrumentor $instrumentor
+     * @param PDO $pdo
      */
-    public function __construct($instrumentor, $pdo)
+    public function __construct(Instrumentor $instrumentor, PDO $pdo)
     {
         $this->instrumentor = $instrumentor;
         $this->pdo = $pdo;
@@ -46,7 +48,7 @@ class PDOInstrumentationWrapper
     // however if code or query would to fail, a parent transaction will be rollbacked fully along with all child transactions regardless of where the issue was
     // even if child transaction was already commited (commiting child transaction just removes it from queue stack)
     /**
-     * @return bool|false|int
+     * @return bool|int
      */
     public function beginTransaction()
     {
@@ -63,7 +65,7 @@ class PDOInstrumentationWrapper
     /**
      * @return bool
      */
-    public function commit()
+    public function commit(): bool
     {
         $tid = array_pop($this->transactionQueue);
         if (count($this->transactionQueue) != 0) {
@@ -76,7 +78,7 @@ class PDOInstrumentationWrapper
     }
 
     /**
-     * @return bool|false|int
+     * @return bool|int
      */
     public function rollBack()
     {
@@ -92,14 +94,14 @@ class PDOInstrumentationWrapper
     }
 
     /**
-     * @param $statement
-     * @param null $type
-     * @param null $type_arg
-     * @param null $ctorarg
+     * @param string $statement
+     * @param int $type
+     * @param string $type_arg
+     * @param array $ctorarg
      *
      * @return false|PDOStatement
      */
-    public function query($statement, $type = null, $type_arg = null, $ctorarg = null)
+    public function query(string $statement, ?int $type = null, ?string $type_arg = null, ?array $ctorarg = null)
     {
         $set = [$type, $type_arg, $ctorarg];
         $n = 0;
@@ -136,12 +138,12 @@ class PDOInstrumentationWrapper
     }
 
     /**
-     * @param $statement
+     * @param string $statement
      * @param array $driver_options
      *
      * @return PDOStatementInstrumentationWrapper
      */
-    public function prepare($statement, $driver_options = [])
+    public function prepare(string $statement, array $driver_options = []): PDOStatementInstrumentationWrapper
     {
         $hash = md5($statement . rand());
         $iid = $this->instrumentor->start('pdo:prepare:' . $hash, $statement);
@@ -155,12 +157,12 @@ class PDOInstrumentationWrapper
     }
 
     /**
-     * @param $statement
+     * @param string $statement
      * @param int $retries
      *
      * @return false|int
      */
-    public function exec($statement, $retries = 3)
+    public function exec(string $statement, int $retries = 3)
     {
         $hash = md5($statement . rand());
         $iid = $this->instrumentor->start('pdo:exec:' . $hash . '_' . $retries, $statement);
@@ -200,12 +202,12 @@ class PDOInstrumentationWrapper
     }
 
     /**
-     * @param $string
+     * @param string $string
      * @param int $parameter_type
      *
      * @return false|string
      */
-    public function quote($string, $parameter_type = PDO::PARAM_STR)
+    public function quote(string $string, int $parameter_type = PDO::PARAM_STR)
     {
         $iid = $this->instrumentor->start(
             'pdo:quote:' . md5($string . $parameter_type),

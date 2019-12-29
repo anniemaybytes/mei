@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Entity;
 
@@ -15,15 +15,15 @@ use Mei\Utilities\Time;
 class EntityAttributeType
 {
     /**
-     * Converts a value from string to a given type.
+     * Converts a value to a given type.
      *
      * @param string $type The type to convert to.
-     * @param string $val The string to convert.
+     * @param mixed $val The value to convert.
      *
      * @return mixed
      * @throws Exception
      */
-    public static function fromString($type, $val)
+    public static function fromTo(string $type, $val)
     {
         switch ($type) {
             case 'bool':
@@ -67,7 +67,7 @@ class EntityAttributeType
      * @return string
      * @throws Exception
      */
-    public static function toString($type, $val)
+    public static function toString(string $type, $val): string
     {
         switch ($type) {
             case 'int':

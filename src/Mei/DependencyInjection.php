@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei;
 
@@ -15,13 +15,13 @@ use Slim\Container;
 class DependencyInjection
 {
     /**
-     * @param $config
+     * @param array $config
      * @param array $args
      *
-     * @return mixed|Container
+     * @return Container
      * @throws ProfilerException
      */
-    public static function get($config, $args = [])
+    public static function get(array $config, array $args = []): Container
     {
         if (!$args) {
             $args = [
@@ -88,28 +88,35 @@ class DependencyInjection
             // delegate to the error handler
             throw new Exception\NotFound('Route Not Found');
         };
+        $di['notAllowedHandler'] = function ($di) {
+            // let's pretend it doesn't exist
+            throw new Exception\NotFound();
+        };
 
-        unset($di['phpErrorHandler']);
         if ($config['mode'] != 'development') {
             $di['errorHandler'] = function ($di) {
                 $ctrl = new Controller\ErrorCtrl($di);
                 return [$ctrl, 'handleException'];
             };
+            $di['phpErrorHandler'] = function ($di) {
+                $ctrl = new Controller\FatalErrorCtrl($di);
+                return [$ctrl, 'handleError'];
+            };
         } else {
             unset($di['errorHandler']);
+            unset($di['phpErrorHandler']);
         }
 
         return $di;
     }
 
     /**
-     * @param $di
+     * @param Container $di
      *
-     * @return mixed
+     * @return Container
      * @throws ProfilerException
      */
-    private static function setUtilities($di)
-        /** @formatter:off */
+    private static function setUtilities(Container $di): Container /** @formatter:off */
     {
         Profiler::start('setUtilities');
 
@@ -131,13 +138,12 @@ class DependencyInjection
     } /** @formatter:on */
 
     /**
-     * @param $di
+     * @param Container $di
      *
-     * @return mixed
+     * @return Container
      * @throws ProfilerException
      */
-    private static function setModels($di)
-        /** @formatter:off */
+    private static function setModels(Container $di): Container /** @formatter:off */
     {
         Profiler::start('setModels');
 

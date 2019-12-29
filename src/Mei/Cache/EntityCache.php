@@ -1,8 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Cache;
 
-use InvalidArgumentException;
 use Mei\Entity\ICacheable;
 
 /**
@@ -24,11 +23,11 @@ class EntityCache implements ICacheable
      * EntityCache constructor.
      *
      * @param IKeyStore $cache
-     * @param $key
+     * @param string $key
      * @param array $id
      * @param int $duration
      */
-    public function __construct(IKeyStore $cache, $key, $id = [], $duration = 3600)
+    public function __construct(IKeyStore $cache, string $key, array $id = [], int $duration = 10800)
     {
         $this->setKey($key);
         $this->setId($id);
@@ -44,9 +43,9 @@ class EntityCache implements ICacheable
     /**
      * @param string $key
      *
-     * @return $this|ICacheable
+     * @return $this
      */
-    public function setKey($key)
+    public function setKey(string $key): self
     {
         $this->key = $key;
         return $this;
@@ -55,14 +54,10 @@ class EntityCache implements ICacheable
     /**
      * @param $id
      *
-     * @return $this|ICacheable
+     * @return $this
      */
-    public function setId($id)
+    public function setId(array $id): self
     {
-        if (!is_array($id)) {
-            throw new InvalidArgumentException("ID must be an array");
-        }
-
         $row = $this->getRow();
         if (!is_array($row)) {
             $row = [];
@@ -89,11 +84,11 @@ class EntityCache implements ICacheable
     }
 
     /**
-     * @param string $duration
+     * @param int $duration
      *
-     * @return $this|ICacheable
+     * @return $this
      */
-    public function setCacheDuration($duration)
+    public function setCacheDuration(int $duration): self
     {
         $this->duration = $duration;
         return $this;
@@ -112,7 +107,7 @@ class EntityCache implements ICacheable
      *
      * @return mixed|null
      */
-    public function getLoaded($key)
+    public function getLoaded(string $key)
     {
         if (!array_key_exists($key, $this->loadedValues)) {
             return null;
@@ -123,9 +118,9 @@ class EntityCache implements ICacheable
     /**
      * @param array $row
      *
-     * @return $this|ICacheable
+     * @return $this
      */
-    public function setRow($row)
+    public function setRow(array $row): self
     {
         $this->dirty = true;
         $this->dbRow = $row;
@@ -136,9 +131,9 @@ class EntityCache implements ICacheable
      * @param string $key
      * @param $value
      *
-     * @return $this|ICacheable
+     * @return $this
      */
-    public function setLoaded($key, $value)
+    public function setLoaded(string $key, $value): self
     {
         $this->dirty = true;
         $this->loadedValues[$key] = $value;
@@ -162,12 +157,12 @@ class EntityCache implements ICacheable
     }
 
     /**
-     * @return bool|string
+     * @return string
      */
-    private function getCacheKey()
+    private function getCacheKey(): string
     {
         if (!$this->id) {
-            return false;
+            return "";
         }
         return sprintf("orm-%s_%s", $this->key, $this->id);
     }
@@ -175,7 +170,7 @@ class EntityCache implements ICacheable
     /**
      * @return array
      */
-    public function getData()
+    public function getData(): array
     {
         return [
             'dbRow' => $this->dbRow,
@@ -184,18 +179,12 @@ class EntityCache implements ICacheable
     }
 
     /**
-     * @param $cached
+     * @param array $cached
      *
-     * @return $this|ICacheable
+     * @return $this
      */
-    public function setData($cached)
+    public function setData(array $cached): self
     {
-        if (!is_array($cached) ||
-            !array_key_exists('dbRow', $cached) ||
-            !array_key_exists('loadedValues', $cached)) {
-            return $this;
-        }
-
         $this->dbRow = $cached['dbRow'];
         $this->loadedValues = $cached['loadedValues'];
         return $this;
@@ -206,7 +195,7 @@ class EntityCache implements ICacheable
      *
      * @return array
      */
-    public function save(IKeyStore $cache)
+    public function save(IKeyStore $cache): array
     {
         $r = $this->getData();
 

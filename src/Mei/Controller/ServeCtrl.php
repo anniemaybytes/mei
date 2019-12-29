@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Controller;
 
@@ -28,13 +28,13 @@ class ServeCtrl extends BaseCtrl
     /**
      * @param Request $request
      * @param Response $response
-     * @param $args
+     * @param array $args
      *
      * @return Response
      * @throws NotFound
      * @throws Exception
      */
-    public function serve($request, $response, $args)
+    public function serve(Request $request, Response $response, array $args): Response
     {
         $pathInfo = pathinfo($args['img']);
         if (!isset($pathInfo['extension']) || !isset($pathInfo['filename'])) {
@@ -76,7 +76,7 @@ class ServeCtrl extends BaseCtrl
 
         // resize if necessary
         if (isset($info['width'])) {
-            $bindata = $this->di['utility.images']->resizeImage(
+            $bindata = (string)$this->di['utility.images']->resizeImage(
                 $this->di['utility.images']->readImage($bindata),
                 $info['width'],
                 $info['height'],
@@ -110,6 +110,7 @@ class ServeCtrl extends BaseCtrl
         $response = $response->withHeader('Last-Modified', date('r', $timeStamp));
 
         if ($request->getHeader('If-None-Match') != $eTag) { // does not match etag?
+            set_time_limit(0);
             $fh = new BufferStream();
             $fh->write($bindata);
             return $response->withBody($fh);

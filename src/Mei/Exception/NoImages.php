@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Exception;
 
@@ -9,5 +9,4 @@ namespace Mei\Exception;
  */
 class NoImages extends GeneralException
 {
-
 }

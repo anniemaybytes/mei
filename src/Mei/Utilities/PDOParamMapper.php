@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Utilities;
 
@@ -12,11 +12,11 @@ use PDO;
 class PDOParamMapper
 {
     /**
-     * @param $entityAttrType
+     * @param string entityAttrType
      *
      * @return int
      */
-    public static function map($entityAttrType)
+    public static function map(string $entityAttrType): int
     {
         switch ($entityAttrType) {
             case 'int':

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Utilities;
 
@@ -23,7 +23,7 @@ class Time
      * @return true if time not 0000-00-00 00:00:00
      * @throws Exception
      */
-    public static function timeIsNonZero($datetime)
+    public static function timeIsNonZero(DateTime $datetime): bool
     {
         $time = self::fromSql(self::ZERO_SQLTIME);
         return $datetime != $time;
@@ -34,12 +34,12 @@ class Time
      *
      * Time string format is 'Y-m-d H:i:s'
      *
-     * @param $str
+     * @param string|null $str
      *
      * @return DateTime
      * @throws Exception
      */
-    public static function fromSql($str)
+    public static function fromSql(?string $str): DateTime
     {
         if (!$str) {
             return self::fromSql(self::ZERO_SQLTIME);
@@ -52,19 +52,19 @@ class Time
      *
      * Unix timestamp format is 'U'
      *
-     * @param $str
+     * @param mixed $str
      *
      * @return DateTime
      */
-    public static function fromEpoch($str)
+    public static function fromEpoch($str): DateTime
     {
-        return DateTime::createFromFormat('U', $str);
+        return DateTime::createFromFormat('U', intval($str));
     }
 
     /**
      * @return int
      */
-    public static function getEpoch()
+    public static function getEpoch(): int
     {
         return time();
     }
@@ -75,7 +75,7 @@ class Time
      * @return DateTime
      * @throws Exception
      */
-    public static function now()
+    public static function now(): DateTime
     {
         return new DateTime();
     }
@@ -89,7 +89,7 @@ class Time
      * @return string
      * @throws Exception
      */
-    public static function sql(DateTime $t, $fuzzy = false)
+    public static function sql(DateTime $t, bool $fuzzy = false): string
     {
         if (!self::timeIsNonZero($t)) {
             return self::ZERO_SQLTIME;
@@ -106,11 +106,11 @@ class Time
      *  interval('-1 day');
      *  interval('+1 year');
      *
-     * @param $s
+     * @param string $s
      *
      * @return DateInterval
      */
-    public static function interval($s)
+    public static function interval(string $s): DateInterval
     {
         return DateInterval::createFromDateString($s);
     }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Mei\Exception;
 
@@ -11,5 +11,4 @@ use Exception;
  */
 class AccessDenied extends Exception
 {
-
 }
