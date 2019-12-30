@@ -2,9 +2,9 @@
 
 namespace Mei\Utilities;
 
-use Exception;
 use Imagick;
 use ImagickException;
+use InvalidArgumentException;
 use Slim\Container;
 use Tracy\Debugger;
 
@@ -49,43 +49,41 @@ class ImageUtilities
     /**
      * @param string $bindata
      *
-     * @return array|bool
+     * @return array|null
      */
-    public function readImageData(string $bindata)
+    public function readImageData(string $bindata): ?array
     {
         $data = @getimagesizefromstring($bindata);
         if (!$data || !isset($data['mime'])) {
-            return false;
+            Debugger::log("Unable to read image info on binary data. Aborting.", DEBUGGER::WARNING);
+            return null;
         }
         if (!array_key_exists($data['mime'], self::$allowedTypes)) {
-            return false;
+            Debugger::log('Type ' . $data['mime'] . ' is not on allowed list. Aborting.', DEBUGGER::WARNING);
+            return null;
         }
 
-        $mime = $data['mime'];
-
-        $data = [
-            'extension' => self::$allowedTypes[$mime],
-            'mime' => $mime,
+        return [
+            'extension' => self::$allowedTypes[$data['mime']],
+            'mime' => $data['mime'],
             'checksum' => hash('sha256', $bindata . $this->config['site.salt']),
             'checksum_legacy' => md5($bindata),
             'width' => $data[0],
             'height' => $data[1],
             'size' => strlen($bindata)
         ];
-
-        return $data ? $data : false;
     }
 
     /**
      * @param string $name
      * @param int $depth
      *
-     * @return bool|string
+     * @return string
      */
-    public function getSavePath(string $name, int $depth = 3)
+    public function getSavePath(string $name, int $depth = 3): string
     {
         if ($depth >= 32) {
-            return false;
+            throw new InvalidArgumentException('Can not fetch save path that is >= 32 levels deep');
         }
 
         $dir = $this->config['site.images_root'];
@@ -100,12 +98,13 @@ class ImageUtilities
     /**
      * @param string $url
      *
-     * @return bool|string
+     * @return null|string
      */
-    public function getDataFromUrl(string $url)
+    public function getDataFromUrl(string $url): ?string
     {
         if (!$url || !filter_var($url, FILTER_VALIDATE_URL)) {
-            return false;
+            Debugger::log('Invalid URL (' . $url . ') was provied for getDataFromUrl. Aborting.', DEBUGGER::WARNING);
+            return null;
         }
 
         $scheme = parse_url($url, PHP_URL_SCHEME);
@@ -131,42 +130,38 @@ class ImageUtilities
             );
 
             $content = $curl->exec();
-            $content_length = $curl->getInfo(CURLINFO_CONTENT_LENGTH_DOWNLOAD);
-            $respcode = $curl->getInfo(CURLINFO_HTTP_CODE);
+            $content_length = (int)$curl->getInfo(CURLINFO_CONTENT_LENGTH_DOWNLOAD);
+            $respcode = (int)$curl->getInfo(CURLINFO_HTTP_CODE);
             unset($curl);
 
-            if (!$content_length) {
-                return false;
+            if ($content_length > $this->config['site.max_filesize'] || $content_length <= 0 || $respcode >= 400) {
+                Debugger::log(
+                    "Aborting getDataFromUrl on $url with size $content_length and response $respcode",
+                    DEBUGGER::WARNING
+                );
+                return null;
             }
-            if (intval($respcode) >= 400) {
-                return false;
-            }
-
-            if ($content_length > $this->config['site.max_filesize'] || $content_length < 0) {
-                return false;
-            }
-
             if ($content) {
+                Debugger::log(
+                    "No data received from $url with size $content_length and response $respcode. Aborting.",
+                    DEBUGGER::WARNING
+                );
                 return $content;
             }
         }
 
-        return false;
+        return null;
     }
 
     /**
      * @param string $path
      *
-     * @return bool|string
+     * @return null|string
      */
-    public function getDataFromPath(string $path)
+    public function getDataFromPath(string $path): ?string
     {
-        if (!$path) {
-            return false;
-        }
-
         if (!is_file($path)) {
-            return false;
+            return null;
         }
 
         $contents = @file_get_contents($path, false);
@@ -174,19 +169,20 @@ class ImageUtilities
             return $contents;
         }
 
-        return false;
+        Debugger::log("Can't fetch contents of file from $path. Aborting.", DEBUGGER::WARNING);
+        return null;
     }
 
     /**
      * @param string $bindata
      *
-     * @return bool|Imagick
+     * @return null|Imagick
      */
-    public function readImage(string $bindata)
+    public function readImage(string $bindata): ?Imagick
     {
         $data = self::readImageData($bindata);
         if (!$data) {
-            return false;
+            return null;
         }
 
         try {
@@ -196,8 +192,9 @@ class ImageUtilities
             $image->setImageCompressionQuality(90);
             $image->setOption('png:compression-level', '9');
             return $image;
-        } catch (Exception $e) {
-            return false;
+        } catch (ImagickException  $e) {
+            Debugger::log($e, DEBUGGER::EXCEPTION);
+            return null;
         }
     }
 
@@ -207,22 +204,15 @@ class ImageUtilities
      * @param bool $stripExif
      *
      * @return bool
-     * @throws ImagickException
      */
     public function saveData(?string $bindata, string $savePath, bool $stripExif = true): bool
     {
-        if (!$savePath || !$bindata) {
-            return false;
-        }
         if (file_exists($savePath)) {
             return true;
         } // let code assume it succeeded
 
-        if ($stripExif) {
+        if ($stripExif && $bindata) {
             $bindata = $this->stripImage($this->readImage($bindata)); // strip image of EXIF, profiles and comments
-        }
-        if ($bindata instanceof Imagick) {
-            $bindata = $bindata->getImagesBlob();
         }
         if (!$bindata) {
             return false;
@@ -230,10 +220,15 @@ class ImageUtilities
 
         $dir = dirname($savePath);
         if (!is_dir($dir)) {
-            mkdir($dir, 0750, true);
+            if (mkdir($dir, 0750, true) === false) {
+                Debugger::log("Unable to create directory $dir.", DEBUGGER::ERROR);
+            }
         }
-        file_put_contents($savePath, $bindata);
-        if (!chmod($savePath, 0640)) {
+        if (file_put_contents($savePath, $bindata) === false) {
+            Debugger::log("Unable to save binary data on $savePath.", DEBUGGER::ERROR);
+        }
+        if (chmod($savePath, 0640) === false) {
+            Debugger::log("Unable to set mode on $savePath.", DEBUGGER::ERROR);
             return false;
         }
         return true;
@@ -242,23 +237,20 @@ class ImageUtilities
     /**
      * @param Imagick $image
      *
-     * @return bool|Imagick
+     * @return null|string
      */
-    private function stripImage(Imagick $image)
+    private function stripImage(Imagick $image): ?string
     {
-        if (!$image) {
-            return false;
-        }
-
         try {
             $profiles = $image->getImageProfiles("icc", true);
             $image->stripImage();
             if (!empty($profiles)) {
                 $image->profileImage("icc", $profiles['icc']);
             }
-            return $image;
-        } catch (Exception $e) {
-            return false;
+            return $image->getImagesBlob();
+        } catch (ImagickException $e) {
+            Debugger::log($e, DEBUGGER::EXCEPTION);
+            return null;
         }
     }
 
@@ -268,19 +260,18 @@ class ImageUtilities
      * @param int $maxHeight
      * @param bool $crop
      *
-     * @return bool|Imagick
+     * @return null|string
      */
-    public function resizeImage(Imagick $image, int $maxWidth, int $maxHeight, bool $crop = false)
+    public function resizeImage(Imagick $image, int $maxWidth, int $maxHeight, bool $crop = false): ?string
     {
-        if (!$image) {
-            return false;
-        }
-
         // check dimensions are valid
-        if (!is_int($maxWidth) || !is_int($maxHeight) ||
-            min([$maxWidth, $maxHeight]) < self::$allowedResizeRange['min'] ||
+        if (min([$maxWidth, $maxHeight]) < self::$allowedResizeRange['min'] ||
             max([$maxWidth, $maxHeight]) > self::$allowedResizeRange['max']) {
-            return false;
+            Debugger::log(
+                "Dimmensions $maxWidth x $maxHeight are outside acceptable range. Aborting.",
+                DEBUGGER::WARNING
+            );
+            return null;
         }
 
         try {
@@ -290,9 +281,10 @@ class ImageUtilities
                 $image->thumbnailImage($maxWidth, $maxHeight, true);
             }
             $image->setImagePage(0, 0, 0, 0);
-            return $image;
-        } catch (Exception $e) {
-            return false;
+            return $image->getImagesBlob();
+        } catch (ImagickException $e) {
+            Debugger::log($e, DEBUGGER::EXCEPTION);
+            return null;
         }
     }
 
@@ -341,8 +333,8 @@ class ImageUtilities
             unset($curl);
 
             $result = json_decode($result, true);
-            if (!$result['success']) {
-                Debugger::log('Failed to clear cache for ' . implode(', ', $urls));
+            if (!$result['success']) { // log it as error since we want bluescreen for debugging
+                Debugger::log('Failed to clear cache for ' . implode(', ', $urls), DEBUGGER::ERROR);
             }
         }
     }

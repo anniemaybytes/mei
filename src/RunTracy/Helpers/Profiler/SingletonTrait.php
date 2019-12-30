@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace RunTracy\Helpers\Profiler;
 
@@ -24,7 +24,7 @@ trait SingletonTrait
      *
      * @return $this
      */
-    public static function getInstance()
+    public static function getInstance(): self
     {
         $self = get_called_class();
         if (!isset(self::$instances[$self])) {
@@ -36,7 +36,7 @@ trait SingletonTrait
     /**
      * @return bool true if has instance, otherwise false
      */
-    public static function hasInstance()
+    public static function hasInstance(): bool
     {
         $self = get_called_class();
         return isset(self::$instances[$self]);

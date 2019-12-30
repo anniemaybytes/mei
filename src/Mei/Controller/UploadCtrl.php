@@ -65,12 +65,7 @@ class UploadCtrl extends BaseCtrl
             $dataToHandle[] = $this->di['utility.images']->getDataFromUrl($url);
         }
 
-        try {
-            $images = $this->processUploadedData($dataToHandle, $token['ident']);
-        } catch (Exception $e) {
-            throw $e;
-        }
-
+        $images = $this->processUploadedData($dataToHandle, $token['ident']);
         if ($images) {
             $qs = ['img' => $this->di['utility.encryption']->encryptUrl(implode('|', $images))];
             $urlString = '?' . http_build_query($qs);
@@ -136,11 +131,7 @@ class UploadCtrl extends BaseCtrl
             }
         }
 
-        try {
-            $images = $this->processUploadedData($imageData, $token['ident'], (int)$args['torrentid']);
-        } catch (Exception $e) {
-            throw $e;
-        }
+        $images = $this->processUploadedData($imageData, $token['ident'], (int)$args['torrentid']);
 
         if ($images) {
             $qs = [
@@ -210,12 +201,7 @@ class UploadCtrl extends BaseCtrl
             throw new GeneralException('No files to upload found');
         }
 
-        try {
-            $images = $this->processUploadedData($dataToHandle);
-        } catch (Exception $e) {
-            throw $e;
-        }
-
+        $images = $this->processUploadedData($dataToHandle);
         if ($images) {
             /** @var Response $response */
             $response = $response->withHeader('Content-Type', 'application/json');

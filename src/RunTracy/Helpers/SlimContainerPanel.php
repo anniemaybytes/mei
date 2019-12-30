@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace RunTracy\Helpers;
 
@@ -18,10 +18,10 @@ class SlimContainerPanel implements IBarPanel
     /**
      * SlimContainerPanel constructor.
      *
-     * @param null $data
+     * @param string|null $data
      * @param array $ver
      */
-    public function __construct($data = null, array $ver = [])
+    public function __construct(?string $data = null, array $ver = [])
     {
         $this->content = $data;
         $this->ver = $ver;
@@ -30,7 +30,7 @@ class SlimContainerPanel implements IBarPanel
     /**
      * @return string
      */
-    public function getTab()
+    public function getTab(): string
     {
         $this->icon = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="Layer_1" x="0px" y="0px" ' .
             'viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="24px" ' .
@@ -51,7 +51,7 @@ class SlimContainerPanel implements IBarPanel
     /**
      * @return string
      */
-    public function getPanel()
+    public function getPanel(): string
     {
         return '<h1>' . $this->icon . ' Slim ' . $this->ver['slim'] . ' Container:</h1>
         <div style="overflow: scroll; max-height: 600px;">' . $this->content . '</div>';

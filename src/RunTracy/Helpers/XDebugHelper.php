@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace RunTracy\Helpers;
 
@@ -18,23 +18,23 @@ class XDebugHelper implements IBarPanel
      *
      * @param string $ideKey
      */
-    public function __construct($ideKey = 'RUNTRACY')
+    public function __construct(string $ideKey = 'RUNTRACY')
     {
         $this->ideKey = $ideKey;
     }
 
     /**
-     * @return bool|string
+     * @return bool
      */
-    public function getPanel()
+    public function getPanel(): bool
     {
         return false;
     }
 
     /**
-     * @return false|string
+     * @return string
      */
-    public function getTab()
+    public function getTab(): string
     {
         ob_start();
         require __DIR__ . '../../Templates/XDebugHelperTab.phtml';

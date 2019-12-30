@@ -4,6 +4,7 @@ namespace Mei\Controller;
 
 use Exception;
 use GuzzleHttp\Psr7\BufferStream;
+use Mei\Exception\GeneralException;
 use Mei\Exception\NotFound;
 use Mei\Utilities\Time;
 use Slim\Http\Request;
@@ -76,8 +77,12 @@ class ServeCtrl extends BaseCtrl
 
         // resize if necessary
         if (isset($info['width'])) {
-            $bindata = (string)$this->di['utility.images']->resizeImage(
-                $this->di['utility.images']->readImage($bindata),
+            $image = $this->di['utility.images']->readImage($bindata);
+            if (!$image) {
+                throw new GeneralException('Unable to resize, possibly broken image?');
+            }
+            $bindata = $this->di['utility.images']->resizeImage(
+                $image,
                 $info['width'],
                 $info['height'],
                 $info['crop']

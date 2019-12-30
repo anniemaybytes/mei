@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace RunTracy\Helpers\Profiler;
 
@@ -51,7 +51,7 @@ class ProfilerService implements SingletonInterface
      * @return Profile
      * @internal
      */
-    public function addProfile(Profile $profile)
+    public function addProfile(Profile $profile): Profile
     {
         $this->metaData = [];
         $this->profiles[] = $profile;
@@ -61,7 +61,7 @@ class ProfilerService implements SingletonInterface
     /**
      * @return Profile[]
      */
-    public function getProfiles()
+    public function getProfiles(): array
     {
         return $this->profiles;
     }
@@ -93,7 +93,7 @@ class ProfilerService implements SingletonInterface
     /**
      * @return mixed[]
      */
-    private function getMetaData()
+    private function getMetaData(): array
     {
         if (empty($this->metaData)) {
             $this->metaData[self::META_TIME_LINE] = [];

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace RunTracy\Helpers;
 
@@ -30,7 +30,7 @@ class ProfilerPanel implements IBarPanel
     /**
      * @inheritdoc
      */
-    public function getTab()
+    public function getTab(): string
     {
         $countOfProfiles = count($this->profilerService->getProfiles());
         return sprintf(
@@ -46,7 +46,7 @@ class ProfilerPanel implements IBarPanel
     /**
      * @inheritdoc
      */
-    public function getPanel()
+    public function getPanel(): string
     {
         $table = '
         <style type="text/css">
@@ -116,7 +116,7 @@ class ProfilerPanel implements IBarPanel
     /**
      * @return string
      */
-    private function getMemoryChart()
+    private function getMemoryChart(): string
     {
         $colors = [
             'axis' => '#000000',

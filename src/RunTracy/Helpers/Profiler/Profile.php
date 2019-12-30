@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace RunTracy\Helpers\Profiler;
 
@@ -13,10 +13,10 @@ use JsonSerializable;
  */
 class Profile implements JsonSerializable
 {
-    public const ABSOLUTE_DURATION = "absolute_duration";
-    public const DURATION = "duration";
-    public const ABSOLUTE_MEMORY_USAGE_CHANGE = "absolute_memory_usage_change";
-    public const MEMORY_USAGE_CHANGE = "memory_usage_change";
+    private const ABSOLUTE_DURATION = "absolute_duration";
+    private const DURATION = "duration";
+    private const ABSOLUTE_MEMORY_USAGE_CHANGE = "absolute_memory_usage_change";
+    private const MEMORY_USAGE_CHANGE = "memory_usage_change";
 
     /**
      * @var array
@@ -54,7 +54,7 @@ class Profile implements JsonSerializable
     /**
      * @inheritdoc
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return array_merge(
             $this->meta,

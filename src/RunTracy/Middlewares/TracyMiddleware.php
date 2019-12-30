@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace RunTracy\Middlewares;
 
@@ -46,9 +46,9 @@ class TracyMiddleware
      * @param Response $response
      * @param Callable $next
      *
-     * @return mixed
+     * @return Response
      */
-    public function __invoke(Request $request, Response $response, callable $next)
+    public function __invoke(Request $request, Response $response, callable $next): Response
     {
         $res = $next($request, $response);
 

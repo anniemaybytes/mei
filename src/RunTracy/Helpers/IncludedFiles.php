@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace RunTracy\Helpers;
 
@@ -16,7 +16,7 @@ class IncludedFiles implements IBarPanel
     /**
      * @return string
      */
-    public function getTab()
+    public function getTab(): string
     {
         $this->icon = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" width="16px" ' .
             'height="16px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">' .
@@ -44,7 +44,7 @@ class IncludedFiles implements IBarPanel
     /**
      * @return string
      */
-    public function getPanel()
+    public function getPanel(): string
     {
         $files = get_included_files();
         $ret = $this->getHeader();
@@ -67,7 +67,7 @@ class IncludedFiles implements IBarPanel
     /**
      * @return string
      */
-    protected function getHeader()
+    protected function getHeader(): string
     {
         return '<thead><tr><th><b>Count</b></th><th>File</th></tr></thead>';
     }
@@ -75,7 +75,7 @@ class IncludedFiles implements IBarPanel
     /**
      * @return string
      */
-    protected function getBaseRow()
+    protected function getBaseRow(): string
     {
         return '<tr><td>%s</td><td>%s</td></tr>';
     }

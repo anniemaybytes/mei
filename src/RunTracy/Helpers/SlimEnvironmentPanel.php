@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace RunTracy\Helpers;
 
@@ -18,10 +18,10 @@ class SlimEnvironmentPanel implements IBarPanel
     /**
      * SlimEnvironmentPanel constructor.
      *
-     * @param null $data
+     * @param string|null $data
      * @param array $ver
      */
-    public function __construct($data = null, array $ver = [])
+    public function __construct(?string $data = null, array $ver = [])
     {
         $this->content = $data;
         $this->ver = $ver;
@@ -30,7 +30,7 @@ class SlimEnvironmentPanel implements IBarPanel
     /**
      * @return string
      */
-    public function getTab()
+    public function getTab(): string
     {
         $this->icon = '<svg enable-background="new 0 0 32 32" height="32px" version="1.1" viewBox="0 0 32 32" ' .
             'width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"><path fill="#239626" d="M29.7,' .
@@ -49,7 +49,7 @@ class SlimEnvironmentPanel implements IBarPanel
     /**
      * @return string
      */
-    public function getPanel()
+    public function getPanel(): string
     {
         return '<h1>' . $this->icon . ' Slim ' . $this->ver['slim'] . ' Http Environment:</h1>
         <div style="overflow: scroll; max-height: 600px;">' . $this->content . '</div>';

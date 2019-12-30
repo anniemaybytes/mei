@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace RunTracy\Helpers\Profiler;
 
@@ -45,7 +45,7 @@ class SimpleProfiler
      *
      * @param bool $realUsage
      */
-    public static function enable($realUsage = false)
+    public static function enable(bool $realUsage = false)
     {
         static::$enabled = true;
         static::$realUsage = $realUsage ? true : false;
@@ -62,7 +62,7 @@ class SimpleProfiler
     /**
      * @return bool true if profiler is enabled, otherwise false
      */
-    public static function isEnabled()
+    public static function isEnabled(): bool
     {
         return static::$enabled;
     }
@@ -70,7 +70,7 @@ class SimpleProfiler
     /**
      * @return bool true if use realUsage memory, , otherwise false
      */
-    public static function isMemRealUsage()
+    public static function isMemRealUsage(): bool
     {
         return static::$realUsage;
     }
@@ -78,17 +78,18 @@ class SimpleProfiler
     /**
      * Start profiling
      *
-     * @param string $labelOrFormat
+     * @param string|null $labelOrFormat
      * @param mixed $args [optional]
      *
      * @return bool true on success or false on failure
      */
-    public static function start($labelOrFormat = null, $args = null)
+    public static function start(?string $labelOrFormat = null, $args = null): bool
     {
         if (static::$enabled) {
             if ($args === null) {
                 $label = $labelOrFormat;
             } else {
+                /** @noinspection SpellCheckingInspection */
                 $label = call_user_func_array('sprintf', func_get_args());
             }
 
@@ -116,13 +117,13 @@ class SimpleProfiler
     /**
      * Finish profiling and get result
      *
-     * @param string $labelOrFormat
+     * @param string|null $labelOrFormat
      * @param mixed $args [optional]
      *
      * @return bool|Profile profile on success or false on failure
      * @throws ProfilerException
      */
-    public static function finish($labelOrFormat = null, $args = null)
+    public static function finish(?string $labelOrFormat = null, $args = null)
     {
         if (static::$enabled) {
             $now = microtime(true);
@@ -136,6 +137,7 @@ class SimpleProfiler
             if ($args === null) {
                 $label = $labelOrFormat;
             } else {
+                /** @noinspection SpellCheckingInspection */
                 $label = call_user_func_array('sprintf', func_get_args());
             }
 

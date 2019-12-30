@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace RunTracy\Helpers\Profiler;
 
@@ -27,7 +27,7 @@ class Profiler extends AdvancedProfiler
     /**
      * @inheritdoc
      */
-    public static function enable($realUsage = false)
+    public static function enable(bool $realUsage = false)
     {
         ProfilerService::init();
         parent::enable($realUsage);

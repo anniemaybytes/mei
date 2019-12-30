@@ -3,6 +3,7 @@
 namespace Mei\Controller;
 
 use Mei\Exception\AccessDenied;
+use Mei\Exception\GeneralException;
 use Mei\Exception\NoImages;
 use Mei\Exception\NotFound;
 use Slim\Http\Request;
@@ -66,7 +67,10 @@ class ErrorCtrl extends BaseCtrl
 
             $data = $this->getData($statusCode);
 
-            if (is_subclass_of($exception, '\Mei\Exception\GeneralException')) {
+            if (is_subclass_of(
+                    $exception,
+                    '\Mei\Exception\GeneralException'
+                ) || $exception instanceof GeneralException) {
                 $desc = $exception->getDescription();
                 if (strlen($desc) > 0) {
                     $data['status_message'] = $desc;

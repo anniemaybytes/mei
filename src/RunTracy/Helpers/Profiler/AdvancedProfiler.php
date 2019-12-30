@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace RunTracy\Helpers\Profiler;
 
@@ -42,7 +42,7 @@ class AdvancedProfiler extends SimpleProfiler
     /**
      * @inheritdoc
      */
-    public static function start($labelOrFormat = null, $args = null, $opt = null)
+    public static function start(?string $labelOrFormat = null, $args = null, $opt = null): bool
     {
         if (static::$enabled) {
             if ($labelOrFormat === null) {
@@ -85,7 +85,7 @@ class AdvancedProfiler extends SimpleProfiler
     /**
      * @inheritdoc
      */
-    public static function finish($labelOrFormat = null, $args = null, $opt = null)
+    public static function finish(?string $labelOrFormat = null, $args = null, $opt = null)
     {
         if (static::$enabled) {
             if ($labelOrFormat === null) {
