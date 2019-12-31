@@ -20,18 +20,22 @@ use function curl_setopt_array;
 class Curl
 {
     /**
-     * @var false|resource $curl
+     * @var null|resource $curl
      */
-    private $curl = false;
+    private $curl = null;
 
     /**
      * Curl constructor.
      *
      * @param string|null $url
      */
-    public function __construct(string $url)
+    public function __construct(?string $url = null)
     {
-        $this->curl = curl_init($url);
+        if (is_null($url)) {
+            $this->curl = curl_init();
+        } else {
+            $this->curl = curl_init($url);
+        }
     }
 
     public function __destruct()
@@ -40,22 +44,22 @@ class Curl
     }
 
     /**
-     * @param $option
+     * @param int $option
      * @param $value
      *
      * @return bool
      */
-    public function setopt($option, $value): bool
+    public function setopt(int $option, $value): bool
     {
         return curl_setopt($this->curl, $option, $value);
     }
 
     /**
-     * @param $option
+     * @param int $option
      *
      * @return mixed
      */
-    public function getInfo($option)
+    public function getInfo(int $option)
     {
         return curl_getinfo($this->curl, $option);
     }

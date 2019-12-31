@@ -69,12 +69,12 @@ class Instrumentor
     }
 
     /**
-     * @param string $event
+     * @param string|null $event
      * @param mixed $extraData
      */
-    public function end(string $event, $extraData = null)
+    public function end(?string $event, $extraData = null)
     {
-        if (!$this->enabled) {
+        if (!$this->enabled || is_null($event)) {
             return;
         }
         if (!array_key_exists($event, $this->eventLog)) {

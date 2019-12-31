@@ -17,7 +17,12 @@ class ImageUtilities
 {
     private $config;
 
-    private static $allowedTypes = ['image/jpeg' => 'jpg', 'image/gif' => 'gif', 'image/png' => 'png'];
+    private static $allowedTypes = [
+        'image/jpeg' => 'jpg',
+        'image/gif' => 'gif',
+        'image/png' => 'png',
+        'image/webp' => 'webp'
+    ];
     private static $allowedResizeRange = ['min' => 20, 'max' => 1000];
     private static $allowedUrlScheme = ['http', 'https'];
 
@@ -142,12 +147,12 @@ class ImageUtilities
                 return null;
             }
             if ($content) {
-                Debugger::log(
-                    "No data received from $url with size $content_length and response $respcode. Aborting.",
-                    DEBUGGER::WARNING
-                );
                 return $content;
             }
+            Debugger::log(
+                "No data received from $url with size $content_length and response $respcode. Aborting.",
+                DEBUGGER::WARNING
+            );
         }
 
         return null;
@@ -281,7 +286,7 @@ class ImageUtilities
                 $image->thumbnailImage($maxWidth, $maxHeight, true);
             }
             $image->setImagePage(0, 0, 0, 0);
-            return $image->getImagesBlob();
+            return $image->__toString();
         } catch (ImagickException $e) {
             Debugger::log($e, DEBUGGER::EXCEPTION);
             return null;

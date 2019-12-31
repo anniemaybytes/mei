@@ -50,7 +50,7 @@ class ConfigLoader
         if (!file_exists($path)) {
             throw new RuntimeException("Couldn't find config file $path");
         }
-        $parsedFile = parse_ini_file($path, true);
+        $parsedFile = parse_ini_file($path, true, INI_SCANNER_TYPED);
 
         return self::parseArray($parsedFile, '');
     }

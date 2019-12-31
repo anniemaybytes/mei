@@ -118,9 +118,15 @@ class ServeCtrl extends BaseCtrl
             set_time_limit(0);
             $fh = new BufferStream();
             $fh->write($bindata);
-            return $response->withBody($fh);
+            return $response->withBody($fh)->withHeader(
+                'Content-Security-Policy',
+                "default-src 'none'; img-src data:; style-src 'unsafe-inline'"
+            );
         } else { // matches etag, return 304
-            return $response->withStatus(304);
+            return $response->withStatus(304)->withHeader(
+                'Content-Security-Policy',
+                "default-src 'none'; img-src data:; style-src 'unsafe-inline'"
+            );
         }
     }
 }
