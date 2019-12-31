@@ -89,7 +89,6 @@ class SimpleProfiler
             if ($args === null) {
                 $label = $labelOrFormat;
             } else {
-                /** @noinspection SpellCheckingInspection */
                 $label = call_user_func_array('sprintf', func_get_args());
             }
 
@@ -137,7 +136,6 @@ class SimpleProfiler
             if ($args === null) {
                 $label = $labelOrFormat;
             } else {
-                /** @noinspection SpellCheckingInspection */
                 $label = call_user_func_array('sprintf', func_get_args());
             }
 

@@ -90,7 +90,7 @@ class DependencyInjection
         };
         $di['notAllowedHandler'] = function ($di) {
             // let's pretend it doesn't exist
-            throw new Exception\NotFound();
+            throw new Exception\NotFound('Route Not Found');
         };
 
         if ($config['mode'] != 'development') {

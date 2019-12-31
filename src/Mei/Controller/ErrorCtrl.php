@@ -72,7 +72,7 @@ class ErrorCtrl extends BaseCtrl
                     '\Mei\Exception\GeneralException'
                 ) || $exception instanceof GeneralException) {
                 $desc = $exception->getDescription();
-                if (strlen($desc) > 0) {
+                if (is_string($desc) && strlen($desc) > 0) {
                     $data['status_message'] = $desc;
                 }
             }
