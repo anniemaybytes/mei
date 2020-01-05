@@ -73,9 +73,8 @@ class Dispatcher extends Singleton
         $config = ConfigLoader::load();
         Profiler::finish('initConfig');
 
-        $config['site.public_root'] = BASE_ROOT . '/' . $config['site.public_root'];
         $config['site.images_root'] = BASE_ROOT . '/' . $config['site.images_root'];
-        $config['site.deleted_root'] = BASE_ROOT . '/' . $config['site.deleted_root'];
+        $config['logs_dir'] = BASE_ROOT . '/' . $config['logs_dir'];
         $this->config = $config;
     }
 

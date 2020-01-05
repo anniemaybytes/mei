@@ -165,6 +165,6 @@ class Instrumentor
      */
     protected function generateStacktrace(): array
     {
-        return debug_backtrace();
+        return debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 5);
     }
 }

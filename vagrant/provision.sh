@@ -69,3 +69,8 @@ echo "CREATE DATABASE mei; GRANT ALL ON mei.* TO mei@localhost IDENTIFIED BY 'me
 mysqladmin -uroot password w3llkn0wn
 echo "DELETE FROM user WHERE (User = 'root' AND Host != 'localhost') OR (User = '');FLUSH PRIVILEGES;\q" | mysql -uroot -pw3llkn0wn mysql
 mysql -umei -pmei mei < /vagrantroot/mei.sql
+
+echo
+echo Creating required directories
+sudo -u vagrant mkdir -p /code/images
+sudo -u vagrant mkdir -p /code/logs

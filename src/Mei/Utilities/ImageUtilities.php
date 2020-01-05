@@ -300,7 +300,7 @@ class ImageUtilities
      */
     public function deleteImage(string $path): bool
     {
-        return rename($path, $this->config['site.deleted_root'] . '/' . basename($path));
+        return unlink($path);
     }
 
     /**

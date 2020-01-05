@@ -84,10 +84,10 @@ class Curl
         if (!$proxyOverride) { // override proxy
             $this->setopt(
                 CURLOPT_PROXY,
-                (Dispatcher::config('site.proxy') ? Dispatcher::config('site.proxy') : null)
+                (Dispatcher::config('proxy') ? Dispatcher::config('proxy') : null)
             );
         }
-        $this->setopt(CURLOPT_TIMEOUT, Dispatcher::config('site.timeout'));
+        $this->setopt(CURLOPT_TIMEOUT, Dispatcher::config('timeout'));
 
         return curl_exec($this->curl);
     }

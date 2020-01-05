@@ -42,6 +42,9 @@ class DependencyInjection
         $di['instrumentor'] = function () {
             return new Instrumentation\Instrumentor();
         };
+        if ($config['mode'] === 'development') {
+            $di['instrumentor']->detailedMode(true);
+        }
 
         $di = self::setUtilities($di);
         $di = self::setModels($di);
