@@ -131,28 +131,37 @@ class ImageUtilities
                     CURLOPT_SSL_VERIFYHOST => 2,
                     CURLOPT_MAXREDIRS => 3,
                     CURLOPT_HTTPHEADER => ['Host: ' . $host],
+                    CURLOPT_MAXFILESIZE => $this->config['site.max_filesize'],
+                    CURLOPT_NOPROGRESS => false,
+                    CURLOPT_PROGRESSFUNCTION => function ($ch, $downTotal, $down, $uplTotal, $upl) {
+                        return (int)($down > $this->config['site.max_filesize']); // non-zero aborts transfer
+                    }
                 ]
             );
 
             $content = $curl->exec();
-            $content_length = (int)$curl->getInfo(CURLINFO_CONTENT_LENGTH_DOWNLOAD);
-            $respcode = (int)$curl->getInfo(CURLINFO_HTTP_CODE);
-            unset($curl);
-
-            if ($content_length > $this->config['site.max_filesize'] || $content_length <= 0 || $respcode >= 400) {
+            $err = $curl->error();
+            if (strlen($err)) {
                 Debugger::log(
-                    "Aborting getDataFromUrl on $url with size $content_length and response $respcode",
+                    "cURL error: {$err}",
                     DEBUGGER::WARNING
                 );
                 return null;
             }
-            if ($content) {
-                return $content;
+
+            $cl = (int)$curl->getInfo(CURLINFO_CONTENT_LENGTH_DOWNLOAD);
+            $respcode = (int)$curl->getInfo(CURLINFO_HTTP_CODE);
+            unset($curl);
+
+            if (!$content) {
+                Debugger::log(
+                    "No data received from $url with content-length $cl and response $respcode. Aborting.",
+                    DEBUGGER::WARNING
+                );
+                return null;
             }
-            Debugger::log(
-                "No data received from $url with size $content_length and response $respcode. Aborting.",
-                DEBUGGER::WARNING
-            );
+
+            return $content;
         }
 
         return null;

@@ -34,7 +34,7 @@ class UploadCtrl extends BaseCtrl
          * ident: userId
          * tvalue: (valid until)
          **/
-        $token = json_decode($this->di['utility.encryption']->decryptString($request->getParam('token')), true);
+        $token = json_decode($this->di['utility.encryption']->decryptString($request->getParam('token', '')), true);
         if (!$token || $token['method'] !== 'account' || time() > $token['tvalid']) {
             throw new AccessDenied();
         }
@@ -98,7 +98,7 @@ class UploadCtrl extends BaseCtrl
          * ident: userId
          * tvalue: (valid until)
          **/
-        $token = json_decode($this->di['utility.encryption']->decryptString($request->getParam('token')), true);
+        $token = json_decode($this->di['utility.encryption']->decryptString($request->getParam('token', '')), true);
         if (!$token || $token['method'] !== 'screenshot' || time() > $token['tvalid']) {
             throw new AccessDenied();
         }
