@@ -2,6 +2,7 @@
 
 namespace Mei\Model;
 
+use DI\Container;
 use Exception;
 use InvalidArgumentException;
 use Mei\Cache\IKeyStore;
@@ -9,7 +10,6 @@ use Mei\Entity\IEntity;
 use Mei\Instrumentation\PDOInstrumentationWrapper;
 use Mei\Utilities\PDOParamMapper;
 use PDO;
-use Slim\Container;
 
 /**
  * Class Model
@@ -52,8 +52,8 @@ abstract class Model implements IModel
     public function __construct(Container $di, callable $entityBuilder)
     {
         $this->di = $di;
-        $this->db = $this->di['db'];
-        $this->cache = $this->di['cache'];
+        $this->db = $this->di->get('db');
+        $this->cache = $this->di->get('cache');
         $this->entityBuilder = $entityBuilder;
         $this->inTransaction = false;
     }

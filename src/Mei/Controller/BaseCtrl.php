@@ -2,8 +2,7 @@
 
 namespace Mei\Controller;
 
-use Slim\Container;
-use Slim\Http\Environment;
+use DI\Container;
 
 /**
  * Class BaseCtrl
@@ -12,7 +11,9 @@ use Slim\Http\Environment;
  */
 abstract class BaseCtrl
 {
-    /** @var Container $di */
+    /**
+     * @var Container $di
+     */
     protected $di;
 
     /**
@@ -20,21 +21,15 @@ abstract class BaseCtrl
      */
     protected $config;
 
-    /**
-     * @var Environment
-     */
-    protected $environment;
-
     public function setDependencies()
     {
-        $this->config = $this->di['config'];
-        $this->environment = $this->di['environment'];
+        $this->config = $this->di->get('config');
     }
 
     /**
      * BaseCtrl constructor.
      *
-     * @param $di
+     * @param Container $di
      */
     public function __construct(Container &$di)
     {

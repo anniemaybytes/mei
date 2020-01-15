@@ -2,8 +2,8 @@
 
 namespace Mei\Utilities;
 
+use DI\Container;
 use Exception;
-use Slim\Container;
 
 /**
  * Class Encryption
@@ -26,7 +26,7 @@ class Encryption
     public function __construct(Container $di)
     {
         $this->di = $di;
-        $this->config = $di['config'];
+        $this->config = $di->get('config');
         $this->encryptionKey = md5($this->config['api.auth_key']);
     }
 

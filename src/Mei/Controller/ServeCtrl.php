@@ -3,12 +3,11 @@
 namespace Mei\Controller;
 
 use Exception;
-use GuzzleHttp\Psr7\BufferStream;
 use Mei\Exception\GeneralException;
-use Mei\Exception\NotFound;
 use Mei\Utilities\Time;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Exception\HttpNotFoundException;
 
 /**
  * Class ServeCtrl
@@ -32,14 +31,14 @@ class ServeCtrl extends BaseCtrl
      * @param array $args
      *
      * @return Response
-     * @throws NotFound
+     * @throws HttpNotFoundException
      * @throws Exception
      */
     public function serve(Request $request, Response $response, array $args): Response
     {
         $pathInfo = pathinfo($args['img']);
         if (!isset($pathInfo['extension']) || !isset($pathInfo['filename'])) {
-            throw new NotFound('Image Not Found');
+            throw new HttpNotFoundException($request, 'Image Not Found');
         }
 
         $hashInfo = explode('-', $pathInfo['filename']);
@@ -59,29 +58,29 @@ class ServeCtrl extends BaseCtrl
             $info['crop'] = (isset($hashInfo[2]) && $hashInfo[2] == 'crop');
         }
 
-        $fileEntity = $this->di['model.files_map']->getByFileName($info['name'] . '.' . $pathInfo['extension']);
+        $fileEntity = $this->di->get('model.files_map')->getByFileName($info['name'] . '.' . $pathInfo['extension']);
 
         if (!$fileEntity) {
-            throw new NotFound('Image Not Found');
+            throw new HttpNotFoundException($request, 'Image Not Found');
         }
 
         $savePath = pathinfo($fileEntity->Key);
-        $bindata = $this->di['utility.images']->getDataFromPath(
-            $this->di['utility.images']->getSavePath(
-                $savePath['filename'] . '.' . $this->di['utility.images']->mapExtension($savePath['extension'])
+        $bindata = $this->di->get('utility.images')->getDataFromPath(
+            $this->di->get('utility.images')->getSavePath(
+                $savePath['filename'] . '.' . $this->di->get('utility.images')->mapExtension($savePath['extension'])
             )
         );
         if (!$bindata) {
-            throw new NotFound('Image Not Found');
+            throw new HttpNotFoundException($request, 'Image Not Found');
         }
 
         // resize if necessary
         if (isset($info['width'])) {
-            $image = $this->di['utility.images']->readImage($bindata);
+            $image = $this->di->get('utility.images')->readImage($bindata);
             if (!$image) {
                 throw new GeneralException('Unable to resize, possibly broken image?');
             }
-            $bindata = $this->di['utility.images']->resizeImage(
+            $bindata = $this->di->get('utility.images')->resizeImage(
                 $image,
                 $info['width'],
                 $info['height'],
@@ -89,10 +88,10 @@ class ServeCtrl extends BaseCtrl
             );
         }
 
-        $meta = $this->di['utility.images']->readImageData($bindata);
+        $meta = $this->di->get('utility.images')->readImageData($bindata);
 
         if (!$meta) {
-            throw new NotFound('Image Not Found');
+            throw new HttpNotFoundException($request, 'Image Not Found');
         }
 
         $eTag = md5($bindata);
@@ -101,8 +100,8 @@ class ServeCtrl extends BaseCtrl
             $fileEntity->UploadTime->getTimestamp()
             :
             filemtime(
-                $this->di['utility.images']->getSavePath(
-                    $savePath['filename'] . '.' . $this->di['utility.images']->mapExtension($savePath['extension'])
+                $this->di->get('utility.images')->getSavePath(
+                    $savePath['filename'] . '.' . $this->di->get('utility.images')->mapExtension($savePath['extension'])
                 )
             );
 
@@ -116,9 +115,7 @@ class ServeCtrl extends BaseCtrl
 
         if ($request->getHeader('If-None-Match') != $eTag) { // does not match etag?
             set_time_limit(0);
-            $fh = new BufferStream();
-            $fh->write($bindata);
-            return $response->withBody($fh)->withHeader(
+            return $response->write($bindata)->withHeader(
                 'Content-Security-Policy',
                 "default-src 'none'; img-src data:; style-src 'unsafe-inline'"
             );

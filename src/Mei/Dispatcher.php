@@ -2,12 +2,13 @@
 
 namespace Mei;
 
+use DI\Container;
 use Exception;
 use Mei\Route as R;
 use RunTracy\Helpers\Profiler\Exception\ProfilerException;
 use RunTracy\Helpers\Profiler\Profiler;
 use Slim\App;
-use Slim\Container;
+use Slim\Factory\AppFactory;
 
 /**
  * Class Dispatcher
@@ -84,7 +85,7 @@ class Dispatcher extends Singleton
     private function initDependencyInjection()
     {
         Profiler::start('initDependencyInjection');
-        $this->di = DependencyInjection::get($this->config);
+        $this->di = DependencyInjection::setup($this->config);
         Profiler::finish('initDependencyInjection');
     }
 
@@ -93,13 +94,24 @@ class Dispatcher extends Singleton
      */
     private function initApplication()
     {
-        $app = new App($this->di);
+        AppFactory::setContainer($this->di);
+        $app = AppFactory::create();
 
         Profiler::start('initRoutes');
+
+        $routeCollector = $app->getRouteCollector();
+        $this->di->set('response.factory', $app->getResponseFactory());
+
         $routes = [
             new R\Main($app),
         ];
-        $this->di['routes'] = $routes;
+        $this->di->set('routes', $routes);
+        $this->di->set('router', $routeCollector->getRouteParser());
+
+        if ($this->di->get('config')['mode'] === 'production') {
+            $routeCollector->setCacheFile(BASE_ROOT . '/routes.cache.php');
+        }
+
         Profiler::finish('initRoutes');
 
         $this->app = $app;

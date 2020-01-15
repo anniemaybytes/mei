@@ -2,10 +2,11 @@
 
 namespace Mei;
 
+use DI\Container;
+use DI\ContainerBuilder;
 use PDO;
 use RunTracy\Helpers\Profiler\Exception\ProfilerException;
 use RunTracy\Helpers\Profiler\Profiler;
-use Slim\Container;
 
 /**
  * Class DependencyInjection
@@ -16,99 +17,84 @@ class DependencyInjection
 {
     /**
      * @param array $config
-     * @param array $args
      *
      * @return Container
      * @throws ProfilerException
      */
-    public static function get(array $config, array $args = []): Container
+    public static function setup(array $config): Container
     {
-        if (!$args) {
-            $args = [
+        $builder = new ContainerBuilder();
+        $builder->useAutowiring(false);
+        $builder->useAnnotations(false);
+        $builder->addDefinitions(
+            [
                 'settings' => [
-                    'addContentLengthHeader' => !($config['mode'] == 'development'),
-                    'displayErrorDetails' => ($config['mode'] == 'development'),
-                    'determineRouteBeforeAppMiddleware' => true,
                     'xdebugHelperIdeKey' => 'mei-image-server',
                 ]
-            ];
-        }
+            ]
+        );
 
-        $di = new Container($args);
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $di = $builder->build();
 
-        $di['obLevel'] = ob_get_level();
-
-        $di['config'] = $config;
-        $di['instrumentor'] = function () {
-            return new Instrumentation\Instrumentor();
-        };
+        $di->set('config', $config);
+        $di->set('obLevel', ob_get_level());
+        $di->set(
+            'instrumentor',
+            function () {
+                return new Instrumentation\Instrumentor();
+            }
+        );
         if ($config['mode'] === 'development') {
-            $di['instrumentor']->detailedMode(true);
+            $di->get('instrumentor')->detailedMode(true);
         }
 
         $di = self::setUtilities($di);
         $di = self::setModels($di);
 
-        $di['db'] = function ($di) {
-            $ins = $di['instrumentor'];
-            $iid = $ins->start('pdo:connect');
-            $config = $di['config'];
+        $di->set(
+            'db',
+            function ($di) {
+                $ins = $di->get('instrumentor');
+                $iid = $ins->start('pdo:connect');
+                $config = $di->get('config');
 
-            $dsn = "mysql:dbname={$config['db.database']};charset=UTF8;";
+                $dsn = "mysql:dbname={$config['db.database']};charset=UTF8;";
 
-            if (isset($config['db.socket'])) {
-                $dsn .= "unix_socket={$config['db.socket']};";
-            } else {
-                $dsn .= "host={$config['db.hostname']};port={$config['db.port']};";
+                if (isset($config['db.socket'])) {
+                    $dsn .= "unix_socket={$config['db.socket']};";
+                } else {
+                    $dsn .= "host={$config['db.hostname']};port={$config['db.port']};";
+                }
+
+                $o = new PDO(
+                    $dsn, $config['db.username'],
+                    $config['db.password'],
+                    [
+                        PDO::ATTR_PERSISTENT => false,
+                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                        PDO::MYSQL_ATTR_INIT_COMMAND => "set time_zone = '+00:00';",
+                        PDO::ATTR_EMULATE_PREPARES => false, // emulated prepares ignore param hinting when binding
+                    ]
+                );
+                $w = new Instrumentation\PDOInstrumentationWrapper($di->get('instrumentor'), $o);
+                $ins->end($iid);
+
+                return $w;
             }
+        );
 
-            $o = new PDO(
-                $dsn, $config['db.username'],
-                $config['db.password'],
-                [
-                    PDO::ATTR_PERSISTENT => false,
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::MYSQL_ATTR_INIT_COMMAND => "set time_zone = '+00:00';",
-                    PDO::ATTR_EMULATE_PREPARES => false, // emulated prepares ignore param hinting when binding
-                ]
-            );
-            $w = new Instrumentation\PDOInstrumentationWrapper($di['instrumentor'], $o);
-            $ins->end($iid);
-
-            return $w;
-        };
-
-        $di['cache'] = function ($di) {
-            $ins = $di['instrumentor'];
-            $iid = $ins->start('nonpersistent:create');
-            $cache = [];
-            $mycache = new Cache\NonPersistent($cache, '');
-            $ins->end($iid);
-            return $mycache;
-        };
-
-        $di['notFoundHandler'] = function () {
-            // delegate to the error handler
-            throw new Exception\NotFound('Route Not Found');
-        };
-        $di['notAllowedHandler'] = function ($di) {
-            // let's pretend it doesn't exist
-            throw new Exception\NotFound('Route Not Found');
-        };
-
-        if ($config['mode'] != 'development') {
-            $di['errorHandler'] = function ($di) {
-                $ctrl = new Controller\ErrorCtrl($di);
-                return [$ctrl, 'handleException'];
-            };
-            $di['phpErrorHandler'] = function ($di) {
-                $ctrl = new Controller\FatalErrorCtrl($di);
-                return [$ctrl, 'handleError'];
-            };
-        } else {
-            unset($di['errorHandler']);
-            unset($di['phpErrorHandler']);
-        }
+        $di->set(
+            'cache',
+            function ($di) {
+                $ins = $di->get('instrumentor');
+                $iid = $ins->start('nonpersistent:create');
+                $cache = [];
+                $mycache = new Cache\NonPersistent($cache, '');
+                $ins->end($iid);
+                return $mycache;
+            }
+        );
 
         return $di;
     }
@@ -123,17 +109,17 @@ class DependencyInjection
     {
         Profiler::start('setUtilities');
 
-        $di['utility.images'] = function ($di) {
+        $di->set('utility.images', function ($di) {
             return new Utilities\ImageUtilities($di);
-        };
+        });
 
-        $di['utility.encryption'] = function ($di) {
+        $di->set('utility.encryption', function ($di) {
             return new Utilities\Encryption($di);
-        };
+        });
 
-        $di['utility.time'] = function () {
+        $di->set('utility.time', function () {
             return new Utilities\Time();
-        };
+        });
 
         Profiler::finish('setUtilities');
 
@@ -150,11 +136,11 @@ class DependencyInjection
     {
         Profiler::start('setModels');
 
-        $di['model.files_map'] = function ($di) {
+        $di->set('model.files_map', function ($di) {
             return new Model\FilesMap($di, function ($c) {
                 return new Entity\FilesMap($c);
             });
-        };
+        });
 
         Profiler::finish('setModels');
 

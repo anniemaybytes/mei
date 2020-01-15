@@ -2,9 +2,9 @@
 
 namespace Mei\Controller;
 
-use Slim\Container;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use DI\Container;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 use Throwable;
 use Tracy\Debugger;
 
@@ -52,7 +52,7 @@ class FatalErrorCtrl
         $response = $response->withBody($body);
 
         // clear output buffer
-        while (ob_get_level() > @$this->di['obLevel']) {
+        while (ob_get_level() > @$this->di->get('obLevel')) {
             $status = ob_get_status();
             if (in_array($status['name'], ['ob_gzhandler', 'zlib output compression'], true)) {
                 break;
@@ -62,7 +62,6 @@ class FatalErrorCtrl
             }
         }
 
-        $response->getBody()->write('500 - Interval Server Error');
-        return $response->withStatus(500);
+        return $response->withStatus(500)->write('500 Interval Server Error');
     }
 }

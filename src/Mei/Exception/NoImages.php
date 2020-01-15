@@ -2,11 +2,13 @@
 
 namespace Mei\Exception;
 
+use Exception;
+
 /**
  * Class NoImages
  *
  * @package Mei\Exception
  */
-class NoImages extends GeneralException
+class NoImages extends Exception
 {
 }

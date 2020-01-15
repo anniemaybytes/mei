@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="runtracy" pattern="file:src/RunTracy//*" />
+</component>

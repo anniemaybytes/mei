@@ -2,10 +2,10 @@
 
 namespace Mei\Utilities;
 
+use DI\Container;
 use Imagick;
 use ImagickException;
 use InvalidArgumentException;
-use Slim\Container;
 use Tracy\Debugger;
 
 /**
@@ -33,7 +33,7 @@ class ImageUtilities
      */
     public function __construct(Container $di)
     {
-        $this->config = $di['config'];
+        $this->config = $di->get('config');
     }
 
     /**
@@ -342,8 +342,17 @@ class ImageUtilities
                     CURLOPT_POSTFIELDS => json_encode(["files" => $urls])
                 ]
             );
-
             $result = $curl->exec();
+
+            $err = $curl->error();
+            if (strlen($err)) {
+                Debugger::log(
+                    "cURL error: {$err}",
+                    DEBUGGER::WARNING
+                );
+                Debugger::log('Failed to clear cache for ' . implode(', ', $urls), DEBUGGER::ERROR);
+                return;
+            }
             unset($curl);
 
             $result = json_decode($result, true);

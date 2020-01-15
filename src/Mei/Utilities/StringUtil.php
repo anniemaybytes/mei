@@ -61,7 +61,9 @@ class StringUtil
      */
     public static function base64UrlDecode($string)
     {
-        if (is_null($string)) return '';
+        if (is_null($string)) {
+            return '';
+        }
         return base64_decode(strtr($string, '-_', '+/'));
     }
 }

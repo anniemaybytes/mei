@@ -7,9 +7,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use RunTracy\Helpers\IncludedFiles;
 use RunTracy\Helpers\ProfilerPanel;
 use RunTracy\Helpers\SlimContainerPanel;
-use RunTracy\Helpers\SlimEnvironmentPanel;
 use RunTracy\Helpers\SlimRequestPanel;
-use RunTracy\Helpers\SlimResponsePanel;
 use RunTracy\Helpers\SlimRouterPanel;
 use RunTracy\Helpers\XDebugHelper;
 use Slim\App;
@@ -43,21 +41,13 @@ class TracyMiddleware
 
     /**
      * @param Request $request
-     * @param Response $response
-     * @param Callable $next
+     * @param $handler
      *
      * @return Response
      */
-    public function __invoke(Request $request, Response $response, callable $next): Response
+    public function __invoke(Request $request, $handler): Response
     {
-        $res = $next($request, $response);
-
-        Debugger::getBar()->addPanel(
-            new SlimEnvironmentPanel(
-                Dumper::toHtml($this->container->get('environment')),
-                $this->versions
-            )
-        );
+        $res = $handler->handle($request);
 
         Debugger::getBar()->addPanel(
             new SlimContainerPanel(
@@ -76,13 +66,6 @@ class TracyMiddleware
         Debugger::getBar()->addPanel(
             new SlimRequestPanel(
                 Dumper::toHtml($this->container->get('request')),
-                $this->versions
-            )
-        );
-
-        Debugger::getBar()->addPanel(
-            new SlimResponsePanel(
-                Dumper::toHtml($this->container->get('response')),
                 $this->versions
             )
         );

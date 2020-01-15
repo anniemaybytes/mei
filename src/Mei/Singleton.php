@@ -16,9 +16,9 @@ class Singleton
     /**
      * Singleton constructor.
      *
-     * @param $args
+     * @param array $args
      */
-    protected function __construct($args)
+    protected function __construct(array $args)
     {
     }
 
@@ -32,9 +32,9 @@ class Singleton
     }
 
     /**
-     * @return mixed
+     * @return object
      */
-    public static function getInstance()
+    public static function getInstance(): object
     {
         $cls = get_called_class(); // late-static-bound class name
         if (!isset(self::$instances[$cls])) {
