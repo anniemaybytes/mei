@@ -31,9 +31,9 @@ abstract class BaseCtrl
      *
      * @param Container $di
      */
-    public function __construct(Container &$di)
+    public function __construct(Container $di)
     {
-        $this->di = &$di;
+        $this->di = $di;
 
         $this->setDependencies();
     }

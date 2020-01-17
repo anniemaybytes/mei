@@ -4,8 +4,8 @@ namespace Mei;
 
 use DI\Container;
 use DI\ContainerBuilder;
+use Exception;
 use PDO;
-use RunTracy\Helpers\Profiler\Exception\ProfilerException;
 use RunTracy\Helpers\Profiler\Profiler;
 
 /**
@@ -19,7 +19,7 @@ class DependencyInjection
      * @param array $config
      *
      * @return Container
-     * @throws ProfilerException
+     * @throws Exception
      */
     public static function setup(array $config): Container
     {
@@ -34,7 +34,6 @@ class DependencyInjection
             ]
         );
 
-        /** @noinspection PhpUnhandledExceptionInspection */
         $di = $builder->build();
 
         $di->set('config', $config);
@@ -103,7 +102,6 @@ class DependencyInjection
      * @param Container $di
      *
      * @return Container
-     * @throws ProfilerException
      */
     private static function setUtilities(Container $di): Container /** @formatter:off */
     {
@@ -130,7 +128,6 @@ class DependencyInjection
      * @param Container $di
      *
      * @return Container
-     * @throws ProfilerException
      */
     private static function setModels(Container $di): Container /** @formatter:off */
     {

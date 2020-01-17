@@ -4,6 +4,7 @@ namespace Mei\Utilities;
 
 use DI\Container;
 use Exception;
+use Tracy\Debugger;
 
 /**
  * Class Encryption
@@ -38,8 +39,6 @@ class Encryption
      */
     public function encrypt(?string $plainData): string
     {
-        srand();
-
         // we need to manually pad data for compatibility with mcrypt
         $paddedData = $plainData;
         if (strlen($paddedData) % 32) {
@@ -69,31 +68,30 @@ class Encryption
      */
     public function decrypt(?string $encryptedData): string
     {
-        if (is_string($encryptedData)) {
-            try {
-                $data = base64_decode($encryptedData);
-                if ($data == false) {
-                    return "";
-                }
-                $initVector = substr($data, 0, 16);
-                $unpaddedCryptedData = substr($data, 16);
-                $r = trim(
-                    openssl_decrypt(
-                        $unpaddedCryptedData,
-                        self::CIPHER,
-                        $this->encryptionKey,
-                        OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING,
-                        $initVector
-                    )
-                );
-                if (!$r) {
-                    return "";
-                }
-                return $r;
-            } catch (Exception $e) {
+        if (!is_string($encryptedData) || !strlen($encryptedData)) {
+            return "";
+        }
+        try {
+            $data = base64_decode($encryptedData);
+            if ($data === false || !strlen($data)) {
                 return "";
             }
-        } else {
+            $initVector = substr($data, 0, 16) ?? "";
+            $unpaddedCryptedData = substr($data, 16) ?? "";
+            $decryptedData = openssl_decrypt(
+                    $unpaddedCryptedData,
+                    $this->cipher,
+                    $this->encryptionKey,
+                    OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING,
+                    $initVector
+                ) ?? "";
+            $r = trim($decryptedData);
+            if (!strlen($r)) {
+                return "";
+            }
+            return $r;
+        } catch (Exception $e) { // must not throw exception
+            Debugger::log($e, Debugger::EXCEPTION);
             return "";
         }
     }
@@ -106,9 +104,6 @@ class Encryption
     public function decryptString(string $encryptedData): string
     {
         $result = $this->decrypt($encryptedData);
-        if (!strlen($result)) {
-            return "";
-        }
         $isUTF8 = preg_match('//u', $result);
         if (!$isUTF8) {
             return "";

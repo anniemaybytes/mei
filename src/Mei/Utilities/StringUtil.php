@@ -2,7 +2,8 @@
 
 namespace Mei\Utilities;
 
-use Exception;
+use RandomLib\Factory;
+use SecurityLib\Strength;
 
 /**
  * Class StringUtil
@@ -15,34 +16,16 @@ class StringUtil
      * @param int $len
      *
      * @return string
-     * @throws Exception
      */
     public static function generateRandomString(int $len = 32): string
     {
-        $charset = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        return self::randomize($charset, $len);
+        $factory = new Factory();
+        $generator = $factory->getGenerator(new Strength(Strength::MEDIUM));
+        return $generator->generateString($len, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
     }
 
     /**
-     * @param $ok
-     * @param $len
-     *
-     * @return string
-     * @throws Exception
-     */
-    public static function randomize(string $ok, int $len): string
-    {
-        $token = '';
-        $max = mb_strlen($ok, '8bit') - 1;
-        for ($i = 0; $i < $len; $i++) {
-            $token .= $ok[random_int(0, $max)];
-        }
-
-        return str_shuffle($token);
-    }
-
-    /**
-     * @param $string
+     * @param string $string
      *
      * @return string
      */
@@ -55,15 +38,12 @@ class StringUtil
     }
 
     /**
-     * @param $string
+     * @param string $string
      *
-     * @return false|string
+     * @return string
      */
-    public static function base64UrlDecode($string)
+    public static function base64UrlDecode(string $string): string
     {
-        if (is_null($string)) {
-            return '';
-        }
         return base64_decode(strtr($string, '-_', '+/'));
     }
 }

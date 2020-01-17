@@ -6,6 +6,7 @@
       <fqn value="\DI\NotFoundException" />
       <fqn value="\Error" />
       <fqn value="\LogicException" />
+      <fqn value="\RunTracy\Helpers\Profiler\Exception\ProfilerException" />
       <fqn value="\RuntimeException" />
     </unchecked_exceptions>
   </component>

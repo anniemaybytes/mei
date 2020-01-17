@@ -5,7 +5,6 @@ namespace Mei;
 use DI\Container;
 use Exception;
 use Mei\Route as R;
-use RunTracy\Helpers\Profiler\Exception\ProfilerException;
 use RunTracy\Helpers\Profiler\Profiler;
 use Slim\App;
 use Slim\Factory\AppFactory;
@@ -59,13 +58,12 @@ class Dispatcher extends Singleton
      *
      * @return Container
      */
-    public static function &di(): Container
+    public static function di(): Container
     {
         return self::getInstance()->di;
     }
 
     /**
-     * @throws ProfilerException
      * @throws Exception
      */
     private function initConfig()
@@ -80,7 +78,7 @@ class Dispatcher extends Singleton
     }
 
     /**
-     * @throws ProfilerException
+     * @throws Exception
      */
     private function initDependencyInjection()
     {
@@ -89,9 +87,6 @@ class Dispatcher extends Singleton
         Profiler::finish('initDependencyInjection');
     }
 
-    /**
-     * @throws ProfilerException
-     */
     private function initApplication()
     {
         AppFactory::setContainer($this->di);
@@ -122,7 +117,7 @@ class Dispatcher extends Singleton
      *
      * @param $args
      *
-     * @throws ProfilerException
+     * @throws Exception
      */
     protected function __construct($args)
     {
