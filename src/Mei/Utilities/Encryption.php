@@ -15,8 +15,14 @@ class Encryption
 {
     private const CIPHER = 'aes-256-cbc';
 
-    protected $di;
+    /**
+     * @var string
+     */
     protected $encryptionKey;
+
+    /**
+     * @var array
+     */
     protected $config;
 
     /**
@@ -26,7 +32,6 @@ class Encryption
      */
     public function __construct(Container $di)
     {
-        $this->di = $di;
         $this->config = $di->get('config');
         $this->encryptionKey = md5($this->config['api.auth_key']);
     }
@@ -80,7 +85,7 @@ class Encryption
             $unpaddedCryptedData = substr($data, 16) ?? "";
             $decryptedData = openssl_decrypt(
                     $unpaddedCryptedData,
-                    $this->cipher,
+                    self::CIPHER,
                     $this->encryptionKey,
                     OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING,
                     $initVector
