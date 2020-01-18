@@ -92,7 +92,7 @@ Profiler::start('initMiddlewares');
 
 // 'before' middleware (either stops execution flow or calls next middleware)
 $app->add(new Middleware\RequestHelper($di));
-if ($di->get('config')['mode'] == 'development') {
+if ($di->get('config')['mode'] === 'development') {
     $app->add(new TracyMiddleware($app));
 }
 

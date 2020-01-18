@@ -30,7 +30,7 @@ class Main extends Base
             $group->post('/delete', DeleteCtrl::class . ':delete')->setName('delete');
             $group->get('/{img:(?:[a-zA-Z0-9]{32}|[a-zA-Z0-9]{64}|[a-zA-Z0-9]{11})(?:-\d{2,3}x\d{2,3}(?:-crop)?)?\.[a-zA-Z]{3,4}}', ServeCtrl::class . ':serve')->setName('serve');
             $group->get('/images/error.jpg', function (Request $request, Response $response, array $args) {
-                return $response->withRedirect('/error.jpg')->withStatus(301);
+                return $response->withRedirect('/error.jpg');
             });
             $group->get('/images/{img:[a-zA-Z0-9]{32}(?:-\d{2,3}x\d{2,3}(?:-crop)?)?\.[a-zA-Z]{3,4}}',
                 function (Request $request, Response $response, array $args) { // legacy

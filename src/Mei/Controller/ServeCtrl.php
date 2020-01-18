@@ -95,15 +95,12 @@ class ServeCtrl extends BaseCtrl
         }
 
         $eTag = md5($bindata);
-        $timeStamp = Time::timeIsNonZero($fileEntity->UploadTime)
-            ?
-            $fileEntity->UploadTime->getTimestamp()
-            :
-            filemtime(
-                $this->di->get('utility.images')->getSavePath(
-                    $savePath['filename'] . '.' . $this->di->get('utility.images')->mapExtension($savePath['extension'])
-                )
-            );
+        $path = $this->di->get('utility.images')->getSavePath(
+            $savePath['filename'] . '.' . $this->di->get('utility.images')->mapExtension($savePath['extension'])
+        );
+        $timeStamp = Time::timeIsNonZero($fileEntity->UploadTime) ? $fileEntity->UploadTime->getTimestamp() : filemtime(
+            $path
+        );
 
         /** @var Response $response */
         $response = $response->withHeader('Content-Type', $meta['mime']);
@@ -114,7 +111,19 @@ class ServeCtrl extends BaseCtrl
         $response = $response->withHeader('Last-Modified', date('r', $timeStamp));
 
         if ($request->getHeader('If-None-Match') != $eTag) { // does not match etag?
-            set_time_limit(0);
+            if (!isset($info['width'])) { // if no resize is taking place we can just ask nginx to stream file for us
+                $response = $response->withHeader(
+                    'Content-Security-Policy',
+                    "default-src 'none'; img-src data:; style-src 'unsafe-inline'"
+                );
+                $response = $response->withHeader(
+                    'X-Accel-Redirect',
+                    str_replace($this->config['site.images_root'], '/x-accel', $path)
+                );
+                return $response->write(
+                    'Performing internal redirect...'
+                ); // todo https://github.com/slimphp/Slim/issues/2924
+            }
             return $response->write($bindata)->withHeader(
                 'Content-Security-Policy',
                 "default-src 'none'; img-src data:; style-src 'unsafe-inline'"

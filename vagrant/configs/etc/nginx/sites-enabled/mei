@@ -18,6 +18,17 @@ server {
         try_files $uri /index.php$is_args$args;
     }
 
+    location  /x-accel {
+        add_header Strict-Transport-Security "max-age=31536000" always;
+        add_header X-Content-Type-Options "nosniff" always;
+
+        add_header ETag $upstream_http_etag;
+        add_header Last-Modified $upstream_http_last_modified;
+        add_header Content-Security-Policy $upstream_http_content_security_policy;
+        internal;
+        alias /code/images;
+    }
+
     location /index.php {
         try_files $uri =404;
         include fastcgi_params;
