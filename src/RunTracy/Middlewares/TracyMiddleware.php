@@ -3,7 +3,6 @@
 namespace RunTracy\Middlewares;
 
 use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface;
 use RunTracy\Helpers\IncludedFiles;
@@ -68,7 +67,7 @@ class TracyMiddleware
 
         Debugger::getBar()->addPanel(
             new SlimRequestPanel(
-                Dumper::toHtml($this->container->get(ServerRequestInterface::class)),
+                Dumper::toHtml($request),
                 $this->versions
             )
         );

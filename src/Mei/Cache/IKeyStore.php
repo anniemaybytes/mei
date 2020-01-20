@@ -18,9 +18,15 @@ interface IKeyStore
      */
     public function doGet(string $key);
 
-    public function getCacheHits();
+    /**
+     * @return array
+     */
+    public function getCacheHits(): array;
 
-    public function getExecutionTime();
+    /**
+     * @return int
+     */
+    public function getExecutionTime(): int;
 
     /**
      * Set the key to value.
@@ -60,7 +66,7 @@ interface IKeyStore
      *
      * @return bool
      */
-    public function doTouch(string $key, int $expiry = 10800);
+    public function doTouch(string $key, int $expiry = 10800): bool;
 
     /**
      * @param bool $val
@@ -85,7 +91,10 @@ interface IKeyStore
     /**
      * @return array
      */
-    public function getAllKeys();
+    public function getAllKeys(): array;
 
-    public function getStats();
+    /**
+     * @return array
+     */
+    public function getStats(): array;
 }

@@ -25,5 +25,5 @@ deleted/*
 logs/*
 
 # project files
-/config/config.ini
+/config/private.ini
 routes.cache.php

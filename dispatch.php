@@ -11,7 +11,6 @@ use Mei\Cache\IKeyStore;
 use Mei\Controller\ErrorCtrl;
 use Mei\Dispatcher;
 use Mei\Instrumentation\Instrumentor;
-use Mei\Middleware;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use RunTracy\Helpers\Profiler\Profiler;
@@ -93,7 +92,6 @@ Debugger::getBlueScreen()->addPanel(
 Profiler::start('initMiddlewares');
 
 // 'before' middleware (either stops execution flow or calls next middleware)
-$app->add(new Middleware\RequestHelper($di));
 if ($di->get('config')['mode'] === 'development') {
     $app->add(new TracyMiddleware($app));
 }
