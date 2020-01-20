@@ -18,6 +18,11 @@ use Tracy\Debugger;
 class ErrorCtrl extends BaseCtrl
 {
     /**
+     * @Inject("obLevel")
+     */
+    private $obLevel;
+
+    /**
      * @param Request $request
      * @param Response $response
      * @param Throwable $exception
@@ -46,7 +51,7 @@ class ErrorCtrl extends BaseCtrl
             $response = $response->withBody($body);
 
             // clear output buffer
-            while (ob_get_level() > $this->di->get('obLevel')) {
+            while (ob_get_level() > $this->obLevel) {
                 $status = ob_get_status();
                 if (in_array($status['name'], ['ob_gzhandler', 'zlib output compression'], true)) {
                     break;
@@ -58,7 +63,7 @@ class ErrorCtrl extends BaseCtrl
 
             return $response->withStatus($statusCode)->write($message);
         } catch (Throwable $e) {
-            return (new FatalErrorCtrl($this->di))->handleError($request, $response, $e);
+            return (new FatalErrorCtrl())->handleError($request, $response, $e);
         }
     }
 

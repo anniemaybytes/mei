@@ -3,6 +3,7 @@
 namespace RunTracy\Middlewares;
 
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface;
 use RunTracy\Helpers\IncludedFiles;
@@ -12,6 +13,7 @@ use RunTracy\Helpers\SlimRequestPanel;
 use RunTracy\Helpers\SlimRouterPanel;
 use RunTracy\Helpers\XDebugHelper;
 use Slim\App;
+use Slim\Routing\RouteParser;
 use Tracy\Debugger;
 use Tracy\Dumper;
 
@@ -59,14 +61,14 @@ class TracyMiddleware
 
         Debugger::getBar()->addPanel(
             new SlimRouterPanel(
-                Dumper::toHtml($this->container->get('router')),
+                Dumper::toHtml($this->container->get(RouteParser::class)),
                 $this->versions
             )
         );
 
         Debugger::getBar()->addPanel(
             new SlimRequestPanel(
-                Dumper::toHtml($this->container->get('request')),
+                Dumper::toHtml($this->container->get(ServerRequestInterface::class)),
                 $this->versions
             )
         );

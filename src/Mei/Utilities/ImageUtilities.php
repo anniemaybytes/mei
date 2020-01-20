@@ -2,7 +2,6 @@
 
 namespace Mei\Utilities;
 
-use DI\Container;
 use Imagick;
 use ImagickException;
 use InvalidArgumentException;
@@ -15,6 +14,10 @@ use Tracy\Debugger;
  */
 class ImageUtilities
 {
+    /**
+     * @Inject("config")
+     * @var array
+     */
     private $config;
 
     private static $allowedTypes = [
@@ -25,16 +28,6 @@ class ImageUtilities
     ];
     private static $allowedResizeRange = ['min' => 20, 'max' => 1000];
     private static $allowedUrlScheme = ['http', 'https'];
-
-    /**
-     * ImageUtilities constructor.
-     *
-     * @param Container $di
-     */
-    public function __construct(Container $di)
-    {
-        $this->config = $di->get('config');
-    }
 
     /**
      * @param string $extension

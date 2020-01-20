@@ -4,6 +4,8 @@ namespace Mei\Controller;
 
 use Exception;
 use Mei\Exception\GeneralException;
+use Mei\Model\FilesMap;
+use Mei\Utilities\ImageUtilities;
 use Mei\Utilities\Time;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -16,6 +18,18 @@ use Slim\Exception\HttpNotFoundException;
  */
 class ServeCtrl extends BaseCtrl
 {
+    /**
+     * @Inject
+     * @var ImageUtilities
+     */
+    private $imageUtils;
+
+    /**
+     * @Inject
+     * @var FilesMap
+     */
+    private $filesMap;
+
     public static $legacySizes = [
         'small' => [80, 150],
         'front' => [200, 150],
@@ -58,16 +72,16 @@ class ServeCtrl extends BaseCtrl
             $info['crop'] = (isset($hashInfo[2]) && $hashInfo[2] == 'crop');
         }
 
-        $fileEntity = $this->di->get('model.files_map')->getByFileName($info['name'] . '.' . $pathInfo['extension']);
+        $fileEntity = $this->filesMap->getByFileName($info['name'] . '.' . $pathInfo['extension']);
 
         if (!$fileEntity) {
             throw new HttpNotFoundException($request, 'Image Not Found');
         }
 
         $savePath = pathinfo($fileEntity->Key);
-        $bindata = $this->di->get('utility.images')->getDataFromPath(
-            $this->di->get('utility.images')->getSavePath(
-                $savePath['filename'] . '.' . $this->di->get('utility.images')->mapExtension($savePath['extension'])
+        $bindata = $this->imageUtils->getDataFromPath(
+            $this->imageUtils->getSavePath(
+                $savePath['filename'] . '.' . $this->imageUtils->mapExtension($savePath['extension'])
             )
         );
         if (!$bindata) {
@@ -76,11 +90,11 @@ class ServeCtrl extends BaseCtrl
 
         // resize if necessary
         if (isset($info['width'])) {
-            $image = $this->di->get('utility.images')->readImage($bindata);
+            $image = $this->imageUtils->readImage($bindata);
             if (!$image) {
                 throw new GeneralException('Unable to resize, possibly broken image?');
             }
-            $bindata = $this->di->get('utility.images')->resizeImage(
+            $bindata = $this->imageUtils->resizeImage(
                 $image,
                 $info['width'],
                 $info['height'],
@@ -88,15 +102,15 @@ class ServeCtrl extends BaseCtrl
             );
         }
 
-        $meta = $this->di->get('utility.images')->readImageData($bindata);
+        $meta = $this->imageUtils->readImageData($bindata);
 
         if (!$meta) {
             throw new HttpNotFoundException($request, 'Image Not Found');
         }
 
         $eTag = md5($bindata);
-        $path = $this->di->get('utility.images')->getSavePath(
-            $savePath['filename'] . '.' . $this->di->get('utility.images')->mapExtension($savePath['extension'])
+        $path = $this->imageUtils->getSavePath(
+            $savePath['filename'] . '.' . $this->imageUtils->mapExtension($savePath['extension'])
         );
         $timeStamp = Time::timeIsNonZero($fileEntity->UploadTime) ? $fileEntity->UploadTime->getTimestamp() : filemtime(
             $path

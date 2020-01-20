@@ -2,8 +2,6 @@
 
 namespace Mei\Utilities;
 
-use Mei\Dispatcher;
-
 use function curl_close;
 use function curl_error;
 use function curl_exec;
@@ -19,6 +17,12 @@ use function curl_setopt_array;
  */
 class Curl
 {
+    /**
+     * @Inject("config")
+     * @var array
+     */
+    private $config;
+
     /**
      * @var null|resource $curl
      */
@@ -84,10 +88,10 @@ class Curl
         if (!$proxyOverride) { // override proxy
             $this->setopt(
                 CURLOPT_PROXY,
-                (Dispatcher::config('proxy') ? Dispatcher::config('proxy') : null)
+                ($this->config['proxy'] ?? null)
             );
         }
-        $this->setopt(CURLOPT_TIMEOUT, Dispatcher::config('timeout'));
+        $this->setopt(CURLOPT_TIMEOUT, $this->config['timeout']);
 
         return curl_exec($this->curl);
     }

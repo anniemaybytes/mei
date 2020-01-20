@@ -5,6 +5,9 @@ namespace Mei\Controller;
 use Exception;
 use Mei\Exception\GeneralException;
 use Mei\Exception\NoImages;
+use Mei\Model\FilesMap;
+use Mei\Utilities\Encryption;
+use Mei\Utilities\ImageUtilities;
 use Mei\Utilities\StringUtil;
 use Mei\Utilities\Time;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -18,6 +21,24 @@ use Slim\Exception\HttpForbiddenException;
  */
 class UploadCtrl extends BaseCtrl
 {
+    /**
+     * @Inject
+     * @var ImageUtilities
+     */
+    private $imageUtils;
+
+    /**
+     * @Inject
+     * @var FilesMap
+     */
+    private $filesMap;
+
+    /**
+     * @Inject
+     * @var Encryption
+     */
+    private $encryption;
+
     /**
      * @param Request $request
      * @param Response $response
@@ -35,7 +56,7 @@ class UploadCtrl extends BaseCtrl
          * tvalue: (valid until)
          **/
         $token = json_decode(
-            $this->di->get('utility.encryption')->decryptString($request->getParam('token', '')),
+            $this->encryption->decryptString($request->getParam('token', '')),
             true
         );
         if (!$token || $token['method'] !== 'account' || time() > $token['tvalid']) {
@@ -65,12 +86,12 @@ class UploadCtrl extends BaseCtrl
             }
         }
         if ($url) {
-            $dataToHandle[] = $this->di->get('utility.images')->getDataFromUrl($url);
+            $dataToHandle[] = $this->imageUtils->getDataFromUrl($url);
         }
 
         $images = $this->processUploadedData($dataToHandle, $token['ident']);
         if ($images) {
-            $qs = ['img' => $this->di->get('utility.encryption')->encryptUrl(implode('|', $images))];
+            $qs = ['img' => $this->encryption->encryptUrl(implode('|', $images))];
             $urlString = '?' . http_build_query($qs);
 
             /** @var Response $response */
@@ -102,7 +123,7 @@ class UploadCtrl extends BaseCtrl
          * tvalue: (valid until)
          **/
         $token = json_decode(
-            $this->di->get('utility.encryption')->decryptString($request->getParam('token', '')),
+            $this->encryption->decryptString($request->getParam('token', '')),
             true
         );
         if (!$token || $token['method'] !== 'screenshot' || time() > $token['tvalid']) {
@@ -127,7 +148,7 @@ class UploadCtrl extends BaseCtrl
                     continue;
                 }
                 $bindata = $file->getStream()->getContents();
-                $metadata = $this->di->get('utility.images')->readImageData($bindata);
+                $metadata = $this->imageUtils->readImageData($bindata);
 
                 if (!$metadata || $metadata['mime'] != 'image/png') {
                     continue;
@@ -143,7 +164,7 @@ class UploadCtrl extends BaseCtrl
             $qs = [
                 'action' => 'takeupload',
                 'torrentid' => (int)$args['torrentid'],
-                'imgs' => $this->di->get('utility.encryption')->encryptUrl(implode('|', $images))
+                'imgs' => $this->encryption->encryptUrl(implode('|', $images))
             ];
             $urlString = '?' . http_build_query($qs);
 
@@ -178,7 +199,7 @@ class UploadCtrl extends BaseCtrl
         $files = $request->getUploadedFiles();
 
         if ($url) {
-            $dataToHandle[] = $this->di->get('utility.images')->getDataFromUrl($url);
+            $dataToHandle[] = $this->imageUtils->getDataFromUrl($url);
         }
 
         if ($file) {
@@ -236,7 +257,7 @@ class UploadCtrl extends BaseCtrl
             if (!$bindata) {
                 continue;
             }
-            $metadata = $this->di->get('utility.images')->readImageData($bindata);
+            $metadata = $this->imageUtils->readImageData($bindata);
 
             // invalid data, or not allowed format
             if (!$metadata) {
@@ -245,10 +266,10 @@ class UploadCtrl extends BaseCtrl
             }
 
             $found = $isLegacy = false;
-            if ($this->di->get('model.files_map')->getByKey($metadata['checksum'] . '.' . $metadata['extension'])) {
+            if ($this->filesMap->getByKey($metadata['checksum'] . '.' . $metadata['extension'])) {
                 $found = true;
                 $isLegacy = false;
-            } elseif ($this->di->get('model.files_map')->getByKey(
+            } elseif ($this->filesMap->getByKey(
                 $metadata['checksum_legacy'] . '.' . $metadata['extension']
             )) {
                 $found = true;
@@ -257,14 +278,14 @@ class UploadCtrl extends BaseCtrl
 
             $checksum = $isLegacy ? $metadata['checksum_legacy'] : $metadata['checksum'];
             if (!$found) {
-                $savePath = $this->di->get('utility.images')->getSavePath($checksum . '.' . $metadata['extension']);
-                if (!$this->di->get('utility.images')->saveData($bindata, $savePath, false)) {
+                $savePath = $this->imageUtils->getSavePath($checksum . '.' . $metadata['extension']);
+                if (!$this->imageUtils->saveData($bindata, $savePath, false)) {
                     throw new GeneralException('Unable to save file');
                 }
             }
 
             $filename = StringUtil::generateRandomString(11) . '.' . $metadata['extension'];
-            $newImage = $this->di->get('model.files_map')->createEntity(
+            $newImage = $this->filesMap->createEntity(
                 [
                     'Key' => $checksum . '.' . $metadata['extension'],
                     'FileName' => $filename,
@@ -274,7 +295,7 @@ class UploadCtrl extends BaseCtrl
                     'UploadTime' => Time::now()
                 ]
             );
-            $this->di->get('model.files_map')->save($newImage);
+            $this->filesMap->save($newImage);
             array_push($images, $filename);
         }
         return $images;

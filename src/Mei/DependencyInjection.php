@@ -2,10 +2,16 @@
 
 namespace Mei;
 
-use DI\Container;
-use DI\ContainerBuilder;
+use DI;
 use Exception;
+use Mei\Cache\IKeyStore;
+use Mei\Instrumentation\Instrumentor;
+use Mei\Model\FilesMap;
+use Mei\Utilities\Encryption;
+use Mei\Utilities\ImageUtilities;
+use Mei\Utilities\Time;
 use PDO;
+use Psr\Container\ContainerInterface as Container;
 use RunTracy\Helpers\Profiler\Profiler;
 
 /**
@@ -23,40 +29,44 @@ class DependencyInjection
      */
     public static function setup(array $config): Container
     {
-        $builder = new ContainerBuilder();
-        $builder->useAutowiring(false);
-        $builder->useAnnotations(false);
+        $builder = new DI\ContainerBuilder();
+        $builder->useAnnotations(true);
         $builder->addDefinitions(
             [
                 'settings' => [
                     'xdebugHelperIdeKey' => 'mei-image-server',
-                ]
+                ],
+                'config' => $config,
+                'obLevel' => ob_get_level(),
+                Instrumentor::class => DI\autowire()
             ]
         );
-
         $di = $builder->build();
 
-        $di->set('config', $config);
-        $di->set('obLevel', ob_get_level());
-        $di->set(
-            'instrumentor',
-            function () {
-                return new Instrumentation\Instrumentor();
-            }
-        );
         if ($config['mode'] === 'development') {
-            $di->get('instrumentor')->detailedMode(true);
+            $di->get(Instrumentor::class)->detailedMode(true);
         }
 
         $di = self::setUtilities($di);
         $di = self::setModels($di);
 
         $di->set(
-            'db',
+            IKeyStore::class,
+            function (Instrumentor $ins) {
+                $iid = $ins->start('nonpersistent:create');
+                $cache = new Cache\NonPersistent('');
+                $ins->end($iid);
+                return $cache;
+            }
+        );
+
+        $di->set(
+            PDO::class,
             function (Container $di) {
-                $ins = $di->get('instrumentor');
-                $iid = $ins->start('pdo:connect');
+                $ins = $di->get(Instrumentor::class);
                 $config = $di->get('config');
+
+                $iid = $ins->start('pdo:connect');
 
                 $dsn = "mysql:dbname={$config['db.database']};charset=UTF8;";
 
@@ -83,17 +93,6 @@ class DependencyInjection
             }
         );
 
-        $di->set(
-            'cache',
-            function (Container $di) {
-                $ins = $di->get('instrumentor');
-                $iid = $ins->start('nonpersistent:create');
-                $cache = new Cache\NonPersistent('');
-                $ins->end($iid);
-                return $cache;
-            }
-        );
-
         return $di;
     }
 
@@ -106,17 +105,9 @@ class DependencyInjection
     {
         Profiler::start('setUtilities');
 
-        $di->set('utility.images', function ($di) {
-            return new Utilities\ImageUtilities($di);
-        });
-
-        $di->set('utility.encryption', function ($di) {
-            return new Utilities\Encryption($di);
-        });
-
-        $di->set('utility.time', function () {
-            return new Utilities\Time();
-        });
+        $di->set(ImageUtilities::class, DI\autowire());
+        $di->set(Encryption::class, DI\autowire()->constructorParameter('encryptionKey', $di->get('config')['api.auth_key']));
+        $di->set(Time::class, DI\autowire());
 
         Profiler::finish('setUtilities');
 
@@ -132,10 +123,10 @@ class DependencyInjection
     {
         Profiler::start('setModels');
 
-        $di->set('model.files_map', function ($di) {
-            return new Model\FilesMap($di, function ($c) {
+        $di->set(FilesMap::class, function (IKeyStore $cache, PDO $db) {
+            return new Model\FilesMap(function ($c) {
                 return new Entity\FilesMap($c);
-            });
+            }, $cache, $db);
         });
 
         Profiler::finish('setModels');

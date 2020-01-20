@@ -7,9 +7,12 @@ define('ERROR_REPORTING', E_ALL & ~(E_STRICT | E_NOTICE | E_WARNING | E_DEPRECAT
 require_once BASE_ROOT . '/vendor/autoload.php'; // set up autoloading
 
 use DI\Container;
+use Mei\Cache\IKeyStore;
 use Mei\Controller\ErrorCtrl;
 use Mei\Dispatcher;
+use Mei\Instrumentation\Instrumentor;
 use Mei\Middleware;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use RunTracy\Helpers\Profiler\Profiler;
 use RunTracy\Middlewares\TracyMiddleware;
@@ -56,7 +59,6 @@ Debugger::getBlueScreen()->maxLength = 520;
 array_push(
     Debugger::getBlueScreen()->keysToHide,
     'SERVER_ADDR',
-    'REMOTE_ADDR',
     '_tracy',
     'PHP_AUTH_PW'
 );
@@ -68,7 +70,7 @@ Debugger::getBlueScreen()->addPanel(
         }
         return [
             'tab' => 'Cache hits',
-            'panel' => Debugger::dump($di->get('cache')->getCacheHits(), true),
+            'panel' => Debugger::dump($di->get(IKeyStore::class)->getCacheHits(), true),
         ];
     }
 );
@@ -79,7 +81,7 @@ Debugger::getBlueScreen()->addPanel(
         }
         return [
             'tab' => 'Instrumentor',
-            'panel' => Debugger::dump($di->get('instrumentor')->getLog(), true),
+            'panel' => Debugger::dump($di->get(Instrumentor::class)->getLog(), true),
         ];
     }
 );
@@ -114,18 +116,18 @@ if ($di->get('config')['mode'] === 'production') {
     $errorHandler->setErrorHandler( // handling for built-in errors when route not found or method not allowed
         HttpException::class,
         function (Request $request, Throwable $exception) use ($di) {
-            return (new ErrorCtrl($di))->handleException(
+            return (new ErrorCtrl())->handleException(
                 $request,
-                $di->get('response.factory')->createResponse(),
+                $di->get(ResponseFactoryInterface::class)->createResponse(),
                 $exception
             );
         }
     );
     $errorHandler->setDefaultErrorHandler( // default error handler
         function (Request $request, Throwable $exception) use ($di) {
-            return (new ErrorCtrl($di))->handleException(
+            return (new ErrorCtrl())->handleException(
                 $request,
-                $di->get('response.factory')->createResponse(),
+                $di->get(ResponseFactoryInterface::class)->createResponse(),
                 $exception
             );
         }
@@ -138,5 +140,5 @@ $app->run();
 Profiler::enable(); // enable back profiler to finish() on what it started before it might've been disabled
 Profiler::finish('app');
 
-Debugger::barDump($di->get('cache')->getCacheHits(), 'Cache hits');
-Debugger::barDump($di->get('instrumentor')->getLog(), 'Instrumentor');
+Debugger::barDump($di->get(IKeyStore::class)->getCacheHits(), 'Cache hits');
+Debugger::barDump($di->get(Instrumentor::class)->getLog(), 'Instrumentor');

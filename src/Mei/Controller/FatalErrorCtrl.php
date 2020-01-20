@@ -2,7 +2,6 @@
 
 namespace Mei\Controller;
 
-use DI\Container;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Throwable;
@@ -16,19 +15,9 @@ use Tracy\Debugger;
 class FatalErrorCtrl
 {
     /**
-     * @var Container
+     * @Inject("obLevel")
      */
-    private $di;
-
-    /**
-     * FatalErrorCtrl constructor.
-     *
-     * @param $di
-     */
-    public function __construct(Container $di)
-    {
-        $this->di = $di;
-    }
+    private $obLevel;
 
     /**
      * Render very simple error page in case of fatal PHP error
@@ -52,7 +41,7 @@ class FatalErrorCtrl
         $response = $response->withBody($body);
 
         // clear output buffer
-        while (ob_get_level() > @$this->di->get('obLevel')) {
+        while (ob_get_level() > @$this->obLevel) {
             $status = ob_get_status();
             if (in_array($status['name'], ['ob_gzhandler', 'zlib output compression'], true)) {
                 break;

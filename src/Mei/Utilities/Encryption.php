@@ -2,7 +2,6 @@
 
 namespace Mei\Utilities;
 
-use DI\Container;
 use Exception;
 use Tracy\Debugger;
 
@@ -21,19 +20,13 @@ class Encryption
     protected $encryptionKey;
 
     /**
-     * @var array
-     */
-    protected $config;
-
-    /**
      * Encryption constructor.
      *
-     * @param Container $di
+     * @param string $encryptionKey
      */
-    public function __construct(Container $di)
+    public function __construct(string $encryptionKey)
     {
-        $this->config = $di->get('config');
-        $this->encryptionKey = md5($this->config['api.auth_key']);
+        $this->encryptionKey = md5($encryptionKey);
     }
 
     /**

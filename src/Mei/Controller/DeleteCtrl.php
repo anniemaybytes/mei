@@ -3,8 +3,11 @@
 namespace Mei\Controller;
 
 use Exception;
+use Mei\Model\FilesMap;
+use Mei\Utilities\ImageUtilities;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Routing\RouteParser;
 use Tracy\Debugger;
 
 /**
@@ -14,6 +17,24 @@ use Tracy\Debugger;
  */
 class DeleteCtrl extends BaseCtrl
 {
+    /**
+     * @Inject
+     * @var RouteParser
+     */
+    private $router;
+
+    /**
+     * @Inject
+     * @var ImageUtilities
+     */
+    private $imageUtils;
+
+    /**
+     * @Inject
+     * @var FilesMap
+     */
+    private $filesMap;
+
     /**
      * @param Request $request
      * @param Response $response
@@ -41,7 +62,7 @@ class DeleteCtrl extends BaseCtrl
 
         foreach ($imgs as $img) {
             $info = pathinfo($img);
-            $fileEntity = $this->di->get('model.files_map')->getByFileName(
+            $fileEntity = $this->filesMap->getByFileName(
                 $info['filename'] . '.' . $info['extension']
             );
 
@@ -51,7 +72,7 @@ class DeleteCtrl extends BaseCtrl
             }
             if ($fileEntity->Protected) {
                 $fileEntity->Protected--;
-                $this->di->get('model.files_map')->save($fileEntity); // decrease protected count by one
+                $this->filesMap->save($fileEntity); // decrease protected count by one
 
                 $success--;
                 continue;
@@ -60,11 +81,11 @@ class DeleteCtrl extends BaseCtrl
             $uri = $request->getUri();
             $domain = $uri->getScheme() . '://' . $uri->getHost();
             $urls = [
-                ($domain . $this->di->get('router')->relativeUrlFor(
+                ($domain . $this->router->relativeUrlFor(
                         'serve',
                         ['img' => $info['filename'] . '.' . $info['extension']]
                     )),
-                ($domain . $this->di->get('router')->relativeUrlFor(
+                ($domain . $this->router->relativeUrlFor(
                         'serve:legacy',
                         ['img' => $info['filename'] . '.' . $info['extension']]
                     ))
@@ -72,7 +93,7 @@ class DeleteCtrl extends BaseCtrl
 
             foreach (ServeCtrl::$legacySizes as $resInfo) // handling common resolutions + crop
             {
-                $urls[] = ($domain . $this->di->get('router')->relativeUrlFor(
+                $urls[] = ($domain . $this->router->relativeUrlFor(
                         'serve',
                         [
                             'img' => (
@@ -80,7 +101,7 @@ class DeleteCtrl extends BaseCtrl
                             )
                         ]
                     ));
-                $urls[] = ($domain . $this->di->get('router')->relativeUrlFor(
+                $urls[] = ($domain . $this->router->relativeUrlFor(
                         'serve:legacy',
                         [
                             'img' => (
@@ -89,7 +110,7 @@ class DeleteCtrl extends BaseCtrl
                         ]
                     ));
 
-                $urls[] = ($domain . $this->di->get('router')->relativeUrlFor(
+                $urls[] = ($domain . $this->router->relativeUrlFor(
                         'serve',
                         [
                             'img' => (
@@ -97,7 +118,7 @@ class DeleteCtrl extends BaseCtrl
                             )
                         ]
                     ));
-                $urls[] = ($domain . $this->di->get('router')->relativeUrlFor(
+                $urls[] = ($domain . $this->router->relativeUrlFor(
                         'serve:legacy',
                         [
                             'img' => (
@@ -108,14 +129,14 @@ class DeleteCtrl extends BaseCtrl
             }
 
             try {
-                $this->di->get('model.files_map')->delete($fileEntity);
-                if (!$this->di->get('model.files_map')->getByKey(
+                $this->filesMap->delete($fileEntity);
+                if (!$this->filesMap->getByKey(
                     $fileEntity->Key
                 )) { // file does not exist anymore anywhere, remove it
                     $savePath = pathinfo($fileEntity->Key);
-                    $this->di->get('utility.images')->deleteImage(
-                        $this->di->get('utility.images')->getSavePath(
-                            $savePath['filename'] . '.' . $this->di->get('utility.images')->mapExtension(
+                    $this->imageUtils->deleteImage(
+                        $this->imageUtils->getSavePath(
+                            $savePath['filename'] . '.' . $this->imageUtils->mapExtension(
                                 $savePath['extension']
                             )
                         )
@@ -127,7 +148,7 @@ class DeleteCtrl extends BaseCtrl
             }
 
             try {
-                $this->di->get('utility.images')->clearCacheForImage($urls);
+                $this->imageUtils->clearCacheForImage($urls);
             } catch (Exception $e) {
                 Debugger::log($e, Debugger::EXCEPTION);
             }

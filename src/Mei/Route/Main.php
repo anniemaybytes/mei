@@ -2,13 +2,14 @@
 
 namespace Mei\Route;
 
-use DI\Container;
 use Mei\Controller\DeleteCtrl;
 use Mei\Controller\ServeCtrl;
 use Mei\Controller\UploadCtrl;
+use Psr\Container\ContainerInterface as Container;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Routing\RouteCollectorProxy;
+use Slim\Routing\RouteParser;
 
 /**
  * Class Main
@@ -35,7 +36,7 @@ class Main extends Base
             $group->get('/images/{img:[a-zA-Z0-9]{32}(?:-\d{2,3}x\d{2,3}(?:-crop)?)?\.[a-zA-Z]{3,4}}',
                 function (Request $request, Response $response, array $args) { // legacy
                     /** @var Container $this */
-                    return $response->withStatus(301)->withRedirect($this->get('router')->relativeUrlFor('serve', ['img' => $args['img']]));
+                    return $response->withStatus(301)->withRedirect($this->get(RouteParser::class)->relativeUrlFor('serve', ['img' => $args['img']]));
                 }
             )->setName('serve:legacy');
         });

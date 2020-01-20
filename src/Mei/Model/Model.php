@@ -2,12 +2,10 @@
 
 namespace Mei\Model;
 
-use DI\Container;
 use Exception;
 use InvalidArgumentException;
 use Mei\Cache\IKeyStore;
 use Mei\Entity\IEntity;
-use Mei\Instrumentation\PDOInstrumentationWrapper;
 use Mei\Utilities\PDOParamMapper;
 use PDO;
 
@@ -19,7 +17,7 @@ use PDO;
 abstract class Model implements IModel
 {
     /**
-     * @var PDOInstrumentationWrapper
+     * @var PDO
      */
     protected $db;
 
@@ -27,11 +25,6 @@ abstract class Model implements IModel
      * @var IKeyStore
      */
     protected $cache;
-
-    /**
-     * @var Container $di
-     */
-    protected $di;
 
     /**
      * callable that takes an ICacheable as argument and returns an entity
@@ -46,24 +39,24 @@ abstract class Model implements IModel
     /**
      * Model constructor.
      *
-     * @param Container $di
      * @param callable $entityBuilder
+     * @param IKeyStore $cache
+     * @param PDO $db
      */
-    public function __construct(Container $di, callable $entityBuilder)
+    public function __construct(callable $entityBuilder, IKeyStore $cache, PDO $db)
     {
-        $this->di = $di;
-        $this->db = $this->di->get('db');
-        $this->cache = $this->di->get('cache');
         $this->entityBuilder = $entityBuilder;
         $this->inTransaction = false;
+        $this->cache = $cache;
+        $this->db = $db;
     }
 
     /**
      * Return an instance of the database object.
      *
-     * @return PDOInstrumentationWrapper
+     * @return PDO
      */
-    protected function getDatabase(): PDOInstrumentationWrapper
+    protected function getDatabase(): PDO
     {
         return $this->db;
     }

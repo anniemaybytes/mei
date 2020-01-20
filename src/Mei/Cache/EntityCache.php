@@ -11,12 +11,34 @@ use Mei\Entity\ICacheable;
  */
 class EntityCache implements ICacheable
 {
+    /**
+     * @var string
+     */
     private $key;
+
+    /**
+     * @var array
+     */
     private $id;
+
+    /**
+     * @var int
+     */
     private $duration;
+
+    /**
+     * @var bool
+     */
     private $dirty;
 
+    /**
+     * @var array
+     */
     private $dbRow;
+
+    /**
+     * @var array
+     */
     private $loadedValues;
 
     /**
@@ -78,6 +100,9 @@ class EntityCache implements ICacheable
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getId()
     {
         return $this->id;
