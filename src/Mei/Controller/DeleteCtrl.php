@@ -29,14 +29,14 @@ class DeleteCtrl extends BaseCtrl
         $auth = $request->getParam('auth');
 
         if (!hash_equals($auth, $this->config['api.auth_key'])) {
-            return $response->withJson(['success' => false, 'reason' => 'access denied'])->withStatus(403);
+            return $response->withStatus(403)->withJson(['success' => false, 'reason' => 'access denied']);
         }
 
         $imgs = json_decode($request->getParam('imgs'));
         $success = count($imgs);
 
         if (!$success) {
-            return $response->withJson(['success' => false, 'reason' => 'imgs array was empty'])->withStatus(200);
+            return $response->withStatus(200)->withJson(['success' => false, 'reason' => 'imgs array was empty']);
         }
 
         foreach ($imgs as $img) {
@@ -133,6 +133,6 @@ class DeleteCtrl extends BaseCtrl
             }
         }
 
-        return $response->withJson(['success' => $success])->withStatus(200);
+        return $response->withStatus(200)->withJson(['success' => $success]);
     }
 }

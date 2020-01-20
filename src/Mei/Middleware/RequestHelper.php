@@ -5,8 +5,9 @@ namespace Mei\Middleware;
 use DI\Container;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use RunTracy\Helpers\Profiler\Profiler;
-use Slim\MiddlewareDispatcher;
 
 /**
  * Class RequestHelper
@@ -16,7 +17,7 @@ use Slim\MiddlewareDispatcher;
  *
  * @package Mei\Middleware
  */
-class RequestHelper
+class RequestHelper implements MiddlewareInterface
 {
     /**
      * @var Container
@@ -35,11 +36,11 @@ class RequestHelper
 
     /**
      * @param Request $request
-     * @param MiddlewareDispatcher $handler
+     * @param RequestHandlerInterface $handler
      *
      * @return Response
      */
-    public function __invoke(Request $request, $handler): Response
+    public function process(Request $request, RequestHandlerInterface $handler): Response
     {
         Profiler::start('requestHelperMiddleware');
         $this->di->set('request', $request);

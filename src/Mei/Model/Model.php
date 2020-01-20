@@ -186,6 +186,7 @@ abstract class Model implements IModel
         }
         $builder = $this->entityBuilder;
         $entityCache = $this->getCache()->getEntityCache($this->getTableName());
+        /** @var IEntity $entity */
         $entity = $builder($entityCache);
 
         foreach ($arr as $k => $v) {

@@ -2,8 +2,9 @@
 
 namespace RunTracy\Middlewares;
 
-use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface;
 use RunTracy\Helpers\IncludedFiles;
 use RunTracy\Helpers\ProfilerPanel;
 use RunTracy\Helpers\SlimContainerPanel;
@@ -41,7 +42,7 @@ class TracyMiddleware
 
     /**
      * @param Request $request
-     * @param $handler
+     * @param RequestHandlerInterface $handler
      *
      * @return Response
      */

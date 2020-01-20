@@ -124,10 +124,10 @@ class ServeCtrl extends BaseCtrl
                     'Performing internal redirect...'
                 ); // todo https://github.com/slimphp/Slim/issues/2924
             }
-            return $response->write($bindata)->withHeader(
+            return $response->withHeader(
                 'Content-Security-Policy',
                 "default-src 'none'; img-src data:; style-src 'unsafe-inline'"
-            );
+            )->write($bindata);
         } else { // matches etag, return 304
             return $response->withStatus(304)->withHeader(
                 'Content-Security-Policy',

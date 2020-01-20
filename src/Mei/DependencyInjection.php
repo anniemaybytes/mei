@@ -53,7 +53,7 @@ class DependencyInjection
 
         $di->set(
             'db',
-            function ($di) {
+            function (Container $di) {
                 $ins = $di->get('instrumentor');
                 $iid = $ins->start('pdo:connect');
                 $config = $di->get('config');
@@ -66,8 +66,8 @@ class DependencyInjection
                     $dsn .= "host={$config['db.hostname']};port={$config['db.port']};";
                 }
 
-                $o = new PDO(
-                    $dsn, $config['db.username'],
+                $w = new Instrumentation\PDOInstrumentationWrapper(
+                    $ins, $dsn, $config['db.username'],
                     $config['db.password'],
                     [
                         PDO::ATTR_PERSISTENT => false,
@@ -76,7 +76,7 @@ class DependencyInjection
                         PDO::ATTR_EMULATE_PREPARES => false, // emulated prepares ignore param hinting when binding
                     ]
                 );
-                $w = new Instrumentation\PDOInstrumentationWrapper($di->get('instrumentor'), $o);
+
                 $ins->end($iid);
 
                 return $w;
@@ -85,13 +85,12 @@ class DependencyInjection
 
         $di->set(
             'cache',
-            function ($di) {
+            function (Container $di) {
                 $ins = $di->get('instrumentor');
                 $iid = $ins->start('nonpersistent:create');
-                $cache = [];
-                $mycache = new Cache\NonPersistent($cache, '');
+                $cache = new Cache\NonPersistent('');
                 $ins->end($iid);
-                return $mycache;
+                return $cache;
             }
         );
 

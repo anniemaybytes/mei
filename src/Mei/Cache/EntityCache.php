@@ -149,7 +149,7 @@ class EntityCache implements ICacheable
         if (!$key) {
             return;
         }
-        $cached = $cache->get($key);
+        $cached = $cache->doGet($key);
         if ($cached) {
             $this->dirty = false;
             $this->setData($cached);
@@ -202,7 +202,7 @@ class EntityCache implements ICacheable
         $key = $this->getCacheKey();
         if ($key) {
             $this->dirty = false;
-            $cache->set($key, $r, $this->duration);
+            $cache->doSet($key, $r, $this->duration);
         }
 
         return $r;
@@ -216,7 +216,7 @@ class EntityCache implements ICacheable
         $key = $this->getCacheKey();
         if ($key) {
             $this->dirty = false;
-            $cache->delete($key);
+            $cache->doDelete($key);
         }
     }
 }

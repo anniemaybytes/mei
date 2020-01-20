@@ -24,11 +24,7 @@ class Instrumentor
 
     public function __construct()
     {
-        if (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
-            $this->start = (float)$_SERVER['REQUEST_TIME_FLOAT'];
-        } else {
-            $this->start = $this->now();
-        }
+        $this->start = $this->now();
     }
 
     /**
@@ -110,7 +106,7 @@ class Instrumentor
         $iid = $this->start($event, $extraData);
         /** @var callable $func */
         $res = $func();
-        $this->end($iid);
+        $this->end($iid, $res);
         return $res;
     }
 

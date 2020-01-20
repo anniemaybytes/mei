@@ -35,7 +35,7 @@ class Main extends Base
             $group->get('/images/{img:[a-zA-Z0-9]{32}(?:-\d{2,3}x\d{2,3}(?:-crop)?)?\.[a-zA-Z]{3,4}}',
                 function (Request $request, Response $response, array $args) { // legacy
                     /** @var Container $this */
-                    return $response->withRedirect($this->get('router')->relativeUrlFor('serve', ['img' => $args['img']]))->withStatus(301);
+                    return $response->withStatus(301)->withRedirect($this->get('router')->relativeUrlFor('serve', ['img' => $args['img']]));
                 }
             )->setName('serve:legacy');
         });

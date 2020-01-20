@@ -27,18 +27,18 @@ class ErrorCtrl extends BaseCtrl
     public function handleException(Request $request, Response $response, Throwable $exception): Response
     {
         try {
-            $status = 500;
+            $statusCode = 500;
             $message = '500 Internal Server Error';
             if ($exception instanceof HttpException) {
-                $status = $exception->getCode();
+                $statusCode = $exception->getCode();
                 $message = $exception->getTitle();
             } elseif ($exception instanceof NoImages) {
-                $status = 415;
+                $statusCode = 415;
                 $message = "415 Unsupported Media Type - " . $exception->getMessage();
             } elseif ($exception instanceof GeneralException) {
                 $message .= " - {$exception->getMessage()}";
             }
-            $this->logError($request, $exception, $status);
+            $this->logError($request, $exception, $statusCode);
 
             // clear the body first
             $body = $response->getBody();
@@ -56,7 +56,7 @@ class ErrorCtrl extends BaseCtrl
                 }
             }
 
-            return $response->withStatus($status)->write($message);
+            return $response->withStatus($statusCode)->write($message);
         } catch (Throwable $e) {
             return (new FatalErrorCtrl($this->di))->handleError($request, $response, $e);
         }
