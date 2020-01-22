@@ -47,7 +47,7 @@ class PDOInstrumentationWrapper extends PDO
         parent::__construct($dsn, $username, $passwd, $options);
         $this->setAttribute(
             PDO::ATTR_STATEMENT_CLASS,
-            ['Mei\\Instrumentation\\PDOStatementInstrumentationWrapper', [$instrumentor]]
+            [PDOStatementInstrumentationWrapper::class, [$instrumentor]]
         );
     }
 
@@ -67,21 +67,22 @@ class PDOInstrumentationWrapper extends PDO
      * even if child transaction was already commited (commiting child transaction just removes it from queue stack)
      *
      * {@inheritDoc}
+     * @noinspection MissUsingParentKeywordInspection
      */
-    public function beginTransaction()
+    public function beginTransaction(): bool
     {
         $tid = $this->instrumentor->start('pdo:transaction'); // get tid
-        array_push($this->transactionQueue, $tid); // ... and push it to array
+        $this->transactionQueue[] = $tid; // ... and push it to array
 
         if (!parent::inTransaction()) {
             return parent::beginTransaction(); // creating new parent transaction
-        } else {
-            return $this->exec('SAVEPOINT tq_' . $tid) ? true : false; // creating new child transaction via savepoint
         }
+
+        return $this->exec('SAVEPOINT tq_' . $tid) ? true : false; // creating new child transaction via savepoint
     }
 
     /** {@inheritDoc} */
-    public function commit()
+    public function commit(): bool
     {
         $tid = array_pop($this->transactionQueue);
         if (count($this->transactionQueue) !== 0) {
@@ -94,7 +95,7 @@ class PDOInstrumentationWrapper extends PDO
     }
 
     /** {@inheritDoc} */
-    public function rollBack()
+    public function rollBack(): bool
     {
         $tid = array_pop($this->transactionQueue); // pop transactionId
         if (count($this->transactionQueue) === 0) { // this is parent transaction, do transaction rollback
@@ -110,12 +111,12 @@ class PDOInstrumentationWrapper extends PDO
     }
 
     /** {@inheritDoc} */
-    public function query($statement, $type = null, $type_arg = null, $ctorarg = null)
+    public function query($statement, $type = null, $type_arg = null, $ctorarg = [])
     {
         $set = [$type, $type_arg, $ctorarg];
         $n = 0;
         foreach ($set as $elem) {
-            if (is_null($elem)) {
+            if ($elem === null) {
                 break;
             }
             $n++;
@@ -137,9 +138,8 @@ class PDOInstrumentationWrapper extends PDO
                 break;
             default:
                 throw new BadFunctionCallException(
-                    "PDOInstrumentationWrapper can't handle query with " . $n . " additional arguments"
+                    "PDOInstrumentationWrapper can't handle query with " . $n . ' additional arguments'
                 );
-                break;
         }
         $this->instrumentor->end($iid, $res);
 
@@ -163,7 +163,7 @@ class PDOInstrumentationWrapper extends PDO
         try {
             $res = parent::exec($statement);
         } catch (PDOException $e) {
-            if (!in_array($e->errorInfo[1], [1213, 1205]) || $retries < 0) {
+            if ($retries < 0 || !in_array($e->errorInfo[1], [1213, 1205], true)) {
                 throw $e;
             }
             sleep(max([2, (3 - $retries) * 3])); // wait longer as attempts increase

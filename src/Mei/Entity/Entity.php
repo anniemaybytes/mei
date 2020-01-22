@@ -10,7 +10,6 @@ use IteratorAggregate;
 use JsonSerializable;
 use Mei\Entity\EntityAttributeMapper as Mapper;
 use Mei\Entity\EntityAttributeType as Type;
-use Traversable;
 
 /**
  * Class Entity
@@ -59,32 +58,22 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
 
     /// IEntity Implementation
 
-    /**
-     * Get an array of entity attributes as key and their type as value
-     *
-     * @return string[]
-     * @throws Exception
-     */
-    public function getAttributes(): array
+    /** {@inheritDoc} */
+    public static function getAttributes(): array
     {
         return static::getAttributesFromColumns(static::$columns);
     }
 
-    /**
-     * @param $columns
-     *
-     * @return array
-     */
-    public static function getAttributesFromColumns(array $columns): array
+    /** {@inheritDoc} */
+    private static function getAttributesFromColumns(array $columns): array
     {
         $attributes = [];
 
         foreach ($columns as $val) {
             if (!is_array($val) || count($val) < 2) {
-                throw new DomainException("Invalid attributes set");
+                throw new DomainException('Invalid attributes set');
             }
-            $column = $val[0];
-            $type = $val[1];
+            [$column, $type] = $val;
             $attributes[$column] = $type;
         }
 
@@ -92,60 +81,48 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     }
 
     /**
-     * Get an array of entity attributes as key and their default value as value.
-     * If an attribute does not have a default value, it should not be included
-     * in the array.
-     *
-     * @return string[]
+     * @inheritDoc
+     * @throws Exception
      */
-    public function getDefaults(): array
+    public static function getDefaults(): array
     {
         return static::getDefaultsFromColumns(static::$columns);
     }
 
     /**
-     * @param array $columns
-     *
-     * @return array
+     * @inheritDoc
+     * @throws Exception
      */
-    public static function getDefaultsFromColumns(array $columns): array
+    private static function getDefaultsFromColumns(array $columns): array
     {
         $defaults = [];
         foreach ($columns as $val) {
             if (!is_array($val) || count($val) < 2) {
-                throw new DomainException("Invalid defaults set");
+                throw new DomainException('Invalid defaults set');
             }
             $column = $val[0];
             if (isset($val[2])) {
-                $defaults[$column] = $val[2];
+                $type = self::getAttributes()[$column];
+                $defaults[$column] = Type::toString($type, $val[2]);
             }
         }
 
         return $defaults;
     }
 
-    /**
-     * Get an array of the attributes used to uniquely identify the entity.
-     * This array can also be empty.
-     *
-     * @return string[]
-     */
-    public function getIdAttributes(): array
+    /** {@inheritDoc} */
+    public static function getIdAttributes(): array
     {
         return static::getIdAttributesFromColumns(static::$columns);
     }
 
-    /**
-     * @param array $columns
-     *
-     * @return array
-     */
-    public static function getIdAttributesFromColumns(array $columns): array
+    /** {@inheritDoc} */
+    private static function getIdAttributesFromColumns(array $columns): array
     {
         $ids = [];
         foreach ($columns as $val) {
             if (!is_array($val) || count($val) < 2) {
-                throw new DomainException("Invalid ID set");
+                throw new DomainException('Invalid ID set');
             }
             $column = $val[0];
             if (isset($val[3]) && $val[3]) {
@@ -156,21 +133,13 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
         return $ids;
     }
 
-    /**
-     * Get array of id, key being attribute name and value being the value.
-     * Return null if the id is not set, or only partially set in the case of
-     * multiple ids. If there are no id attributes, should return an empty array
-     *
-     * @return array|null
-     */
+    /** {@inheritDoc} */
     public function getId(): ?array
     {
-        $ids = $this->getIdAttributes();
+        $ids = self::getIdAttributes();
         $id = [];
         foreach ($ids as $col) {
-            if (is_null($this->getCacheable()) ||
-                is_null($this->mapper) ||
-                !$this->mapper->isAttributeSet($this->getCacheable(), $col)) {
+            if (!$this->mapper->isAttributeSet($this->getCacheable(), $col)) {
                 return null;
             }
             $id[$col] = $this->mapper->get($this->getCacheable(), $col);
@@ -179,48 +148,33 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
         return $id;
     }
 
-    /**
-     * @param ICacheable $cacheable
-     *
-     * @return $this
-     */
-    public function setCacheable(ICacheable $cacheable): self
+    /** {@inheritDoc} */
+    public function setCacheable(ICacheable $cacheable): IEntity
     {
         $this->cache = $cacheable;
         return $this;
     }
 
-    /**
-     * @return ICacheable
-     */
+    /** {@inheritDoc} */
     public function getCacheable(): ICacheable
     {
         return $this->cache;
     }
 
-    /**
-     * @return array
-     */
+    /** {@inheritDoc} */
     public function getChangedValues(): array
     {
         return $this->mapper->getChangedValues($this->getCacheable());
     }
 
-    /**
-     * @return array
-     */
+    /** {@inheritDoc} */
     public function getValues(): array
     {
         return $this->mapper->getValues($this->getCacheable());
     }
 
     /**
-     * Get an array of the entity values.
-     * The attribute is the key and the value is the value.
-     * If an attribute is not set, it should not be part of the array.
-     * The value should be a php value.
-     *
-     * @return mixed[]
+     * @inheritDoc
      * @throws Exception
      */
     public function getMappedValues(): array
@@ -229,54 +183,42 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
         $mappedValues = [];
 
         foreach ($values as $attribute => $value) {
-            $type = $this->getAttributes()[$attribute];
+            $type = self::getAttributes()[$attribute];
             $mappedValues[$attribute] = Type::fromTo($type, $value);
         }
 
         return $mappedValues;
     }
 
-    /**
-     * @param $new
-     *
-     * @return $this|mixed
-     */
-    public function setNew(bool $new): self
+    /** {@inheritDoc} */
+    public function setNew(bool $new): IEntity
     {
         $this->new = $new;
         return $this;
     }
 
-    /**
-     * @return bool
-     */
+    /** {@inheritDoc} */
     public function isNew(): bool
     {
         return $this->new;
     }
 
-    /**
-     * @return bool
-     */
+    /** {@inheritDoc} */
     public function hasChanged(): bool
     {
         return $this->mapper->hasChanged($this->getCacheable());
     }
 
     /**
-     * Reset the entity state, for example after the entity is saved
-     *
-     * @param ICacheable $cache
-     *
-     * @return $this|mixed
+     * @inheritDoc
      * @throws Exception
      */
-    public function reset(ICacheable $cache): self
+    public function reset(ICacheable $cache): IEntity
     {
         $this->new = false;
-        $this->mapper = new Mapper($this->getAttributes(), $this->getDefaults());
+        $this->mapper = new Mapper(self::getAttributes(), self::getDefaults());
         $this->setCacheable($cache);
-        if (!($cache->getId()) && !is_null($this->getId())) {
+        if (!($cache->getId()) && $this->getId() !== null) {
             $cache = $this->getCacheable()->setId($this->getId());
             $this->setCacheable($cache);
         }
@@ -284,15 +226,11 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
         return $this;
     }
 
-    /**
-     * @param string $key
-     *
-     * @return array
-     */
+    /** {@inheritDoc} */
     public function getCachedValue(string $key): array
     {
         $value = $this->getCacheable()->getLoaded($key);
-        if (is_null($value)) {
+        if ($value === null) {
             $value = $this->generateCachedValue($key);
             $cache = $this->getCacheable()->setLoaded($key, $value);
             $this->setCacheable($cache);
@@ -305,37 +243,27 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
      *
      * @return array
      */
-    public function generateCachedValue(string $key): array
+    private function generateCachedValue(string $key): array
     {
         return [];
     }
 
     /// \ArrayAccess implementation
 
-    /**
-     * @param mixed $offset
-     *
-     * @return bool
-     */
+    /** {@inheritDoc} */
     public function offsetExists($offset): bool
     {
         return $this->__isset($offset);
     }
 
-    /**
-     * @param mixed $offset
-     *
-     * @return mixed|IEntity|void
-     */
+    /** {@inheritDoc} */
     public function offsetUnset($offset)
     {
-        return $this->__unset($offset);
+        $this->__unset($offset);
     }
 
     /**
-     * @param mixed $offset
-     *
-     * @return mixed|null
+     * @inheritDoc
      * @throws Exception
      */
     public function offsetGet($offset)
@@ -344,15 +272,12 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     }
 
     /**
-     * @param mixed $offset
-     * @param mixed $value
-     *
-     * @return mixed|IEntity|void
+     * @inheritDoc
      * @throws Exception
      */
     public function offsetSet($offset, $value)
     {
-        return $this->__set($offset, $value);
+        $this->__set($offset, $value);
     }
 
     /**
@@ -367,19 +292,17 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
 
     /**
      * @param string $attribute
-     *
-     * @return mixed|IEntity
      */
     public function __unset(string $attribute)
     {
         $cache = $this->mapper->unsetAttribute($this->getCacheable(), $attribute);
-        return $this->setCacheable($cache);
+        $this->setCacheable($cache);
     }
 
     /**
      * @param string $attribute
      *
-     * @return mixed|null
+     * @return mixed
      * @throws Exception
      */
     public function __get(string $attribute)
@@ -388,38 +311,35 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
             return null;
         }
         $value = $this->mapper->get($this->getCacheable(), $attribute);
-        $type = $this->getAttributes()[$attribute];
+        $type = self::getAttributes()[$attribute];
         return Type::fromTo($type, $value);
     }
 
     /**
      * @param string $attribute
-     * @param $value
+     * @param mixed $value
      *
-     * @return mixed|IEntity
      * @throws Exception
      */
-    public function __set(string $attribute, $value)
+    public function __set(string $attribute, $value): void
     {
-        $attributes = $this->getAttributes();
+        $attributes = self::getAttributes();
         // note that we can't use isset here - might be setting an attribute that
         // was never previously set; however, we still don't want to do anything if
         // the attribute does not exist
         if (!array_key_exists($attribute, $attributes)) {
-            return $this;
+            return;
         }
         $type = $attributes[$attribute];
         $mappedValue = Type::toString($type, $value);
         $cache = $this->mapper->set($this->getCacheable(), $attribute, $mappedValue);
-        return $this->setCacheable($cache);
+        $this->setCacheable($cache);
     }
 
     /// \JsonSerializable implementation
 
-    /**
-     * @return array|mixed
-     */
-    public function jsonSerialize()
+    /** {@inheritDoc} */
+    public function jsonSerialize(): array
     {
         return $this->getValues();
     }
@@ -427,10 +347,10 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     /// \IteratorAggregate implementation
 
     /**
-     * @return ArrayIterator|Traversable
+     * @inheritDoc
      * @throws Exception
      */
-    public function getIterator()
+    public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->getMappedValues());
     }

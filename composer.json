@@ -32,5 +32,9 @@
             "Mei\\": "src/Mei/",
             "RunTracy\\": "src/RunTracy/"
         }
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-master",
+        "phpstan/phpstan": "^0.12.7"
     }
 }

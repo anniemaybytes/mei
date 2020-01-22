@@ -20,13 +20,13 @@ class Time
      *
      * @param DateTime $datetime
      *
-     * @return true if time not 0000-00-00 00:00:00
+     * @return bool true if time not 0000-00-00 00:00:00
      * @throws Exception
      */
     public static function timeIsNonZero(DateTime $datetime): bool
     {
         $time = self::fromSql(self::ZERO_SQLTIME);
-        return $datetime != $time;
+        return !($datetime == $time);
     }
 
     /**
@@ -58,7 +58,7 @@ class Time
      */
     public static function fromEpoch($str): DateTime
     {
-        return DateTime::createFromFormat('U', intval($str));
+        return DateTime::createFromFormat('U', (string)(int)$str);
     }
 
     /**

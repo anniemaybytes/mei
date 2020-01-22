@@ -20,13 +20,24 @@ class ImageUtilities
      */
     private $config;
 
+    /**
+     * @var array
+     */
     private static $allowedTypes = [
         'image/jpeg' => 'jpg',
         'image/gif' => 'gif',
         'image/png' => 'png',
         'image/webp' => 'webp'
     ];
+
+    /**
+     * @var array
+     */
     private static $allowedResizeRange = ['min' => 20, 'max' => 1000];
+
+    /**
+     * @var array
+     */
     private static $allowedUrlScheme = ['http', 'https'];
 
     /**
@@ -37,7 +48,7 @@ class ImageUtilities
     public static function mapExtension(string $extension): string
     {
         $extension = strtolower($extension);
-        if ($extension == 'jpeg') {
+        if ($extension === 'jpeg') {
             $extension = 'jpg';
         }
 
@@ -53,7 +64,7 @@ class ImageUtilities
     {
         $data = @getimagesizefromstring($bindata);
         if (!$data || !isset($data['mime'])) {
-            Debugger::log("Unable to read image info on binary data. Aborting.", DEBUGGER::WARNING);
+            Debugger::log('Unable to read image info on binary data. Aborting.', DEBUGGER::WARNING);
             return null;
         }
         if (!array_key_exists($data['mime'], self::$allowedTypes)) {
@@ -108,7 +119,7 @@ class ImageUtilities
         $scheme = parse_url($url, PHP_URL_SCHEME);
         $host = parse_url($url, PHP_URL_HOST);
 
-        if (in_array($scheme, self::$allowedUrlScheme)) {
+        if (in_array($scheme, self::$allowedUrlScheme, true)) {
             $curl = new Curl($url);
             $curl->setoptArray(
                 [
@@ -134,7 +145,7 @@ class ImageUtilities
 
             $content = $curl->exec();
             $err = $curl->error();
-            if (strlen($err)) {
+            if ($err !== '') {
                 Debugger::log(
                     "cURL error: {$err}",
                     DEBUGGER::WARNING
@@ -187,7 +198,7 @@ class ImageUtilities
      */
     public function readImage(string $bindata): ?Imagick
     {
-        $data = self::readImageData($bindata);
+        $data = $this->readImageData($bindata);
         if (!$data) {
             return null;
         }
@@ -226,10 +237,8 @@ class ImageUtilities
         }
 
         $dir = dirname($savePath);
-        if (!is_dir($dir)) {
-            if (mkdir($dir, 0750, true) === false) {
-                Debugger::log("Unable to create directory $dir.", DEBUGGER::ERROR);
-            }
+        if (!mkdir($dir, 0750, true) && !is_dir($dir)) {
+            Debugger::log("Unable to create directory $dir.", DEBUGGER::ERROR);
         }
         if (file_put_contents($savePath, $bindata) === false) {
             Debugger::log("Unable to save binary data on $savePath.", DEBUGGER::ERROR);
@@ -249,10 +258,10 @@ class ImageUtilities
     private function stripImage(Imagick $image): ?string
     {
         try {
-            $profiles = $image->getImageProfiles("icc", true);
+            $profiles = $image->getImageProfiles('icc', true);
             $image->stripImage();
             if (!empty($profiles)) {
-                $image->profileImage("icc", $profiles['icc']);
+                $image->profileImage('icc', $profiles['icc']);
             }
             return $image->getImagesBlob();
         } catch (ImagickException $e) {
@@ -308,7 +317,7 @@ class ImageUtilities
     /**
      * @param array $urls
      */
-    public function clearCacheForImage(array $urls)
+    public function clearCacheForImage(array $urls): void
     {
         if (is_array($urls) && $this->config['cloudflare.enabled']) { // domain present
             $curl = new Curl(
@@ -332,13 +341,13 @@ class ImageUtilities
                         'Content-Type: application/json'
                     ],
                     CURLOPT_CUSTOMREQUEST => 'DELETE',
-                    CURLOPT_POSTFIELDS => json_encode(["files" => $urls])
+                    CURLOPT_POSTFIELDS => json_encode(['files' => $urls])
                 ]
             );
             $result = $curl->exec();
 
             $err = $curl->error();
-            if (strlen($err)) {
+            if ($err !== '') {
                 Debugger::log(
                     "cURL error: {$err}",
                     DEBUGGER::WARNING

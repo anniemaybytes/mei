@@ -32,9 +32,9 @@ interface IModel
      *
      * @param array $id
      *
-     * @return IEntity | null
+     * @return IEntity|null
      */
-    public function getById(array $id);
+    public function getById(array $id): ?IEntity;
 
     /**
      * Return an entity created from the provided array
@@ -44,7 +44,7 @@ interface IModel
      *
      * @return IEntity
      */
-    public function createEntity(array $arr);
+    public function createEntity(array $arr): IEntity;
 
     /**
      * Save the entity handled by the model.
@@ -53,9 +53,9 @@ interface IModel
      *
      * @param IEntity $entity
      *
-     * @return IEntity
+     * @return IEntity|null
      */
-    public function save(IEntity $entity);
+    public function save(IEntity $entity): ?IEntity;
 
     /**
      * Delete the entity handled by the model.
@@ -64,9 +64,9 @@ interface IModel
      *
      * @param IEntity $entity
      *
-     * @return IEntity
+     * @return IEntity|null
      */
-    public function delete(IEntity $entity);
+    public function delete(?IEntity $entity): ?IEntity;
 
     /**
      * @param array $id

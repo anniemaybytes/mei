@@ -27,5 +27,5 @@ abstract class Base
         $this->addRoutes();
     }
 
-    abstract protected function addRoutes();
+    abstract protected function addRoutes(): void;
 }

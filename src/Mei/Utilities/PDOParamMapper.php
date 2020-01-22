@@ -12,7 +12,7 @@ use PDO;
 class PDOParamMapper
 {
     /**
-     * @param string entityAttrType
+     * @param string $entityAttrType
      *
      * @return int
      */

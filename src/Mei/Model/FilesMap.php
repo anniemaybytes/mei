@@ -5,6 +5,9 @@ namespace Mei\Model;
 /**
  * Class FilesMap
  *
+ * @method \Mei\Entity\FilesMap|null getById(?array $id)
+ * @method \Mei\Entity\FilesMap|null save(\Mei\Entity\FilesMap $entity)
+ * @method \Mei\Entity\FilesMap createEntity(array $arr)
  * @package Mei\Model
  */
 class FilesMap extends Model
@@ -12,7 +15,7 @@ class FilesMap extends Model
     /**
      * @return string
      */
-    public function getTableName()
+    public function getTableName(): string
     {
         return 'files_map';
     }
@@ -28,11 +31,11 @@ class FilesMap extends Model
     }
 
     /**
-     * @param $key
+     * @param string $key
      *
      * @return \Mei\Entity\FilesMap
      */
-    public function getByFileName($key): ?\Mei\Entity\FilesMap
+    public function getByFileName(string $key): ?\Mei\Entity\FilesMap
     {
         return $this->getById(['FileName' => $key]);
     }

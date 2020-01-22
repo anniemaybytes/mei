@@ -66,31 +66,31 @@ class Encryption
      */
     public function decrypt(?string $encryptedData): string
     {
-        if (!is_string($encryptedData) || !strlen($encryptedData)) {
-            return "";
+        if (!is_string($encryptedData) || $encryptedData === '') {
+            return '';
         }
         try {
-            $data = base64_decode($encryptedData);
-            if ($data === false || !strlen($data)) {
-                return "";
+            $data = base64_decode($encryptedData, true);
+            if ($data === false || $data === '') {
+                return '';
             }
-            $initVector = substr($data, 0, 16) ?? "";
-            $unpaddedCryptedData = substr($data, 16) ?? "";
+            $initVector = substr($data, 0, 16) ?? '';
+            $unpaddedCryptedData = substr($data, 16) ?? '';
             $decryptedData = openssl_decrypt(
                     $unpaddedCryptedData,
                     self::CIPHER,
                     $this->encryptionKey,
                     OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING,
                     $initVector
-                ) ?? "";
+                ) ?? '';
             $r = trim($decryptedData);
-            if (!strlen($r)) {
-                return "";
+            if ($r === '') {
+                return '';
             }
             return $r;
         } catch (Exception $e) { // must not throw exception
             Debugger::log($e, Debugger::EXCEPTION);
-            return "";
+            return '';
         }
     }
 
@@ -104,7 +104,7 @@ class Encryption
         $result = $this->decrypt($encryptedData);
         $isUTF8 = preg_match('//u', $result);
         if (!$isUTF8) {
-            return "";
+            return '';
         }
         return $result;
     }

@@ -14,17 +14,17 @@ class AdvancedProfiler extends SimpleProfiler
     /**
      * @var bool
      */
-    protected static $enabled = false;
+    protected static $enabled;
 
     /**
      * @var Profile[]
      */
-    protected static $stack = [];
+    protected static $stack;
 
     /**
      * @var callable
      */
-    protected static $postProcessor = null;
+    protected static $postProcessor;
 
     /**
      * Set post processor
@@ -34,13 +34,15 @@ class AdvancedProfiler extends SimpleProfiler
      *
      * @param callable $postProcessor
      */
-    public static function setPostProcessor(callable $postProcessor)
+    public static function setPostProcessor(callable $postProcessor): void
     {
         static::$postProcessor = $postProcessor;
     }
 
     /**
      * @inheritdoc
+     *
+     * @param mixed $opt
      */
     public static function start(?string $labelOrFormat = null, $args = null, $opt = null): bool
     {
@@ -69,13 +71,13 @@ class AdvancedProfiler extends SimpleProfiler
         $deep = &$args[0];
 
         $backtrace = debug_backtrace();
-        $backtrace = &$backtrace[$deep ? $deep : 0];
+        $backtrace = &$backtrace[$deep ?: 0];
 
         if ($backtrace) {
             return sprintf(
-                "%s#%s",
-                $backtrace["file"],
-                $backtrace["line"]
+                '%s#%s',
+                $backtrace['file'],
+                $backtrace['line']
             );
         }
 
@@ -84,6 +86,8 @@ class AdvancedProfiler extends SimpleProfiler
 
     /**
      * @inheritdoc
+     *
+     * @param mixed $opt
      */
     public static function finish(?string $labelOrFormat = null, $args = null, $opt = null)
     {

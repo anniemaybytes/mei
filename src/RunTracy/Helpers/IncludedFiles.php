@@ -11,6 +11,9 @@ use Tracy\IBarPanel;
  */
 class IncludedFiles implements IBarPanel
 {
+    /**
+     * @var string
+     */
     private $icon = '';
 
     /**
@@ -49,6 +52,7 @@ class IncludedFiles implements IBarPanel
         $files = get_included_files();
         $ret = $this->getHeader();
 
+        $num = 0;
         foreach ($files as $num => $file) {
             $ret .= sprintf(
                 $this->getBaseRow(),
@@ -56,7 +60,7 @@ class IncludedFiles implements IBarPanel
                 $file
             );
         }
-        /** @noinspection PhpUndefinedVariableInspection */
+
         return '
         <h1>' . $this->icon . ' &nbsp; Included Files: ' . $num . '</h1>
         <div class="tracy-inner">

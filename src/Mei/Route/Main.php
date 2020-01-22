@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php /** @noinspection StaticClosureCanBeUsedInspection */
+
+declare(strict_types=1);
 
 namespace Mei\Route;
 
@@ -18,7 +20,7 @@ use Slim\Routing\RouteParser;
  */
 class Main extends Base
 {
-    protected function addRoutes()  /** @formatter:off */
+    protected function addRoutes(): void  /** @formatter:off */
     {
         $app = $this->app;
 

@@ -15,6 +15,8 @@ interface IKeyStore
      * Return value stored for key, or false if not existent
      *
      * @param string $key
+     *
+     * @return mixed
      */
     public function doGet(string $key);
 
@@ -24,21 +26,21 @@ interface IKeyStore
     public function getCacheHits(): array;
 
     /**
-     * @return int
+     * @return float
      */
-    public function getExecutionTime(): int;
+    public function getExecutionTime(): float;
 
     /**
      * Set the key to value.
      * Return true on success or false on failure.
      *
      * @param string $key
-     * @param $value
+     * @param mixed $value
      * @param int $time
      *
      * @return bool
      */
-    public function doSet(string $key, $value, int $time = 10800);
+    public function doSet(string $key, $value, int $time = 10800): bool;
 
     /**
      * Delete the value stored against key.
@@ -48,7 +50,7 @@ interface IKeyStore
      *
      * @return bool
      */
-    public function doDelete(string $key);
+    public function doDelete(string $key): bool;
 
     /**
      * @param string $key
@@ -71,7 +73,7 @@ interface IKeyStore
     /**
      * @param bool $val
      */
-    public function setClearOnGet(bool $val);
+    public function setClearOnGet(bool $val): void;
 
     /**
      * @param string $key
@@ -86,7 +88,7 @@ interface IKeyStore
         int $duration = 10800
     ): ICacheable;
 
-    public function doFlush();
+    public function doFlush(): void;
 
     /**
      * @return array

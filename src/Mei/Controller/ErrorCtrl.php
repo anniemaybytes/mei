@@ -19,6 +19,7 @@ class ErrorCtrl extends BaseCtrl
 {
     /**
      * @Inject("obLevel")
+     * @var int
      */
     private $obLevel;
 
@@ -39,7 +40,7 @@ class ErrorCtrl extends BaseCtrl
                 $message = $exception->getTitle();
             } elseif ($exception instanceof NoImages) {
                 $statusCode = 415;
-                $message = "415 Unsupported Media Type - " . $exception->getMessage();
+                $message = '415 Unsupported Media Type - ' . $exception->getMessage();
             } elseif ($exception instanceof GeneralException) {
                 $message .= " - {$exception->getMessage()}";
             }
@@ -72,7 +73,7 @@ class ErrorCtrl extends BaseCtrl
      * @param Throwable $exception
      * @param int $status
      */
-    private function logError(Request $request, Throwable $exception, int $status)
+    private function logError(Request $request, Throwable $exception, int $status): void
     {
         if ($status !== 500) {
             return;

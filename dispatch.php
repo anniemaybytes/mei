@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection StaticClosureCanBeUsedInspection */
 
 declare(strict_types=1);
 
@@ -34,7 +34,7 @@ Profiler::finish('initApp');
 $di = $app->getContainer();
 
 // disable further profiling based on run mode
-if ($di->get('config')['mode'] == 'production') {
+if ($di->get('config')['mode'] === 'production') {
     Profiler::disable();
 }
 
@@ -44,12 +44,12 @@ Debugger::$maxLength = 520;
 Debugger::$logSeverity = ERROR_REPORTING;
 Debugger::$reservedMemorySize = 5000000; // 5 megabytes because we increase depth for bluescreen
 Debugger::enable(
-    $di->get('config')['mode'] == 'development' ? Debugger::DEVELOPMENT : Debugger::PRODUCTION,
+    $di->get('config')['mode'] === 'development' ? Debugger::DEVELOPMENT : Debugger::PRODUCTION,
     $di->get('config')['logs_dir']
 );
 if ($di->get(
         'config'
-    )['mode'] == 'production') { // tracy resets error_reporting to E_ALL when it's enabled, silence it on production please
+    )['mode'] === 'production') { // tracy resets error_reporting to E_ALL when it's enabled, silence it on production please
     error_reporting(ERROR_REPORTING);
 }
 
@@ -63,7 +63,7 @@ array_push(
 );
 
 Debugger::getBlueScreen()->addPanel(
-    function ($e) use ($di) {
+    static function ($e) use ($di) {
         if ($e) {
             return null;
         }
@@ -74,7 +74,7 @@ Debugger::getBlueScreen()->addPanel(
     }
 );
 Debugger::getBlueScreen()->addPanel(
-    function ($e) use ($di) {
+    static function ($e) use ($di) {
         if ($e) {
             return null;
         }

@@ -31,7 +31,7 @@ class StringUtil
      */
     public static function base64UrlEncode(?string $string): string
     {
-        if (is_null($string)) {
+        if ($string === null) {
             return '';
         }
         return strtr(base64_encode($string), '+/', '-_');

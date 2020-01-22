@@ -60,17 +60,17 @@ class Instrumentor
             $myData['stacktrace'] = ['start' => $this->generateStacktrace(), 'end' => null];
         }
         $len = count($this->eventLog);
-        $this->eventLog[intval($this->start) . '_' . ($len)] = $myData;
-        return intval($this->start) . '_' . ($len); // event ID
+        $this->eventLog[(int)$this->start . '_' . ($len)] = $myData;
+        return (int)$this->start . '_' . ($len); // event ID
     }
 
     /**
      * @param string|null $event
      * @param mixed $extraData
      */
-    public function end(?string $event, $extraData = null)
+    public function end(?string $event, $extraData = null): void
     {
-        if (!$this->enabled || is_null($event)) {
+        if (!$this->enabled || $event === null) {
             return;
         }
         if (!array_key_exists($event, $this->eventLog)) {
@@ -98,7 +98,7 @@ class Instrumentor
     public function wrap(string $event, $extraData = null, ?callable $func = null)
     {
         // convenience, for omitting extra_data
-        if (is_null($func)) {
+        if ($func === null) {
             $func = $extraData;
             $extraData = null;
         }
@@ -135,7 +135,7 @@ class Instrumentor
      */
     public function detailedMode(?bool $detailed = null): bool
     {
-        if (is_null($detailed)) {
+        if ($detailed === null) {
             return $this->detailedMode;
         }
         $this->detailedMode = (bool)$detailed;
@@ -149,7 +149,7 @@ class Instrumentor
      */
     public function enabled(?bool $enabled = null): bool
     {
-        if (is_null($enabled)) {
+        if ($enabled === null) {
             return $this->enabled;
         }
         $this->enabled = (bool)$enabled;

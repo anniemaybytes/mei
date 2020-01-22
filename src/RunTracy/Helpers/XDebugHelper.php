@@ -11,6 +11,9 @@ use Tracy\IBarPanel;
  */
 class XDebugHelper implements IBarPanel
 {
+    /**
+     * @var string
+     */
     protected $ideKey;
 
     /**
@@ -24,11 +27,11 @@ class XDebugHelper implements IBarPanel
     }
 
     /**
-     * @return bool
+     * @return string
      */
-    public function getPanel(): bool
+    public function getPanel(): string
     {
-        return false;
+        return '';
     }
 
     /**

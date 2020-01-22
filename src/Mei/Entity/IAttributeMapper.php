@@ -3,7 +3,6 @@
 namespace Mei\Entity;
 
 /**
- *
  * This is used to access and operate on the attributes of an entity.
  */
 interface IAttributeMapper
@@ -19,11 +18,11 @@ interface IAttributeMapper
     /**
      * @param ICacheable $cache
      * @param string $attribute
-     * @param $value
+     * @param mixed $value
      *
      * @return ICacheable
      */
-    public function set(ICacheable $cache, string $attribute, $value);
+    public function set(ICacheable $cache, string $attribute, $value): ICacheable;
 
     /**
      * @param ICacheable $cache
@@ -31,7 +30,7 @@ interface IAttributeMapper
      *
      * @return bool
      */
-    public function isAttributeSet(ICacheable $cache, string $attribute);
+    public function isAttributeSet(ICacheable $cache, string $attribute): bool;
 
     /**
      * @param ICacheable $cache
@@ -39,7 +38,7 @@ interface IAttributeMapper
      *
      * @return ICacheable
      */
-    public function unsetAttribute(ICacheable $cache, string $attribute);
+    public function unsetAttribute(ICacheable $cache, string $attribute): ICacheable;
 
     /**
      * Get a list of the attributes whose values have been changed, and their values
@@ -48,7 +47,7 @@ interface IAttributeMapper
      *
      * @return string[]
      */
-    public function getChangedValues(ICacheable $cache);
+    public function getChangedValues(ICacheable $cache): array;
 
     /**
      * Get a list of the entity's values
@@ -57,7 +56,7 @@ interface IAttributeMapper
      *
      * @return string[]
      */
-    public function getValues(ICacheable $cache);
+    public function getValues(ICacheable $cache): array;
 
     /**
      * Check if the data has changed
@@ -66,10 +65,10 @@ interface IAttributeMapper
      *
      * @return bool true if the data has changed
      */
-    public function hasChanged(ICacheable $cache);
+    public function hasChanged(ICacheable $cache): bool;
 
     /**
-     * @return ICacheable
+     * @return self
      */
-    public function resetChangedAttributes();
+    public function resetChangedAttributes(): IAttributeMapper;
 }

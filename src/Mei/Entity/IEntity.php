@@ -1,11 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Mei\Entity;
 
 /**
- *
  * An entity is an object that can be persisted
- *
  */
 interface IEntity
 {
@@ -16,14 +16,14 @@ interface IEntity
      *
      * @return string[]
      */
-    public function getDefaults();
+    public static function getDefaults(): array;
 
     /**
      * Get an array of entity attributes as key and their type as value
      *
      * @return string[]
      */
-    public function getAttributes();
+    public static function getAttributes(): array;
 
     /**
      * Get an array of the attributes used to uniquely identify the entity.
@@ -31,7 +31,7 @@ interface IEntity
      *
      * @return string[]
      */
-    public function getIdAttributes();
+    public static function getIdAttributes(): array;
 
     /**
      * Get array of id, key being attribute name and value being the value.
@@ -40,19 +40,19 @@ interface IEntity
      *
      * @return array|null
      */
-    public function getId();
+    public function getId(): ?array;
 
     /**
      * @param ICacheable $cacheable
      *
-     * @return IEntity
+     * @return self
      */
-    public function setCacheable(ICacheable $cacheable);
+    public function setCacheable(ICacheable $cacheable): IEntity;
 
     /**
      * @return ICacheable
      */
-    public function getCacheable();
+    public function getCacheable(): ICacheable;
 
     /**
      * Get an array of the attributes whose values have been changed.
@@ -61,7 +61,7 @@ interface IEntity
      *
      * @return string[]
      */
-    public function getChangedValues();
+    public function getChangedValues(): array;
 
     /**
      * Get an array of the entity values.
@@ -71,7 +71,7 @@ interface IEntity
      *
      * @return string[]
      */
-    public function getValues();
+    public function getValues(): array;
 
     /**
      * Get an array of the entity values.
@@ -81,42 +81,44 @@ interface IEntity
      *
      * @return mixed[]
      */
-    public function getMappedValues();
+    public function getMappedValues(): array;
 
     /**
      * @param bool $new
      *
-     * @return IEntity
+     * @return self
      */
-    public function setNew(bool $new);
+    public function setNew(bool $new): IEntity;
 
     /**
      * Check if the entity needs to be persisted (it is new)
      *
      * @return bool true if the entity is new and hasn't yet been saved
      */
-    public function isNew();
+    public function isNew(): bool;
 
     /**
      * Check if the entity data needs to be persisted (it has changed)
      *
      * @return bool true if the entity data has changed
      */
-    public function hasChanged();
+    public function hasChanged(): bool;
 
     /**
      * Reset the entity state, for example after the entity is saved
      *
      * @param ICacheable $cacheable
      *
-     * @return IEntity
+     * @return self
      */
-    public function reset(ICacheable $cacheable);
+    public function reset(ICacheable $cacheable): IEntity;
 
     /**
      * Get the value for the given key, generating it if needed
      *
-     * @param $key
+     * @param string $key
+     *
+     * @return array
      */
-    public function getCachedValue(string $key);
+    public function getCachedValue(string $key): array;
 }

@@ -53,7 +53,7 @@ class DeleteCtrl extends BaseCtrl
             return $response->withStatus(403)->withJson(['success' => false, 'reason' => 'access denied']);
         }
 
-        $imgs = json_decode($request->getParam('imgs'));
+        $imgs = json_decode($request->getParam('imgs'), true);
         $success = count($imgs);
 
         if (!$success) {
@@ -136,7 +136,7 @@ class DeleteCtrl extends BaseCtrl
                     $savePath = pathinfo($fileEntity->Key);
                     $this->imageUtils->deleteImage(
                         $this->imageUtils->getSavePath(
-                            $savePath['filename'] . '.' . $this->imageUtils->mapExtension(
+                            $savePath['filename'] . '.' . $this->imageUtils::mapExtension(
                                 $savePath['extension']
                             )
                         )

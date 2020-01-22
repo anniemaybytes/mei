@@ -37,16 +37,16 @@ class EntityAttributeType
                 $val = Time::fromSql($val);
                 break;
             case 'array':
-                $val = unserialize($val);
+                $val = unserialize($val, ['allowed_classes' => false]);
                 break;
             case 'json':
                 $val = json_decode($val, true);
-                if (JSON_ERROR_NONE != json_last_error()) {
-                    throw new InvalidArgumentException("Failed to decode value");
+                if (JSON_ERROR_NONE !== json_last_error()) {
+                    throw new InvalidArgumentException('Failed to decode value');
                 }
                 break;
             case 'enum-bool':
-                $val = ($val == '1');
+                $val = ($val === '1' || $val === true || $val === 1);
                 break;
             case 'epoch':
                 $val = Time::fromEpoch($val);
@@ -85,8 +85,8 @@ class EntityAttributeType
                 break;
             case 'json':
                 $val = json_encode($val);
-                if (JSON_ERROR_NONE != json_last_error()) {
-                    throw new InvalidArgumentException("Failed to encode value");
+                if (JSON_ERROR_NONE !== json_last_error()) {
+                    throw new InvalidArgumentException('Failed to encode value');
                 }
                 break;
             case 'bool':
@@ -101,7 +101,7 @@ class EntityAttributeType
             default:
                 throw new InvalidArgumentException("I don't know how to deflate a $type!");
         }
-        settype($val, 'string');
+        $val = (string)$val;
         return $val;
     }
 }

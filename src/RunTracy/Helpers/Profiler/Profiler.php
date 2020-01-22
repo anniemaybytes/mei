@@ -22,23 +22,15 @@ class Profiler extends AdvancedProfiler
     /**
      * @var callable
      */
-    protected static $postProcessor = null;
+    protected static $postProcessor;
 
     /**
      * @inheritdoc
      */
-    public static function enable(bool $realUsage = false)
+    public static function enable(bool $realUsage = false): void
     {
         ProfilerService::init();
         parent::enable($realUsage);
     }
 
-    /**
-     * @inheritdoc
-     * @internal
-     */
-    public static function setPostProcessor(callable $postProcessor)
-    {
-        parent::setPostProcessor($postProcessor);
-    }
 }

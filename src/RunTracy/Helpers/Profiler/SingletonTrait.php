@@ -22,11 +22,11 @@ trait SingletonTrait
     /**
      * Returns instance, if instance does not exist then creates new one and returns it
      *
-     * @return $this
+     * @return self
      */
     public static function getInstance(): self
     {
-        $self = get_called_class();
+        $self = static::class;
         if (!isset(self::$instances[$self])) {
             self::$instances[$self] = new $self();
         }
@@ -38,7 +38,7 @@ trait SingletonTrait
      */
     public static function hasInstance(): bool
     {
-        $self = get_called_class();
+        $self = static::class;
         return isset(self::$instances[$self]);
     }
 }

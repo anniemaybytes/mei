@@ -32,7 +32,7 @@ class NonPersistent implements IKeyStore
     private $cacheHits = [];
 
     /**
-     * @var int $time
+     * @var float $time
      */
     private $time = 0;
 
@@ -81,7 +81,7 @@ class NonPersistent implements IKeyStore
     }
 
     /** {@inheritDoc} */
-    public function getExecutionTime(): int
+    public function getExecutionTime(): float
     {
         return $this->time;
     }
@@ -159,13 +159,13 @@ class NonPersistent implements IKeyStore
     /**
      * @param float $start
      */
-    private function endCall(float $start)
+    private function endCall(float $start): void
     {
         $this->time += (microtime(true) - $start) * 1000;
     }
 
     /** {@inheritDoc} */
-    public function doFlush()
+    public function doFlush(): void
     {
         foreach ($this->inner as $key => $value) {
             unset($this->inner[$key]);
@@ -179,7 +179,7 @@ class NonPersistent implements IKeyStore
     }
 
     /** {@inheritDoc} */
-    public function setClearOnGet(bool $val)
+    public function setClearOnGet(bool $val): void
     {
         $this->clearOnGet = $val;
     }

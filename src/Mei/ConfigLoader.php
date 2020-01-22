@@ -27,15 +27,17 @@ class ConfigLoader
             $prefix .= '.';
         }
 
+        $subOutput = [];
         foreach ($array as $k => $v) {
-            if (is_array($v) && !isset($v[0]) && !$deep) {
-                // if it's a subarray, and it *looks* associative and is not deep
-                $output = array_merge($output, self::parseArray($v, $prefix . $k, true));
+            if (is_array(
+                    $v
+                ) && !isset($v[0]) && !$deep) { // if it's a subarray, and it *looks* associative and is not deep
+                $subOutput[] = self::parseArray($v, $prefix . $k, true);
             } else {
                 $output[$prefix . $k] = $v;
             }
         }
-        return $output;
+        return array_merge($output + [[]], ...$subOutput);
     }
 
     /**

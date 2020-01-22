@@ -16,6 +16,7 @@ class FatalErrorCtrl
 {
     /**
      * @Inject("obLevel")
+     * @var int
      */
     private $obLevel;
 

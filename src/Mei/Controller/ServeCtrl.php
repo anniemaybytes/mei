@@ -30,6 +30,9 @@ class ServeCtrl extends BaseCtrl
      */
     private $filesMap;
 
+    /**
+     * @var array
+     */
     public static $legacySizes = [
         'small' => [80, 150],
         'front' => [200, 150],
@@ -51,25 +54,25 @@ class ServeCtrl extends BaseCtrl
     public function serve(Request $request, Response $response, array $args): Response
     {
         $pathInfo = pathinfo($args['img']);
-        if (!isset($pathInfo['extension']) || !isset($pathInfo['filename'])) {
+        if (!isset($pathInfo['extension'], $pathInfo['filename'])) {
             throw new HttpNotFoundException($request, 'Image Not Found');
         }
 
         $hashInfo = explode('-', $pathInfo['filename']);
         $info['name'] = $hashInfo[0];
 
-        if (in_array($info['name'], array_keys(self::$legacySizes)) && count($hashInfo) == 2) {
+        if (array_key_exists($info['name'], self::$legacySizes) && count($hashInfo) === 2) {
             $info['width'] = self::$legacySizes[$hashInfo[0]][0];
             $info['height'] = self::$legacySizes[$hashInfo[0]][1];
             $info['crop'] = false;
             $info['name'] = $hashInfo[1];
         } elseif (isset($hashInfo[1])) {
             $dimensions = explode('x', $hashInfo[1]);
-            if (count($dimensions) == 2) {
-                $info['width'] = intval($dimensions[0]);
-                $info['height'] = intval($dimensions[1]);
+            if (count($dimensions) === 2) {
+                $info['width'] = (int)$dimensions[0];
+                $info['height'] = (int)$dimensions[1];
             }
-            $info['crop'] = (isset($hashInfo[2]) && $hashInfo[2] == 'crop');
+            $info['crop'] = (isset($hashInfo[2]) && $hashInfo[2] === 'crop');
         }
 
         $fileEntity = $this->filesMap->getByFileName($info['name'] . '.' . $pathInfo['extension']);
@@ -81,7 +84,7 @@ class ServeCtrl extends BaseCtrl
         $savePath = pathinfo($fileEntity->Key);
         $bindata = $this->imageUtils->getDataFromPath(
             $this->imageUtils->getSavePath(
-                $savePath['filename'] . '.' . $this->imageUtils->mapExtension($savePath['extension'])
+                $savePath['filename'] . '.' . $this->imageUtils::mapExtension($savePath['extension'])
             )
         );
         if (!$bindata) {
@@ -110,7 +113,7 @@ class ServeCtrl extends BaseCtrl
 
         $eTag = md5($bindata);
         $path = $this->imageUtils->getSavePath(
-            $savePath['filename'] . '.' . $this->imageUtils->mapExtension($savePath['extension'])
+            $savePath['filename'] . '.' . $this->imageUtils::mapExtension($savePath['extension'])
         );
         $timeStamp = Time::timeIsNonZero($fileEntity->UploadTime) ? $fileEntity->UploadTime->getTimestamp() : filemtime(
             $path
@@ -124,7 +127,7 @@ class ServeCtrl extends BaseCtrl
         $response = $response->withHeader('Expires', date('r', strtotime('+30 days')));
         $response = $response->withHeader('Last-Modified', date('r', $timeStamp));
 
-        if ($request->getHeader('If-None-Match') != $eTag) { // does not match etag?
+        if ($request->getHeader('If-None-Match')[0] !== $eTag) { // does not match etag?
             if (!isset($info['width'])) { // if no resize is taking place we can just ask nginx to stream file for us
                 $response = $response->withHeader(
                     'Content-Security-Policy',
@@ -142,11 +145,12 @@ class ServeCtrl extends BaseCtrl
                 'Content-Security-Policy',
                 "default-src 'none'; img-src data:; style-src 'unsafe-inline'"
             )->write($bindata);
-        } else { // matches etag, return 304
-            return $response->withStatus(304)->withHeader(
-                'Content-Security-Policy',
-                "default-src 'none'; img-src data:; style-src 'unsafe-inline'"
-            );
         }
+
+        // matches etag, return 304
+        return $response->withStatus(304)->withHeader(
+            'Content-Security-Policy',
+            "default-src 'none'; img-src data:; style-src 'unsafe-inline'"
+        );
     }
 }

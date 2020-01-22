@@ -51,9 +51,10 @@ class EntityAttributeMapper implements IAttributeMapper
     /**
      * @param ICacheable $cache
      * @param string $attribute
-     * @param $value
+     * @param mixed $value
      *
      * @return ICacheable
+     * @noinspection TypeUnsafeComparisonInspection
      */
     private function setAttributeValue(ICacheable $cache, string $attribute, $value): ICacheable
     {
@@ -68,12 +69,7 @@ class EntityAttributeMapper implements IAttributeMapper
         return $cache->setRow($values);
     }
 
-    /**
-     * @param ICacheable $cache
-     * @param string $attribute
-     *
-     * @return mixed
-     */
+    /** {@inheritDoc} */
     public function get(ICacheable $cache, string $attribute)
     {
         if (!array_key_exists($attribute, $this->attributeMap)) {
@@ -85,15 +81,7 @@ class EntityAttributeMapper implements IAttributeMapper
         return $this->getAttributeValue($cache, $attribute);
     }
 
-    /**
-     * Sets the attribute's value
-     *
-     * @param ICacheable $cache
-     * @param string $attribute
-     * @param $value
-     *
-     * @return ICacheable
-     */
+    /** {@inheritDoc} */
     public function set(ICacheable $cache, string $attribute, $value): ICacheable
     {
         if (!array_key_exists($attribute, $this->attributeMap)) {
@@ -103,12 +91,7 @@ class EntityAttributeMapper implements IAttributeMapper
         return $this->setAttributeValue($cache, $attribute, $value);
     }
 
-    /**
-     * @param ICacheable $cache
-     * @param string $attribute
-     *
-     * @return bool
-     */
+    /** {@inheritDoc} */
     public function isAttributeSet(ICacheable $cache, string $attribute): bool
     {
         $values = $cache->getRow();
@@ -123,12 +106,7 @@ class EntityAttributeMapper implements IAttributeMapper
         return false;
     }
 
-    /**
-     * @param ICacheable $cache
-     * @param string $attribute
-     *
-     * @return ICacheable
-     */
+    /** {@inheritDoc} */
     public function unsetAttribute(ICacheable $cache, string $attribute): ICacheable
     {
         $values = $cache->getRow();
@@ -138,11 +116,7 @@ class EntityAttributeMapper implements IAttributeMapper
         return $cache->setRow($values);
     }
 
-    /**
-     * @param ICacheable $cache
-     *
-     * @return array
-     */
+    /** {@inheritDoc} */
     public function getChangedValues(ICacheable $cache): array
     {
         $values = [];
@@ -156,11 +130,7 @@ class EntityAttributeMapper implements IAttributeMapper
         return $values;
     }
 
-    /**
-     * @param ICacheable $cache
-     *
-     * @return array
-     */
+    /** {@inheritDoc} */
     public function getValues(ICacheable $cache): array
     {
         $values = [];
@@ -172,20 +142,14 @@ class EntityAttributeMapper implements IAttributeMapper
         return $values;
     }
 
-    /**
-     * @param ICacheable $cache
-     *
-     * @return bool
-     */
+    /** {@inheritDoc} */
     public function hasChanged(ICacheable $cache): bool
     {
         return (count($this->changedAttributes) > 0);
     }
 
-    /**
-     * @return $this
-     */
-    public function resetChangedAttributes(): self
+    /** {@inheritDoc} */
+    public function resetChangedAttributes(): IAttributeMapper
     {
         $this->changedAttributes = [];
         return $this;

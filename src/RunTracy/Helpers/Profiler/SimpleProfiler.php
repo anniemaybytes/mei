@@ -45,7 +45,7 @@ class SimpleProfiler
      *
      * @param bool $realUsage
      */
-    public static function enable(bool $realUsage = false)
+    public static function enable(bool $realUsage = false): void
     {
         static::$enabled = true;
         static::$realUsage = $realUsage ? true : false;
@@ -54,7 +54,7 @@ class SimpleProfiler
     /**
      * Disable profiler
      */
-    public static function disable()
+    public static function disable(): void
     {
         static::$enabled = false;
     }
@@ -89,7 +89,7 @@ class SimpleProfiler
             if ($args === null) {
                 $label = $labelOrFormat;
             } else {
-                $label = call_user_func_array('sprintf', func_get_args());
+                $label = sprintf(...func_get_args());
             }
 
             $now = microtime(true);
@@ -105,7 +105,7 @@ class SimpleProfiler
                 self::START_MEMORY_USAGE => $memoryUsage
             ];
 
-            array_push(static::$stack, $profile);
+            static::$stack[] = $profile;
 
             return true;
         }
@@ -130,13 +130,13 @@ class SimpleProfiler
             $memoryUsage = static::$realUsage ? memory_get_usage(true) : memory_get_usage();
 
             if (empty(static::$stack)) {
-                throw new EmptyStackException('The stack is empty. Call ' . get_called_class() . '::start() first.');
+                throw new EmptyStackException('The stack is empty. Call ' . static::class . '::start() first.');
             }
 
             if ($args === null) {
                 $label = $labelOrFormat;
             } else {
-                $label = call_user_func_array('sprintf', func_get_args());
+                $label = sprintf(...func_get_args());
             }
 
             /** @var Profile $profile */
@@ -153,10 +153,10 @@ class SimpleProfiler
 
             if (!empty(static::$stack)) {
                 $timeOffset = &static::$stack[count(static::$stack) - 1]->meta[self::TIME_OFFSET];
-                $timeOffset = $timeOffset + $profile->absoluteDuration;
+                $timeOffset += $profile->absoluteDuration;
 
                 $memoryUsageOffset = &static::$stack[count(static::$stack) - 1]->meta[self::MEMORY_USAGE_OFFSET];
-                $memoryUsageOffset = $memoryUsageOffset + $profile->absoluteMemoryUsageChange;
+                $memoryUsageOffset += $profile->absoluteMemoryUsageChange;
             }
 
             return $profile;

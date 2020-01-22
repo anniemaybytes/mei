@@ -11,8 +11,19 @@ use Tracy\IBarPanel;
  */
 class SlimRouterPanel implements IBarPanel
 {
+    /**
+     * @var string|null
+     */
     private $content;
+
+    /**
+     * @var array
+     */
     private $ver;
+
+    /**
+     * @var string
+     */
     private $icon;
 
     /**

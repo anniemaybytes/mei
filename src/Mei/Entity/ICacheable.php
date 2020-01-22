@@ -14,9 +14,9 @@ interface ICacheable
     /**
      * Get the row used to represent the entity
      *
-     * @return string[]
+     * @return string[]|null
      */
-    public function getRow();
+    public function getRow(): ?array;
 
     /**
      * Set the row used to represent the entity
@@ -25,12 +25,14 @@ interface ICacheable
      *
      * @return self
      */
-    public function setRow(array $row);
+    public function setRow(array $row): ICacheable;
 
     /**
      * Get the value stored against $key
      *
      * @param string $key
+     *
+     * @return mixed
      */
     public function getLoaded(string $key);
 
@@ -38,11 +40,11 @@ interface ICacheable
      * Set the value stored against $key to $value
      *
      * @param string $key
-     * @param $value
+     * @param mixed $value
      *
      * @return self
      */
-    public function setLoaded(string $key, $value);
+    public function setLoaded(string $key, $value): ICacheable;
 
     /**
      * Set the key under which similar entries are stored
@@ -51,7 +53,7 @@ interface ICacheable
      *
      * @return self
      */
-    public function setKey(string $key);
+    public function setKey(string $key): ICacheable;
 
     /**
      * Set the cache duration
@@ -60,7 +62,7 @@ interface ICacheable
      *
      * @return self
      */
-    public function setCacheDuration(int $duration);
+    public function setCacheDuration(int $duration): ICacheable;
 
     /**
      * Set the unique identifier
@@ -69,7 +71,7 @@ interface ICacheable
      *
      * @return self
      */
-    public function setId(array $id);
+    public function setId(array $id): ICacheable;
 
     /**
      * Get the unique identifier
@@ -80,20 +82,22 @@ interface ICacheable
      * Store the values into cache
      *
      * @param IKeyStore $cache
+     *
+     * @return array
      */
-    public function save(IKeyStore $cache);
+    public function save(IKeyStore $cache): array;
 
     /**
      * Delete the values from cache
      *
      * @param IKeyStore $cache
      */
-    public function delete(IKeyStore $cache);
+    public function delete(IKeyStore $cache): void;
 
     /**
      * Get the data that gets stored into cache
      */
-    public function getData();
+    public function getData(): array;
 
     /**
      * Set the data that gets loaded from cache
@@ -102,5 +106,5 @@ interface ICacheable
      *
      * @return ICacheable
      */
-    public function setData(array $cache);
+    public function setData(array $cache): ICacheable;
 }

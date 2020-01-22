@@ -2,6 +2,7 @@
 
 namespace RunTracy\Middlewares;
 
+use Psr\Container\ContainerInterface as Container;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -23,7 +24,14 @@ use Tracy\Dumper;
  */
 class TracyMiddleware
 {
+    /**
+     * @var Container
+     */
     private $container;
+
+    /**
+     * @var array
+     */
     private $versions;
 
     /**

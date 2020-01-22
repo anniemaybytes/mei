@@ -96,11 +96,11 @@ class UploadCtrl extends BaseCtrl
 
             /** @var Response $response */
             return $response->withStatus(303)->withHeader('Location', "{$this->config['api.redirect']}{$urlString}");
-        } else {
-            throw new NoImages(
-                'No processed images found. Possibly file was more than ' . $this->config['site.max_filesize'] . ' bytes?'
-            );
         }
+
+        throw new NoImages(
+            'No processed images found. Possibly file was more than ' . $this->config['site.max_filesize'] . ' bytes?'
+        );
     }
 
     /**
@@ -150,7 +150,7 @@ class UploadCtrl extends BaseCtrl
                 $bindata = $file->getStream()->getContents();
                 $metadata = $this->imageUtils->readImageData($bindata);
 
-                if (!$metadata || $metadata['mime'] != 'image/png') {
+                if (!$metadata || $metadata['mime'] !== 'image/png') {
                     continue;
                 }
 
@@ -169,11 +169,11 @@ class UploadCtrl extends BaseCtrl
             $urlString = '?' . http_build_query($qs);
 
             return $response->withStatus(303)->withHeader('Location', "{$this->config['api.redirect']}{$urlString}");
-        } else {
-            throw new NoImages(
-                'No processed images found. Possibly file was more than ' . $this->config['site.max_filesize'] . ' bytes or image was not PNG?'
-            );
         }
+
+        throw new NoImages(
+            'No processed images found. Possibly file was more than ' . $this->config['site.max_filesize'] . ' bytes or image was not PNG?'
+        );
     }
 
     /**
@@ -234,11 +234,11 @@ class UploadCtrl extends BaseCtrl
             $response = $response->withHeader('Content-Type', 'application/json');
             $response->getBody()->write(json_encode($images));
             return $response->withStatus(201);
-        } else {
-            throw new NoImages(
-                'No processed images found. Possibly file was more than ' . $this->config['site.max_filesize'] . ' bytes?'
-            );
         }
+
+        throw new NoImages(
+            'No processed images found. Possibly file was more than ' . $this->config['site.max_filesize'] . ' bytes?'
+        );
     }
 
     /**
@@ -261,7 +261,7 @@ class UploadCtrl extends BaseCtrl
 
             // invalid data, or not allowed format
             if (!$metadata) {
-                array_push($images, 'error.jpg');
+                $images[] = 'error.jpg';
                 continue;
             }
 
@@ -296,7 +296,7 @@ class UploadCtrl extends BaseCtrl
                 ]
             );
             $this->filesMap->save($newImage);
-            array_push($images, $filename);
+            $images[] = $filename;
         }
         return $images;
     }

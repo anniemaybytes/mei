@@ -11,16 +11,10 @@ use BadMethodCallException;
  */
 class Singleton
 {
-    private static $instances = [];
-
     /**
-     * Singleton constructor.
-     *
-     * @param array $args
+     * @var object[]
      */
-    protected function __construct(array $args)
-    {
-    }
+    private static $instances = [];
 
     protected function __clone()
     {
@@ -28,7 +22,7 @@ class Singleton
 
     public function __wakeup()
     {
-        throw new BadMethodCallException("Cannot unserialize singleton");
+        throw new BadMethodCallException('Cannot unserialize singleton');
     }
 
     /**
@@ -36,9 +30,9 @@ class Singleton
      */
     public static function getInstance(): object
     {
-        $cls = get_called_class(); // late-static-bound class name
+        $cls = static::class; // late-static-bound class name
         if (!isset(self::$instances[$cls])) {
-            self::$instances[$cls] = new static(func_get_args());
+            self::$instances[$cls] = new static();
         }
         return self::$instances[$cls];
     }

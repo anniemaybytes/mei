@@ -28,6 +28,8 @@ abstract class Model implements IModel
 
     /**
      * callable that takes an ICacheable as argument and returns an entity
+     *
+     * @var IEntity
      */
     protected $entityBuilder;
 
@@ -76,7 +78,7 @@ abstract class Model implements IModel
      *
      * @return string
      */
-    abstract public function getTableName();
+    abstract public function getTableName(): string;
 
     // needs to be run immediately after a SELECT SQL_CALC_FOUND_ROWS statement
 
@@ -95,7 +97,7 @@ abstract class Model implements IModel
      *
      * @return array
      */
-    public function getEntitiesFromIds(?array $ids)
+    public function getEntitiesFromIds(?array $ids): array
     {
         if (!$ids) {
             return [];
@@ -108,15 +110,10 @@ abstract class Model implements IModel
         );
     }
 
-    /**
-     * @param array|null $id
-     *
-     * @return mixed|IEntity
-     * @see \Mei\Model\IModel::getById()
-     */
-    public function getById(?array $id)
+    /** {@inheritDoc} */
+    public function getById(?array $id): ?IEntity
     {
-        if (is_null($id) || $id === [] || !(is_array($id))) {
+        if ($id === null || $id === [] || !(is_array($id))) {
             return null;
         }
 
@@ -136,7 +133,7 @@ abstract class Model implements IModel
             $whereStr = implode(
                 ' AND ',
                 array_map(
-                    function ($col) {
+                    static function ($col) {
                         return "`$col` = :$col";
                     },
                     array_keys($id)
@@ -166,16 +163,11 @@ abstract class Model implements IModel
         return $builder($entityCache);
     }
 
-    /**
-     * @param array $arr
-     *
-     * @return mixed|IEntity
-     * @see \Mei\Model\IModel::createEntity()
-     */
-    public function createEntity(array $arr)
+    /** {@inheritDoc} */
+    public function createEntity(array $arr): IEntity
     {
         if (!is_array($arr)) {
-            throw new InvalidArgumentException("createEntity expects array as argument");
+            throw new InvalidArgumentException('createEntity expects array as argument');
         }
         $builder = $this->entityBuilder;
         $entityCache = $this->getCache()->getEntityCache($this->getTableName());
@@ -191,26 +183,21 @@ abstract class Model implements IModel
         return $entity;
     }
 
-    /**
-     * @param IEntity $entity
-     *
-     * @return IEntity
-     * @see \Mei\Model\IModel::save()
-     */
-    public function save(IEntity $entity)
+    /** {@inheritDoc} */
+    public function save(IEntity $entity): ?IEntity
     {
         $table = $this->getTableName();
         $entity = clone $entity;
 
         if ($entity->isNew()) {
             $idAttr = $entity->getIdAttributes();
+            $id = $entity->getId();
 
             // if there are multiple primary keys, require that both are set before
             // saving; otherwise, there is no way to identify the entity after insert
             if (count($idAttr) > 1) {
-                $id = $entity->getId();
-                if (is_null($id) || count($id) != count($idAttr)) {
-                    throw new InvalidArgumentException("Unable to save entity - primary key not set");
+                if ($id === null || count($id) !== count($idAttr)) {
+                    throw new InvalidArgumentException('Unable to save entity - primary key not set');
                 }
             }
 
@@ -228,19 +215,26 @@ abstract class Model implements IModel
             $sql = "INSERT INTO `$table` ($cols) VALUES ($vals)";
             $q = $this->getDatabase()->prepare($sql);
             foreach ($values as $param => $value) {
-                $q->bindValue(':' . $param, $value, PDOParamMapper::map($attrs[$param]));
+                $q->bindValue(
+                    ':' . $param,
+                    $value,
+                    PDOParamMapper::map($attrs[$param])
+                ); // null values must be of special type
             }
             $q->execute();
 
             $cache = $entity->getCacheable();
 
             // if using autoincrement id
-            if (count($idAttr) == 1) {
+            $idCol = reset($idAttr);
+            if (count($idAttr) === 1 && !(bool)$id[$idCol]) {
                 $insertId = $this->getDatabase()->lastInsertId();
-                if (is_null($insertId)) {
-                    throw new InvalidArgumentException("Unable to save entity - failed to retrieve id after save");
+                if ($insertId === '0') {
+                    throw new InvalidArgumentException(
+                        'Unable to save entity - failed to retrieve auto-increment id after save'
+                    );
                 }
-                $idCol = reset($idAttr);
+
                 $id = [$idCol => $insertId];
                 $cache->setId($id);
             }
@@ -250,96 +244,91 @@ abstract class Model implements IModel
 
             // note that it is possible the entity has no IDs, thus it is impossible
             // to retrieve the entity that just got inserted
-            if (isset($id)) {
-                return $this->getById($id);
-            }
-
-            return $entity;
-        } else { // the entity is an old entity getting updated
-            // nothing to change - return entity as is
-            if (!$entity->hasChanged()) {
-                return $entity;
-            }
-
-            $id = $entity->getId();
-            $idAttr = $entity->getIdAttributes();
-            if ((is_null($id)) || (count($id) == 0) || (count($id) != count($idAttr))) {
-                throw new InvalidArgumentException("Unable to save entity - primary key not set");
-            }
-
-            $values = $entity->getChangedValues();
-            $attrs = $entity->getAttributes();
-
-            if (count($values) == 0) {
-                throw new InvalidArgumentException(
-                    'Unable to save entity - nothing was changed, but marked as changed'
-                );
-            }
-
-            // prevent changing primary key, since this could result in overwriting
-            // other entities (rather than saving the current one)
-            // also check that each of the ID columns is set
-            foreach ($idAttr as $idAttribute) {
-                if (array_key_exists($idAttribute, $values)) {
-                    throw new InvalidArgumentException("Unable to save entity - primary key was changed");
-                }
-                if (!array_key_exists($idAttribute, $id)) {
-                    throw new InvalidArgumentException("Unable to save entity - primary key not set");
-                }
-            }
-
-            $sql = "UPDATE `$table` SET ";
-
-            // there must be changed values if we reached here
-            $cols = array_keys($values);
-            $cols = array_map(
-                function ($col) {
-                    return "`$col` = :$col";
-                },
-                $cols
-            );
-            $sql .= implode(', ', $cols);
-
-            $where = array_map(
-                function ($col) {
-                    return "`$col` = :$col";
-                },
-                $idAttr
-            );
-            $where = implode(' AND ', $where);
-
-            $sql .= " WHERE $where LIMIT 1";
-
-            // add id columns for the query execution
-            $values = array_merge($values, $id);
-
-            $q = $this->getDatabase()->prepare($sql);
-            foreach ($values as $param => $value) {
-                $q->bindValue(':' . $param, $value, PDOParamMapper::map($attrs[$param]));
-            }
-            $q->execute();
-
-            // delete anything that might have been in cache and retrieve what we just saved
-            $cache = $entity->getCacheable();
-            $cache->delete($this->getCache());
-            return $this->getById($id);
+            return $this->getById($id) ?? $entity;
         }
+
+        // nothing to change - return entity as is
+        if (!$entity->hasChanged()) {
+            return $entity;
+        }
+
+        $id = $entity->getId();
+        $idAttr = $entity->getIdAttributes();
+        if (($id === null) || (count($id) === 0) || (count($id) !== count($idAttr))) {
+            throw new InvalidArgumentException('Unable to save entity - primary key not set');
+        }
+
+        $values = $entity->getChangedValues();
+        $attrs = $entity->getAttributes();
+
+        if (count($values) === 0) {
+            throw new InvalidArgumentException(
+                'Unable to save entity - nothing was changed, but marked as changed'
+            );
+        }
+
+        // prevent changing primary key, since this could result in overwriting
+        // other entities (rather than saving the current one)
+        // also check that each of the ID columns is set
+        foreach ($idAttr as $idAttribute) {
+            if (array_key_exists($idAttribute, $values)) {
+                throw new InvalidArgumentException('Unable to save entity - primary key was changed');
+            }
+            if (!array_key_exists($idAttribute, $id)) {
+                throw new InvalidArgumentException('Unable to save entity - primary key not set');
+            }
+        }
+
+        $sql = "UPDATE `$table` SET ";
+
+        // there must be changed values if we reached here
+        $cols = array_keys($values);
+        $cols = array_map(
+            static function ($col) {
+                return "`$col` = :$col";
+            },
+            $cols
+        );
+        $sql .= implode(', ', $cols);
+
+        $where = array_map(
+            static function ($col) {
+                return "`$col` = :$col";
+            },
+            $idAttr
+        );
+        $where = implode(' AND ', $where);
+
+        $sql .= " WHERE $where LIMIT 1";
+
+        // add id columns for the query execution
+        $values = array_merge($values, $id);
+
+        $q = $this->getDatabase()->prepare($sql);
+        foreach ($values as $param => $value) {
+            $q->bindValue(':' . $param, $value, PDOParamMapper::map($attrs[$param]));
+        }
+        $q->execute();
+
+        // delete anything that might have been in cache and retrieve what we just saved
+        $cache = $entity->getCacheable();
+        $cache->delete($this->getCache());
+        return $this->getById($id);
     }
 
-    /**
-     * @param IEntity $entity
-     *
-     * @return IEntity
-     * @see \Mei\Model\IModel::delete()
-     */
-    public function delete(IEntity $entity)
+    /** {@inheritDoc} */
+    public function delete(?IEntity $entity): ?IEntity
     {
+        if ($entity === null) {
+            return null;
+        }
+
         $table = $this->getTableName();
         $entity = clone $entity;
 
         $id = $entity->getId();
-        if (is_null($id) || count($id) == 0) {
-            throw new InvalidArgumentException("Unable to delete entity - primary key not set");
+        if ($id === null || count($id) === 0) {
+            throw new InvalidArgumentException('Unable to delete entity - primary key not set');
         }
 
         $where = [];
