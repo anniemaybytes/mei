@@ -4,6 +4,8 @@ namespace Mei;
 
 use Exception;
 use Mei\Route as R;
+use PetrKnap\Php\Singleton\SingletonInterface;
+use PetrKnap\Php\Singleton\SingletonTrait;
 use Psr\Container\ContainerInterface as Container;
 use Psr\Http\Message\ResponseFactoryInterface;
 use RunTracy\Helpers\Profiler\Profiler;
@@ -16,8 +18,10 @@ use Slim\Routing\RouteParser;
  *
  * @package Mei
  */
-class Dispatcher extends Singleton
+final class Dispatcher implements SingletonInterface
 {
+    use SingletonTrait;
+
     /**
      * @var App $app
      */

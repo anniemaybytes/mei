@@ -13,7 +13,7 @@ use PDOStatement;
  *
  * @package Mei\Instrumentation
  */
-class PDOStatementInstrumentationWrapper extends PDOStatement
+final class PDOStatementInstrumentationWrapper extends PDOStatement
 {
     /**
      * @var Instrumentor

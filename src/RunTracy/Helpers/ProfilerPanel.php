@@ -14,7 +14,7 @@ use Tracy\IBarPanel;
  *
  * @package RunTracy\Helpers
  */
-class ProfilerPanel implements IBarPanel
+final class ProfilerPanel implements IBarPanel
 {
     /**
      * @var ProfilerService
@@ -50,17 +50,10 @@ class ProfilerPanel implements IBarPanel
      */
     public function getPanel(): string
     {
-        $table = '
-        <style type="text/css">
-            .tracy-inner {
-                max-height: calc(100vh - 5px) !important;
-            }
-        </style>
-        ';
-        $table .= '<style>.tracy-addons-profiler-hidden{display:none}
+        $table = '<style>.tracy-addons-profiler-hidden{display:none}
             .tracy-addons-profiler-bar{display:inline-block;margin:0;height:0.8em;}</style>';
         $table .= '<table><tr><td colspan="4" style="text-align: center">' . $this->getMemoryChart() . '</td></tr>
-            <tr><th>Start</th><th>Finish</th><th>Time (effective)</th><th>Memory change (effective)</th></tr>';
+            <tr><th>Start</th><th>Finish</th><th>Time (absolute)</th><th>Memory change (absolute)</th></tr>';
 
         $this->profilerService->iterateProfiles(
             function (Profile $profile) use (&$table) {
@@ -84,18 +77,18 @@ class ProfilerPanel implements IBarPanel
                 $table .= sprintf(
                     '<tr>%s<td>%d&nbsp;ms (%d&nbsp;ms)</td><td>%d&nbsp;kB (%d&nbsp;kB)</td></tr>',
                     $labels,
-                    $profile->absoluteDuration * 1000,
                     $profile->duration * 1000,
-                    $profile->absoluteMemoryUsageChange / 1024,
-                    $profile->memoryUsageChange / 1024
+                    $profile->absoluteDuration * 1000,
+                    $profile->memoryUsageChange / 1024,
+                    $profile->absoluteMemoryUsageChange / 1024
                 );
 
                 $table .= sprintf(
                     '<tr class="tracy-addons-profiler-hidden"><td colspan="4"></td></tr><tr><td colspan="4">' .
-                    '<span class="tracy-addons-profiler-bar" style="width:%d%%;background-color:#cccccc;"></span>' .
-                    '<span class="tracy-addons-profiler-bar" style="width:%d%%;background-color:#3987d4;"></span>' .
-                    '<span class="tracy-addons-profiler-bar" style="width:%s%%;background-color:#6ba9e6;"></span>' .
-                    '<span class="tracy-addons-profiler-bar" style="width:%s%%;background-color:#cccccc;"></span>' .
+                    '<span class="tracy-addons-profiler-bar" style="height:12px;width:%d%%;background-color:#cccccc;"></span>' .
+                    '<span class="tracy-addons-profiler-bar" style="height:12px;width:%d%%;background-color:#3987d4;"></span>' .
+                    '<span class="tracy-addons-profiler-bar" style="height:12px;width:%s%%;background-color:#6ba9e6;"></span>' .
+                    '<span class="tracy-addons-profiler-bar" style="height:12px;width:%s%%;background-color:#cccccc;"></span>' .
                     '</td></tr>',
                     $profile->meta[ProfilerService::TIME_LINE_BEFORE],
                     $profile->meta[ProfilerService::TIME_LINE_ACTIVE],

@@ -16,6 +16,7 @@
         "slim/psr7": "^1.0",
         "slim/http": "^1.0",
         "doctrine/annotations": "^1.8.0",
+        "petrknap/php-singleton": "1.0.0",
         "ext-xml": "*",
         "ext-json": "*",
         "ext-gd": "*",

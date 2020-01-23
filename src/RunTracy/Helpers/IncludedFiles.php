@@ -9,7 +9,7 @@ use Tracy\IBarPanel;
  *
  * @package RunTracy\Helpers
  */
-class IncludedFiles implements IBarPanel
+final class IncludedFiles implements IBarPanel
 {
     /**
      * @var string

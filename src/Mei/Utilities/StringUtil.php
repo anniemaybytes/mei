@@ -10,7 +10,7 @@ use SecurityLib\Strength;
  *
  * @package Mei\Utilities
  */
-class StringUtil
+final class StringUtil
 {
     /**
      * @param int $len

@@ -11,7 +11,7 @@ use JsonSerializable;
  * @since    2015-12-19
  * @license  https://github.com/petrknap/php-profiler/blob/master/LICENSE MIT
  */
-class Profile implements JsonSerializable
+final class Profile implements JsonSerializable
 {
     private const ABSOLUTE_DURATION = 'absolute_duration';
     private const DURATION = 'duration';

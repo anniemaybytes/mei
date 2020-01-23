@@ -15,7 +15,7 @@ use Tracy\Debugger;
  *
  * @package Mei\Instrumentation
  */
-class PDOInstrumentationWrapper extends PDO
+final class PDOInstrumentationWrapper extends PDO
 {
     /**
      * @var Instrumentor $instrumentor

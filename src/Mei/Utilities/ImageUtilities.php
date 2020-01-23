@@ -12,7 +12,7 @@ use Tracy\Debugger;
  *
  * @package Mei\Utilities
  */
-class ImageUtilities
+final class ImageUtilities
 {
     /**
      * @Inject("config")

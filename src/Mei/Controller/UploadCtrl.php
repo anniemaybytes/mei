@@ -19,7 +19,7 @@ use Slim\Exception\HttpForbiddenException;
  *
  * @package Mei\Controller
  */
-class UploadCtrl extends BaseCtrl
+final class UploadCtrl extends BaseCtrl
 {
     /**
      * @Inject

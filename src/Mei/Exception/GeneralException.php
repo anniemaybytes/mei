@@ -9,6 +9,6 @@ use Exception;
  *
  * @package Mei\Exception
  */
-class GeneralException extends Exception
+final class GeneralException extends Exception
 {
 }

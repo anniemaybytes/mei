@@ -13,8 +13,10 @@ use Mei\Dispatcher;
 use Mei\Instrumentation\Instrumentor;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use RunTracy\Helpers\IncludedFiles;
 use RunTracy\Helpers\Profiler\Profiler;
-use RunTracy\Middlewares\TracyMiddleware;
+use RunTracy\Helpers\ProfilerPanel;
+use RunTracy\Helpers\XDebugHelper;
 use Slim\Exception\HttpException;
 use Slim\Middleware\ContentLengthMiddleware;
 use Slim\Middleware\OutputBufferingMiddleware;
@@ -38,11 +40,14 @@ if ($di->get('config')['mode'] === 'production') {
     Profiler::disable();
 }
 
+// configure pre-runtime tracy
 Debugger::$maxDepth = 7;
 Debugger::$showFireLogger = false;
 Debugger::$maxLength = 520;
 Debugger::$logSeverity = ERROR_REPORTING;
 Debugger::$reservedMemorySize = 5000000; // 5 megabytes because we increase depth for bluescreen
+
+// enable tracy
 Debugger::enable(
     $di->get('config')['mode'] === 'development' ? Debugger::DEVELOPMENT : Debugger::PRODUCTION,
     $di->get('config')['logs_dir']
@@ -53,15 +58,23 @@ if ($di->get(
     error_reporting(ERROR_REPORTING);
 }
 
+// configure runtime tracy
 Debugger::getBlueScreen()->maxDepth = 7;
 Debugger::getBlueScreen()->maxLength = 520;
 array_push(
     Debugger::getBlueScreen()->keysToHide,
     'SERVER_ADDR',
-    '_tracy',
     'PHP_AUTH_PW'
 );
 
+// setup additional panels
+if ($di->get('config')['mode'] === 'development') {
+    Debugger::getBar()->addPanel(new ProfilerPanel());
+    Debugger::getBar()->addPanel(new IncludedFiles());
+    Debugger::getBar()->addPanel(new XDebugHelper('status'));
+}
+
+// setup additional panels for bluescreen
 Debugger::getBlueScreen()->addPanel(
     static function ($e) use ($di) {
         if ($e) {
@@ -90,11 +103,6 @@ Debugger::getBlueScreen()->addPanel(
 // the first middleware that gets added gets executed last as the request comes
 // in and first as the response comes out.
 Profiler::start('initMiddlewares');
-
-// 'before' middleware (either stops execution flow or calls next middleware)
-if ($di->get('config')['mode'] === 'development') {
-    $app->add(new TracyMiddleware($app));
-}
 
 // output caching should be in the middle of the stack
 $app->add(new OutputBufferingMiddleware(new StreamFactory(), OutputBufferingMiddleware::APPEND));

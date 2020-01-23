@@ -18,7 +18,7 @@ use Slim\Routing\RouteParser;
  *
  * @package Mei\Route
  */
-class Main extends Base
+final class Main extends Base
 {
     protected function addRoutes(): void  /** @formatter:off */
     {

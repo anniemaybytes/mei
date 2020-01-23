@@ -15,7 +15,7 @@ use Tracy\Debugger;
  *
  * @package Mei\Controller
  */
-class ErrorCtrl extends BaseCtrl
+final class ErrorCtrl extends BaseCtrl
 {
     /**
      * @Inject("obLevel")

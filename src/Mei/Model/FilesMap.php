@@ -10,7 +10,7 @@ namespace Mei\Model;
  * @method \Mei\Entity\FilesMap createEntity(array $arr)
  * @package Mei\Model
  */
-class FilesMap extends Model
+final class FilesMap extends Model
 {
     /**
      * @return string

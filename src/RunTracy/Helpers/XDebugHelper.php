@@ -9,7 +9,7 @@ use Tracy\IBarPanel;
  *
  * @package RunTracy\Helpers
  */
-class XDebugHelper implements IBarPanel
+final class XDebugHelper implements IBarPanel
 {
     /**
      * @var string
@@ -21,7 +21,7 @@ class XDebugHelper implements IBarPanel
      *
      * @param string $ideKey
      */
-    public function __construct(string $ideKey = 'RUNTRACY')
+    public function __construct(string $ideKey)
     {
         $this->ideKey = $ideKey;
     }

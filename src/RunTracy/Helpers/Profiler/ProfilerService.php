@@ -2,10 +2,13 @@
 
 namespace RunTracy\Helpers\Profiler;
 
+use PetrKnap\Php\Singleton\SingletonInterface;
+use PetrKnap\Php\Singleton\SingletonTrait;
+
 /**
  * @internal
  */
-class ProfilerService implements SingletonInterface
+final class ProfilerService implements SingletonInterface
 {
     use SingletonTrait;
 

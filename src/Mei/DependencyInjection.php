@@ -21,7 +21,7 @@ use RunTracy\Helpers\Profiler\Profiler;
  *
  * @package Mei
  */
-class DependencyInjection
+final class DependencyInjection
 {
     /**
      * @param array $config

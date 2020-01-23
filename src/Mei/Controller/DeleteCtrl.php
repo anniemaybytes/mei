@@ -15,7 +15,7 @@ use Tracy\Debugger;
  *
  * @package Mei\Controller
  */
-class DeleteCtrl extends BaseCtrl
+final class DeleteCtrl extends BaseCtrl
 {
     /**
      * @Inject

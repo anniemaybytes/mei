@@ -2,8 +2,7 @@
 
 namespace RunTracy\Helpers\Profiler;
 
-use RunTracy\Helpers\Profiler\Exception\EmptyStackException;
-use RunTracy\Helpers\Profiler\Exception\ProfilerException;
+use RuntimeException;
 
 /**
  * Simple PHP class for profiling
@@ -120,7 +119,6 @@ class SimpleProfiler
      * @param mixed $args [optional]
      *
      * @return bool|Profile profile on success or false on failure
-     * @throws ProfilerException
      */
     public static function finish(?string $labelOrFormat = null, $args = null)
     {
@@ -130,7 +128,7 @@ class SimpleProfiler
             $memoryUsage = static::$realUsage ? memory_get_usage(true) : memory_get_usage();
 
             if (empty(static::$stack)) {
-                throw new EmptyStackException('The stack is empty. Call ' . static::class . '::start() first.');
+                throw new RuntimeException('The stack is empty. Call ' . static::class . '::start() first.');
             }
 
             if ($args === null) {

@@ -10,7 +10,7 @@ use Tracy\Debugger;
  *
  * @package Mei\Utilities
  */
-class Encryption
+final class Encryption
 {
     private const CIPHER = 'aes-256-cbc';
 

@@ -12,7 +12,7 @@ use Tracy\Debugger;
  *
  * @package Mei\Controller
  */
-class FatalErrorCtrl
+final class FatalErrorCtrl
 {
     /**
      * @Inject("obLevel")

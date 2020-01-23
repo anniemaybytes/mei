@@ -9,6 +9,6 @@ use Exception;
  *
  * @package Mei\Exception
  */
-class NoImages extends Exception
+final class NoImages extends Exception
 {
 }

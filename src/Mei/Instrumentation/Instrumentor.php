@@ -9,17 +9,31 @@ use RuntimeException;
  *
  * @package Mei\Instrumentation
  */
-class Instrumentor
+final class Instrumentor
 {
-    /** @var bool $enabled */
+    /**
+     * @var bool $enabled
+     */
     protected $enabled = true;
-    /** @var array $eventLog */
+
+    /**
+     * @var array $eventLog
+     */
     protected $eventLog = [];
-    /** @var float $start */
+
+    /**
+     * @var float $start
+     */
     protected $start;
-    /** @var float $end */
+
+    /**
+     * @var float $end
+     */
     protected $end;
-    /** @var bool $detailedMode */
+
+    /**
+     * @var bool $detailedMode
+     */
     protected $detailedMode = false;
 
     public function __construct()

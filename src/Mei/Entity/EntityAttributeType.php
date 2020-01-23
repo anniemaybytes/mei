@@ -12,7 +12,7 @@ use Mei\Utilities\Time;
  *
  * @package Mei\Entity
  */
-class EntityAttributeType
+final class EntityAttributeType
 {
     /**
      * Converts a value to a given type.

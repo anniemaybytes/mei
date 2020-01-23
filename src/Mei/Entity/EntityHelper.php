@@ -7,7 +7,7 @@ namespace Mei\Entity;
  *
  * @package Mei\Entity
  */
-class EntityHelper
+final class EntityHelper
 {
     /**
      * @param object $d

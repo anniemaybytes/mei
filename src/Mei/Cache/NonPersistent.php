@@ -9,7 +9,7 @@ use Mei\Entity\ICacheable;
  *
  * @package Mei\Cache
  */
-class NonPersistent implements IKeyStore
+final class NonPersistent implements IKeyStore
 {
     /**
      * @var array $inner

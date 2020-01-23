@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Mei\Utilities;
+namespace Mei\Entity;
 
 use PDO;
 
@@ -9,7 +9,7 @@ use PDO;
  *
  * @package Mei\Utilities
  */
-class PDOParamMapper
+final class PDOParamMapper
 {
     /**
      * @param string $entityAttrType

@@ -6,7 +6,7 @@ use Exception;
 use InvalidArgumentException;
 use Mei\Cache\IKeyStore;
 use Mei\Entity\IEntity;
-use Mei\Utilities\PDOParamMapper;
+use Mei\Entity\PDOParamMapper;
 use PDO;
 
 /**

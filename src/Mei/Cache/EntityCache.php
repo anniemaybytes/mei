@@ -9,7 +9,7 @@ use Mei\Entity\ICacheable;
  *
  * @package Mei\Cache
  */
-class EntityCache implements ICacheable
+final class EntityCache implements ICacheable
 {
     /**
      * @var string

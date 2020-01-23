@@ -9,7 +9,7 @@ use InvalidArgumentException;
  *
  * @package Mei\Entity
  */
-class EntityAttributeMapper implements IAttributeMapper
+final class EntityAttributeMapper implements IAttributeMapper
 {
     private $attributeMap;
     private $defaultValues; // stored in db string form

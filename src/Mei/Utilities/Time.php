@@ -11,7 +11,7 @@ use Exception;
  *
  * @package Mei\Utilities
  */
-class Time
+final class Time
 {
     public const ZERO_SQLTIME = '0000-00-00 00:00:00';
 

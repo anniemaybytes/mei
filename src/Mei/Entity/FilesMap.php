@@ -15,7 +15,7 @@ use DateTime;
  * @property int $Protected
  * @package Mei\Entity
  */
-class FilesMap extends Entity
+final class FilesMap extends Entity
 {
     protected static $columns = [
         ['Key', 'string', null], // key is unique multi to single mapper

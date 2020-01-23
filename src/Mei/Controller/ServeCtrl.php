@@ -16,7 +16,7 @@ use Slim\Exception\HttpNotFoundException;
  *
  * @package Mei\Controller
  */
-class ServeCtrl extends BaseCtrl
+final class ServeCtrl extends BaseCtrl
 {
     /**
      * @Inject

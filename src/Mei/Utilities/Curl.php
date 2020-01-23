@@ -15,7 +15,7 @@ use function curl_setopt_array;
  *
  * @package Mei\Utilities
  */
-class Curl
+final class Curl
 {
     /**
      * @Inject("config")

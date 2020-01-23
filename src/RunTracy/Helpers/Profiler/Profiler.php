@@ -7,23 +7,8 @@ namespace RunTracy\Helpers\Profiler;
  *
  * @package RunTracy\Helpers\Profiler
  */
-class Profiler extends AdvancedProfiler
+final class Profiler extends AdvancedProfiler
 {
-    /**
-     * @var bool
-     */
-    protected static $enabled = false;
-
-    /**
-     * @var Profile[]
-     */
-    protected static $stack = [];
-
-    /**
-     * @var callable
-     */
-    protected static $postProcessor;
-
     /**
      * @inheritdoc
      */
