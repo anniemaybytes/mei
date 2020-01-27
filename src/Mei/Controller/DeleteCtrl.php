@@ -134,7 +134,7 @@ final class DeleteCtrl extends BaseCtrl
                     $fileEntity->Key
                 )) { // file does not exist anymore anywhere, remove it
                     $savePath = pathinfo($fileEntity->Key);
-                    $this->imageUtils->deleteImage(
+                    ImageUtilities::deleteImage(
                         $this->imageUtils->getSavePath(
                             $savePath['filename'] . '.' . $this->imageUtils::mapExtension(
                                 $savePath['extension']

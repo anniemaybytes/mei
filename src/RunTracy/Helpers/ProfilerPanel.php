@@ -1,4 +1,4 @@
-<?php /** @noinspection StaticClosureCanBeUsedInspection */
+<?php
 
 declare(strict_types=1);
 
@@ -56,7 +56,7 @@ final class ProfilerPanel implements IBarPanel
             <tr><th>Start</th><th>Finish</th><th>Time (absolute)</th><th>Memory change (absolute)</th></tr>';
 
         $this->profilerService->iterateProfiles(
-            function (Profile $profile) use (&$table) {
+            static function (Profile $profile) use (&$table) {
                 if (($profile->meta[ProfilerService::TIME_LINE_ACTIVE] +
                         (int)$profile->meta[ProfilerService::TIME_LINE_INACTIVE]) < 1) {
                     return /* continue */ ;
@@ -156,7 +156,7 @@ final class ProfilerPanel implements IBarPanel
         $lines = '';
         $points = '';
         $this->profilerService->iterateMemoryTimeLine(
-            function (
+            static function (
                 $time,
                 $height,
                 $metaData

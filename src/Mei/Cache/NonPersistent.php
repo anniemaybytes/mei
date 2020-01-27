@@ -3,6 +3,8 @@
 namespace Mei\Cache;
 
 use Mei\Entity\ICacheable;
+use Throwable;
+use Tracy\Debugger;
 
 /**
  * Class NonPersistent
@@ -44,6 +46,20 @@ final class NonPersistent implements IKeyStore
     public function __construct(string $keyPrefix)
     {
         $this->keyPrefix = $keyPrefix;
+
+        $bar = new CacheTracyBarPanel($this);
+        Debugger::getBar()->addPanel($bar);
+        Debugger::getBlueScreen()->addPanel(
+            static function (?Throwable $e) use ($bar) {
+                if ($e) {
+                    return null;
+                }
+                return [
+                    'tab' => 'NonPersistent hits',
+                    'panel' => $bar->getPanel(),
+                ];
+            }
+        );
     }
 
     /** {@inheritDoc} */

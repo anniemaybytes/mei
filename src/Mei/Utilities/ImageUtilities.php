@@ -5,6 +5,7 @@ namespace Mei\Utilities;
 use Imagick;
 use ImagickException;
 use InvalidArgumentException;
+use Mei\Exception\GeneralException;
 use Tracy\Debugger;
 
 /**
@@ -176,7 +177,7 @@ final class ImageUtilities
      *
      * @return null|string
      */
-    public function getDataFromPath(string $path): ?string
+    public static function getDataFromPath(string $path): ?string
     {
         if (!is_file($path)) {
             return null;
@@ -194,13 +195,14 @@ final class ImageUtilities
     /**
      * @param string $bindata
      *
-     * @return null|Imagick
+     * @return Imagick
+     * @throws GeneralException
      */
-    public function readImage(string $bindata): ?Imagick
+    public function readImage(string $bindata): Imagick
     {
         $data = $this->readImageData($bindata);
         if (!$data) {
-            return null;
+            throw new GeneralException('Unable to read image data, broken image or disallowed type?');
         }
 
         try {
@@ -211,8 +213,7 @@ final class ImageUtilities
             $image->setOption('png:compression-level', '9');
             return $image;
         } catch (ImagickException  $e) {
-            Debugger::log($e, DEBUGGER::EXCEPTION);
-            return null;
+            throw new GeneralException('Unable to load image data, possibly broken image?');
         }
     }
 
@@ -222,6 +223,7 @@ final class ImageUtilities
      * @param bool $stripExif
      *
      * @return bool
+     * @throws GeneralException
      */
     public function saveData(?string $bindata, string $savePath, bool $stripExif = true): bool
     {
@@ -230,7 +232,7 @@ final class ImageUtilities
         } // let code assume it succeeded
 
         if ($stripExif && $bindata) {
-            $bindata = $this->stripImage($this->readImage($bindata)); // strip image of EXIF, profiles and comments
+            $bindata = self::stripImage($this->readImage($bindata)); // strip image of EXIF, profiles and comments
         }
         if (!$bindata) {
             return false;
@@ -253,9 +255,10 @@ final class ImageUtilities
     /**
      * @param Imagick $image
      *
-     * @return null|string
+     * @return string
+     * @throws GeneralException
      */
-    private function stripImage(Imagick $image): ?string
+    private static function stripImage(Imagick $image): string
     {
         try {
             $profiles = $image->getImageProfiles('icc', true);
@@ -265,8 +268,7 @@ final class ImageUtilities
             }
             return $image->getImagesBlob();
         } catch (ImagickException $e) {
-            Debugger::log($e, DEBUGGER::EXCEPTION);
-            return null;
+            throw new GeneralException('Unable to strip EXIF data, possibly broken image?');
         }
     }
 
@@ -277,8 +279,9 @@ final class ImageUtilities
      * @param bool $crop
      *
      * @return null|string
+     * @throws GeneralException
      */
-    public function resizeImage(Imagick $image, int $maxWidth, int $maxHeight, bool $crop = false): ?string
+    public static function resizeImage(Imagick $image, int $maxWidth, int $maxHeight, bool $crop = false): ?string
     {
         // check dimensions are valid
         if (min([$maxWidth, $maxHeight]) < self::$allowedResizeRange['min'] ||
@@ -299,8 +302,7 @@ final class ImageUtilities
             $image->setImagePage(0, 0, 0, 0);
             return $image->__toString();
         } catch (ImagickException $e) {
-            Debugger::log($e, DEBUGGER::EXCEPTION);
-            return null;
+            throw new GeneralException('Unable to resize, possibly broken image?');
         }
     }
 
@@ -309,7 +311,7 @@ final class ImageUtilities
      *
      * @return bool
      */
-    public function deleteImage(string $path): bool
+    public static function deleteImage(string $path): bool
     {
         return unlink($path);
     }

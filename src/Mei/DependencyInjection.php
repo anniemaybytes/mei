@@ -7,14 +7,17 @@ namespace Mei;
 use DI;
 use Exception;
 use Mei\Cache\IKeyStore;
-use Mei\Instrumentation\Instrumentor;
 use Mei\Model\FilesMap;
+use Mei\PDO\PDOTracyBarPanel;
+use Mei\PDO\PDOWrapper;
 use Mei\Utilities\Encryption;
 use Mei\Utilities\ImageUtilities;
 use Mei\Utilities\Time;
 use PDO;
 use Psr\Container\ContainerInterface as Container;
 use RunTracy\Helpers\Profiler\Profiler;
+use Throwable;
+use Tracy\Debugger;
 
 /**
  * Class DependencyInjection
@@ -40,35 +43,24 @@ final class DependencyInjection
                 ],
                 'config' => $config,
                 'obLevel' => ob_get_level(),
-                Instrumentor::class => DI\autowire()
             ]
         );
         $di = $builder->build();
-
-        if ($config['mode'] === 'development') {
-            $di->get(Instrumentor::class)->detailedMode(true);
-        }
 
         $di = self::setUtilities($di);
         $di = self::setModels($di);
 
         $di->set(
             IKeyStore::class,
-            function (Instrumentor $ins) {
-                $iid = $ins->start('nonpersistent:create');
-                $cache = new Cache\NonPersistent('');
-                $ins->end($iid);
-                return $cache;
+            function () {
+                return new Cache\NonPersistent('');
             }
         );
 
         $di->set(
             PDO::class,
             function (Container $di) {
-                $ins = $di->get(Instrumentor::class);
                 $config = $di->get('config');
-
-                $iid = $ins->start('pdo:connect');
 
                 $dsn = "mysql:dbname={$config['db.database']};charset=UTF8;";
 
@@ -78,8 +70,8 @@ final class DependencyInjection
                     $dsn .= "host={$config['db.hostname']};port={$config['db.port']};";
                 }
 
-                $w = new Instrumentation\PDOInstrumentationWrapper(
-                    $ins, $dsn, $config['db.username'],
+                $w = new PDOWrapper(
+                    $dsn, $config['db.username'],
                     $config['db.password'],
                     [
                         PDO::ATTR_PERSISTENT => false,
@@ -89,7 +81,19 @@ final class DependencyInjection
                     ]
                 );
 
-                $ins->end($iid);
+                $bar = new PDOTracyBarPanel($w);
+                Debugger::getBar()->addPanel($bar);
+                Debugger::getBlueScreen()->addPanel(
+                    static function (?Throwable $e) use ($bar) {
+                        if ($e) {
+                            return null;
+                        }
+                        return [
+                            'tab' => 'PDO',
+                            'panel' => $bar->getPanel()
+                        ];
+                    }
+                );
 
                 return $w;
             }

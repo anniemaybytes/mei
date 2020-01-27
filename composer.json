@@ -17,6 +17,7 @@
         "slim/http": "^1.0",
         "doctrine/annotations": "^1.8.0",
         "petrknap/php-singleton": "1.0.0",
+        "jdorn/sql-formatter": "dev-master#7ef9b85961956aa572413693e1194b60f50ab9ab",
         "ext-xml": "*",
         "ext-json": "*",
         "ext-gd": "*",

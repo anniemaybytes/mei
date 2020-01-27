@@ -1,11 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Mei\Instrumentation;
+namespace Mei\PDO;
 
 use BadFunctionCallException;
 use PDO;
 use PDOException;
-use PDOStatement;
 use Tracy\Debugger;
 
 /**
@@ -15,39 +14,38 @@ use Tracy\Debugger;
  *
  * @package Mei\Instrumentation
  */
-final class PDOInstrumentationWrapper extends PDO
+final class PDOWrapper extends PDO
 {
-    /**
-     * @var Instrumentor $instrumentor
-     */
-    private $instrumentor;
-
     /**
      * @var array $transactionQueue
      */
     private $transactionQueue = [];
 
     /**
+     * Logged queries.
+     *
+     * @var array
+     */
+    private $log = [];
+
+    /**
      * PDOInstrumentationWrapper constructor.
      *
-     * @param Instrumentor $instrumentor
      * @param string $dsn
      * @param string|null $username
      * @param string|null $passwd
      * @param array|null $options
      */
     public function __construct(
-        Instrumentor $instrumentor,
         string $dsn,
         ?string $username = null,
         ?string $passwd = null,
         ?array $options = null
     ) {
-        $this->instrumentor = $instrumentor;
         parent::__construct($dsn, $username, $passwd, $options);
         $this->setAttribute(
             PDO::ATTR_STATEMENT_CLASS,
-            [PDOStatementInstrumentationWrapper::class, [$instrumentor]]
+            [PDOStatementWrapper::class, [$this]]
         );
     }
 
@@ -71,11 +69,14 @@ final class PDOInstrumentationWrapper extends PDO
      */
     public function beginTransaction(): bool
     {
-        $tid = $this->instrumentor->start('pdo:transaction'); // get tid
+        $tid = microtime(true) . '_' . count($this->transactionQueue);
         $this->transactionQueue[] = $tid; // ... and push it to array
 
         if (!parent::inTransaction()) {
-            return parent::beginTransaction(); // creating new parent transaction
+            $start = microtime(true);
+            $res = parent::beginTransaction(); // creating new parent transaction
+            $this->addLog('START TRANSACTION', microtime(true) - $start);
+            return $res;
         }
 
         return $this->exec('SAVEPOINT tq_' . $tid) ? true : false; // creating new child transaction via savepoint
@@ -84,13 +85,15 @@ final class PDOInstrumentationWrapper extends PDO
     /** {@inheritDoc} */
     public function commit(): bool
     {
-        $tid = array_pop($this->transactionQueue);
+        array_pop($this->transactionQueue);
+
         if (count($this->transactionQueue) !== 0) {
             return true;
         } // there are still transactions left, do nothing as theyll be commited by parent transaction
 
+        $start = microtime(true);
         $res = parent::commit();
-        $this->instrumentor->end($tid, 'commit');
+        $this->addLog('COMMIT', microtime(true) - $start);
         return $res;
     }
 
@@ -98,21 +101,25 @@ final class PDOInstrumentationWrapper extends PDO
     public function rollBack(): bool
     {
         $tid = array_pop($this->transactionQueue); // pop transactionId
+
         if (count($this->transactionQueue) === 0) { // this is parent transaction, do transaction rollback
+            $start = microtime(true);
             $res = parent::rollBack();
+            $this->addLog('ROLLBACK', microtime(true) - $start);
         } else {
             $res = parent::exec(
                 'ROLLBACK TO tq_' . $tid
             ) ? true : false; // this is child transaction, rollback to savepoint
         }
 
-        $this->instrumentor->end($tid, 'rollBack');
         return $res;
     }
 
     /** {@inheritDoc} */
     public function query($statement, $type = null, $type_arg = null, $ctorarg = [])
     {
+        $start = microtime(true);
+
         $set = [$type, $type_arg, $ctorarg];
         $n = 0;
         foreach ($set as $elem) {
@@ -122,7 +129,6 @@ final class PDOInstrumentationWrapper extends PDO
             $n++;
         }
 
-        $iid = $this->instrumentor->start('pdo:query:' . md5($statement), $statement);
         switch ($n) {
             case 0:
                 $res = parent::query($statement);
@@ -141,25 +147,17 @@ final class PDOInstrumentationWrapper extends PDO
                     "PDOInstrumentationWrapper can't handle query with " . $n . ' additional arguments'
                 );
         }
-        $this->instrumentor->end($iid, $res);
 
-        return $res;
-    }
+        $this->addLog($statement, microtime(true) - $start);
 
-    /** {@inheritDoc} */
-    public function prepare($statement, $driver_options = [])
-    {
-        $iid = $this->instrumentor->start('pdo:prepare:' . md5($statement), $statement);
-        $res = parent::prepare($statement, $driver_options);
-        $this->instrumentor->end($iid, $res instanceof PDOStatement);
         return $res;
     }
 
     /** {@inheritDoc} */
     public function exec($statement, int $retries = 3)
     {
-        $hash = md5($statement . rand());
-        $iid = $this->instrumentor->start('pdo:exec:' . $hash . '_' . $retries, $statement);
+        $start = microtime(true);
+
         try {
             $res = parent::exec($statement);
         } catch (PDOException $e) {
@@ -167,22 +165,35 @@ final class PDOInstrumentationWrapper extends PDO
                 throw $e;
             }
             sleep(max([2, (3 - $retries) * 3])); // wait longer as attempts increase
-            $this->instrumentor->end($iid, $e);
             return $this->exec($statement, $retries - 1);
         }
-        $this->instrumentor->end($iid, $res);
+        $this->addLog($statement, microtime(true) - $start);
+
         return $res;
     }
 
-    /** {@inheritDoc} */
-    public function quote($string, $parameter_type = PDO::PARAM_STR)
+    /**
+     * Add query to logged queries.
+     *
+     * @param string $statement
+     * @param float $time Elapsed seconds with microseconds
+     */
+    public function addLog(string $statement, float $time): void
     {
-        $iid = $this->instrumentor->start(
-            'pdo:quote:' . md5($string . $parameter_type),
-            $string . '_' . $parameter_type
-        );
-        $res = parent::quote($string, $parameter_type);
-        $this->instrumentor->end($iid, $res);
-        return $res;
+        $query = [
+            'statement' => $statement,
+            'time' => $time * 1000
+        ];
+        $this->log[] = $query;
+    }
+
+    /**
+     * Return logged queries.
+     *
+     * @return array Logged queries
+     */
+    public function getLog(): array
+    {
+        return $this->log;
     }
 }

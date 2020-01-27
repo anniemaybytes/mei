@@ -3,7 +3,6 @@
 namespace Mei\Controller;
 
 use Exception;
-use Mei\Exception\GeneralException;
 use Mei\Model\FilesMap;
 use Mei\Utilities\ImageUtilities;
 use Mei\Utilities\Time;
@@ -75,40 +74,32 @@ final class ServeCtrl extends BaseCtrl
             $info['crop'] = (isset($hashInfo[2]) && $hashInfo[2] === 'crop');
         }
 
-        $fileEntity = $this->filesMap->getByFileName($info['name'] . '.' . $pathInfo['extension']);
-
-        if (!$fileEntity) {
+        if (!$fileEntity = $this->filesMap->getByFileName($info['name'] . '.' . $pathInfo['extension'])) {
             throw new HttpNotFoundException($request, 'Image Not Found');
         }
 
         $savePath = pathinfo($fileEntity->Key);
-        $bindata = $this->imageUtils->getDataFromPath(
+        if (!$bindata = ImageUtilities::getDataFromPath(
             $this->imageUtils->getSavePath(
                 $savePath['filename'] . '.' . $this->imageUtils::mapExtension($savePath['extension'])
             )
-        );
-        if (!$bindata) {
+        )) {
+            throw new HttpNotFoundException($request, 'Image Not Found');
+        }
+
+        if (!$meta = $this->imageUtils->readImageData($bindata)) {
             throw new HttpNotFoundException($request, 'Image Not Found');
         }
 
         // resize if necessary
         if (isset($info['width'])) {
             $image = $this->imageUtils->readImage($bindata);
-            if (!$image) {
-                throw new GeneralException('Unable to resize, possibly broken image?');
-            }
-            $bindata = $this->imageUtils->resizeImage(
+            $bindata = ImageUtilities::resizeImage(
                 $image,
                 $info['width'],
                 $info['height'],
                 $info['crop']
             );
-        }
-
-        $meta = $this->imageUtils->readImageData($bindata);
-
-        if (!$meta) {
-            throw new HttpNotFoundException($request, 'Image Not Found');
         }
 
         $eTag = md5($bindata);
@@ -119,9 +110,8 @@ final class ServeCtrl extends BaseCtrl
             $path
         );
 
-        /** @var Response $response */
         $response = $response->withHeader('Content-Type', $meta['mime']);
-        $response = $response->withHeader('Content-Length', $meta['size']);
+        $response = $response->withHeader('Content-Length', (string)strlen($bindata));
         $response = $response->withHeader('Cache-Control', 'public, max-age=' . (strtotime('+30 days') - time()));
         $response = $response->withHeader('ETag', '"' . $eTag . '"');
         $response = $response->withHeader('Expires', date('r', strtotime('+30 days')));
@@ -140,7 +130,7 @@ final class ServeCtrl extends BaseCtrl
                 return $response->write(
                     'Performing internal redirect...'
                 ); // todo https://github.com/slimphp/Slim/issues/2924
-            }
+            } // otherwise we have to stream file ourselves
             return $response->withHeader(
                 'Content-Security-Policy',
                 "default-src 'none'; img-src data:; style-src 'unsafe-inline'"

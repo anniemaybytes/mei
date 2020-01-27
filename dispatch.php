@@ -7,10 +7,8 @@ define('ERROR_REPORTING', E_ALL & ~(E_STRICT | E_NOTICE | E_WARNING | E_DEPRECAT
 require_once BASE_ROOT . '/vendor/autoload.php'; // set up autoloading
 
 use DI\Container;
-use Mei\Cache\IKeyStore;
 use Mei\Controller\ErrorCtrl;
 use Mei\Dispatcher;
-use Mei\Instrumentation\Instrumentor;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use RunTracy\Helpers\IncludedFiles;
@@ -71,38 +69,17 @@ array_push(
 if ($di->get('config')['mode'] === 'development') {
     Debugger::getBar()->addPanel(new ProfilerPanel());
     Debugger::getBar()->addPanel(new IncludedFiles());
-    Debugger::getBar()->addPanel(new XDebugHelper('status'));
+    Debugger::getBar()->addPanel(new XDebugHelper('mei-image-server'));
 }
-
-// setup additional panels for bluescreen
-Debugger::getBlueScreen()->addPanel(
-    static function ($e) use ($di) {
-        if ($e) {
-            return null;
-        }
-        return [
-            'tab' => 'Cache hits',
-            'panel' => Debugger::dump($di->get(IKeyStore::class)->getCacheHits(), true),
-        ];
-    }
-);
-Debugger::getBlueScreen()->addPanel(
-    static function ($e) use ($di) {
-        if ($e) {
-            return null;
-        }
-        return [
-            'tab' => 'Instrumentor',
-            'panel' => Debugger::dump($di->get(Instrumentor::class)->getLog(), true),
-        ];
-    }
-);
 
 // add middleware
 // note that the order is important; middleware gets executed as an onion, so
 // the first middleware that gets added gets executed last as the request comes
 // in and first as the response comes out.
 Profiler::start('initMiddlewares');
+
+// 'before' middleware (either stops execution flow or calls next middleware)
+$app->addBodyParsingMiddleware(); // parses xml and json body
 
 // output caching should be in the middle of the stack
 $app->add(new OutputBufferingMiddleware(new StreamFactory(), OutputBufferingMiddleware::APPEND));
@@ -112,7 +89,6 @@ if ($di->get('config')['mode'] === 'production') {
     $contentLengthMiddleware = new ContentLengthMiddleware();
     $app->add($contentLengthMiddleware); // adds content-length but only on production
 }
-$app->addBodyParsingMiddleware(); // parses xml and json body
 $app->addRoutingMiddleware();
 
 // error handler must be added before everything else on request or it won't handle errors from middleware stack
@@ -145,6 +121,3 @@ Profiler::finish('initMiddlewares');
 $app->run();
 Profiler::enable(); // enable back profiler to finish() on what it started before it might've been disabled
 Profiler::finish('app');
-
-Debugger::barDump($di->get(IKeyStore::class)->getCacheHits(), 'Cache hits');
-Debugger::barDump($di->get(Instrumentor::class)->getLog(), 'Instrumentor');
