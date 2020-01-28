@@ -27,3 +27,4 @@ logs/*
 # project files
 /config/private.ini
 routes.cache.php
+CompiledContainer.php

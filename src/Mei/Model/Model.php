@@ -45,7 +45,7 @@ abstract class Model implements IModel
      * @param IKeyStore $cache
      * @param PDO $db
      */
-    public function __construct(callable $entityBuilder, IKeyStore $cache, PDO $db)
+    public function __construct(PDO $db, IKeyStore $cache, callable $entityBuilder)
     {
         $this->entityBuilder = $entityBuilder;
         $this->inTransaction = false;

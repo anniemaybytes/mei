@@ -3,7 +3,6 @@
 namespace Mei\Utilities;
 
 use Exception;
-use Tracy\Debugger;
 
 /**
  * Class Encryption
@@ -22,11 +21,11 @@ final class Encryption
     /**
      * Encryption constructor.
      *
-     * @param string $encryptionKey
+     * @param array $config
      */
-    public function __construct(string $encryptionKey)
+    public function __construct(array $config)
     {
-        $this->encryptionKey = md5($encryptionKey);
+        $this->encryptionKey = md5($config['api.auth_key']);
     }
 
     /**
@@ -69,29 +68,21 @@ final class Encryption
         if (!is_string($encryptedData) || $encryptedData === '') {
             return '';
         }
-        try {
-            $data = base64_decode($encryptedData, true);
-            if ($data === false || $data === '') {
-                return '';
-            }
-            $initVector = substr($data, 0, 16) ?? '';
-            $unpaddedCryptedData = substr($data, 16) ?? '';
-            $decryptedData = openssl_decrypt(
-                    $unpaddedCryptedData,
-                    self::CIPHER,
-                    $this->encryptionKey,
-                    OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING,
-                    $initVector
-                ) ?? '';
-            $r = trim($decryptedData);
-            if ($r === '') {
-                return '';
-            }
-            return $r;
-        } catch (Exception $e) { // must not throw exception
-            Debugger::log($e, Debugger::EXCEPTION);
+
+        $data = base64_decode($encryptedData, true);
+        if ($data === false || strlen($data) < 16) {
             return '';
         }
+        $initVector = substr($data, 0, 16);
+        $unpaddedCryptedData = substr($data, 16);
+        $decryptedData = openssl_decrypt(
+            $unpaddedCryptedData,
+            self::CIPHER,
+            $this->encryptionKey,
+            OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING,
+            $initVector
+        );
+        return trim($decryptedData === false ? '' : $decryptedData);
     }
 
     /**
