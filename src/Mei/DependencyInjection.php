@@ -7,6 +7,7 @@ namespace Mei;
 use DI;
 use Exception;
 use Mei\Cache\IKeyStore;
+use Mei\Entity\ICacheable;
 use Mei\Model\FilesMap;
 use Mei\PDO\PDOTracyBarPanel;
 use Mei\PDO\PDOWrapper;
@@ -87,13 +88,15 @@ final class DependencyInjection
                     return $w;
                 },
                 // models
-                FilesMap::class => function (IKeyStore $cache, PDO $db) {
-                    return new Model\FilesMap(
-                        $db, $cache, function ($c) {
-                        return new Entity\FilesMap($c);
-                    }
-                    );
-                }
+                FilesMap::class => DI\autowire()
+                    ->constructorParameter(
+                        'entityBuilder',
+                        DI\value(
+                            function (ICacheable $c) {
+                                return new Entity\FilesMap($c);
+                            }
+                        )
+                    ),
             ]
         );
         $di = $builder->build();

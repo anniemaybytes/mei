@@ -10,7 +10,7 @@ use Tracy\IBarPanel;
  *
  * @package Mei\Cache
  */
-class CacheTracyBarPanel implements IBarPanel
+final class CacheTracyBarPanel implements IBarPanel
 {
     /**
      * Base64 icon for Tracy panel.
@@ -45,14 +45,7 @@ class CacheTracyBarPanel implements IBarPanel
     public function __construct(IKeyStore $cache)
     {
         $this->cache = $cache;
-
-        $name = get_class($cache);
-        if ($pos = strrpos($name, '\\')) {
-            $name = substr($name, $pos + 1);
-        } else {
-            $name = $pos;
-        }
-        $this->provider = $name;
+        $this->provider = get_class($cache);
     }
 
     /**
@@ -98,7 +91,7 @@ class CacheTracyBarPanel implements IBarPanel
             ];
         }
 
-        $html = '<h1 style="font-size:1.6em">' . $this->provider . ' hits</h1><div class="tracy-inner tracy-InfoPanel">';
+        $html = '<h1 style="font-size:1.6em">' . $this->provider . '</h1><div class="tracy-inner tracy-InfoPanel">';
         if (count($this->hits['hits']) > 0) {
             $html .= Debugger::dump($this->hits['hits'], true);
         } else {

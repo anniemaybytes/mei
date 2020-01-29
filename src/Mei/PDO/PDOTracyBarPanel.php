@@ -10,7 +10,7 @@ use Tracy\IBarPanel;
  *
  * @package Mei\PDO
  */
-class PDOTracyBarPanel implements IBarPanel
+final class PDOTracyBarPanel implements IBarPanel
 {
     /**
      * Base64 icon for Tracy panel.
@@ -81,7 +81,9 @@ class PDOTracyBarPanel implements IBarPanel
 
         SqlFormatter::$pre_attributes = 'style="color: black;"';
 
-        $html = '<h1 style="font-size:1.6em">PDO queries</h1><div class="tracy-inner tracy-InfoPanel">';
+        $html = '<h1 style="font-size:1.6em">' . get_class(
+                $this->pdo
+            ) . '</h1><div class="tracy-inner tracy-InfoPanel">';
         if (count($this->queries) > 0) {
             $html .= '<table><tr><th>Time</th><th>Statement</th></tr>';
             foreach ($this->queries as $query) {
@@ -89,7 +91,7 @@ class PDOTracyBarPanel implements IBarPanel
                         $query['time'],
                         2,
                         '.',
-                        ' '
+                        '&nbsp;'
                     ) . '&nbsp;ms</span></td><td>' . SqlFormatter::highlight(
                         $query['statement']
                     ) . '</td></tr>';

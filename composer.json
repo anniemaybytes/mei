@@ -7,6 +7,11 @@
             "email": "staff@animebytes.tv"
         }
     ],
+    "scripts": {
+        "test": [
+            "phpstan analyze --ansi"
+        ]
+    },
     "require": {
         "php": "~7.3",
         "slim/slim": "^4.4.0",

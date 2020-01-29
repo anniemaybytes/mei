@@ -55,7 +55,7 @@ final class NonPersistent implements IKeyStore
                     return null;
                 }
                 return [
-                    'tab' => 'NonPersistent hits',
+                    'tab' => 'Cache hits',
                     'panel' => $bar->getPanel(),
                 ];
             }
