@@ -1,0 +1,22 @@
+kind: pipeline
+name: default
+type: docker
+
+platform:
+    os: linux
+    arch: amd64
+
+steps:
+    -   name: install
+        image: php:7.3
+        commands:
+            - DEBIAN_FRONTEND=noninteractive apt-get -qq update && apt-get -qq install git unzip --no-install-recommends > /dev/null
+            - curl -sS https://getcomposer.org/installer | php --
+            - ./composer.phar global require hirak/prestissimo --no-progress --ansi --no-suggest
+            - ./composer.phar install --no-progress --ansi --no-suggest --ignore-platform-reqs
+    -   name: phpstan
+        image: php:7.3
+        failure: ignore
+        commands:
+            - docker-php-ext-install pdo_mysql > /dev/null # https://github.com/phpstan/phpstan/issues/2883
+            - ./composer.phar phpstan

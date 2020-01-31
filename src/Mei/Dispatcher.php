@@ -8,6 +8,7 @@ use PetrKnap\Php\Singleton\SingletonInterface;
 use PetrKnap\Php\Singleton\SingletonTrait;
 use Psr\Container\ContainerInterface as Container;
 use Psr\Http\Message\ResponseFactoryInterface;
+use RuntimeException;
 use RunTracy\Helpers\Profiler\Profiler;
 use Slim\App;
 use Slim\Factory\AppFactory;
@@ -73,6 +74,16 @@ final class Dispatcher implements SingletonInterface
         Profiler::start('initConfig');
         $config = ConfigLoader::load();
         Profiler::finish('initConfig');
+
+        $allowedModes = ['production', 'development'];
+        if (!in_array($config['mode'], $allowedModes, true)) {
+            throw new RuntimeException(
+                'Can not start application with non-recognized mode: ' . $config['mode'] . '. Must be one of: ' . implode(
+                    ', ',
+                    $allowedModes
+                )
+            );
+        }
 
         $config['site.images_root'] = BASE_ROOT . '/' . $config['site.images_root'];
         $config['logs_dir'] = BASE_ROOT . '/' . $config['logs_dir'];

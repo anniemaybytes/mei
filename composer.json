@@ -9,7 +9,10 @@
     ],
     "scripts": {
         "test": [
-            "phpstan analyze --ansi"
+            "@phpstan"
+        ],
+        "phpstan": [
+            "phpstan analyze --ansi --memory-limit=-1"
         ]
     },
     "require": {
@@ -26,7 +29,6 @@
         "ext-xml": "*",
         "ext-json": "*",
         "ext-gd": "*",
-        "ext-mysqli": "*",
         "ext-pdo": "*",
         "ext-imagick": "*",
         "ext-zlib": "*",
@@ -42,6 +44,6 @@
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",
-        "phpstan/phpstan": "^0.12.7"
+        "phpstan/phpstan": "^0.12.8"
     }
 }
