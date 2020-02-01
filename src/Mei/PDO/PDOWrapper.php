@@ -69,7 +69,7 @@ final class PDOWrapper extends PDO
      */
     public function beginTransaction(): bool
     {
-        $tid = microtime(true) . '_' . count($this->transactionQueue);
+        $tid = str_replace('.', '', (string)microtime(true)) . '_' . count($this->transactionQueue);
         $this->transactionQueue[] = $tid; // ... and push it to array
 
         if (!parent::inTransaction()) {
