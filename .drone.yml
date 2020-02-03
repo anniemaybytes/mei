@@ -20,3 +20,7 @@ steps:
         commands:
             - docker-php-ext-install pdo_mysql > /dev/null # https://github.com/phpstan/phpstan/issues/2883
             - ./composer.phar phpstan
+
+trigger:
+    branch:
+        - master
