@@ -23,7 +23,7 @@ steps:
     -   name: outdated
         image: php:7.3
         commands:
-            - ./composer.phar outdated --direct --minor-only --strict --ansi
+            - ./composer.phar outdated --direct --minor-only --strict --ansi --ignore roave/security-advisories
         depends_on: [ install ]
 
 trigger:
