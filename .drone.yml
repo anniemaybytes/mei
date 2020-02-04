@@ -12,15 +12,21 @@ steps:
         commands:
             - DEBIAN_FRONTEND=noninteractive apt-get -qq update && apt-get -qq install git unzip --no-install-recommends > /dev/null
             - curl -sS https://getcomposer.org/installer | php --
-            - ./composer.phar global require hirak/prestissimo --no-progress --ansi --no-suggest
-            - ./composer.phar install --no-progress --ansi --no-suggest --ignore-platform-reqs
+            - ./composer.phar global require hirak/prestissimo --no-progress --ansi --no-suggest --prefer-dist
+            - ./composer.phar install --no-progress --ansi --no-suggest --ignore-platform-reqs --prefer-dist
     -   name: phpstan
         image: php:7.3
-        failure: ignore
         commands:
             - docker-php-ext-install pdo_mysql > /dev/null # https://github.com/phpstan/phpstan/issues/2883
             - ./composer.phar phpstan
+        depends_on: [ install ]
+    -   name: outdated
+        image: php:7.3
+        commands:
+            - ./composer.phar outdated --direct --minor-only --strict --ansi
+        depends_on: [ install ]
 
 trigger:
     branch:
         - master
+        - drone
