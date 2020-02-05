@@ -30,3 +30,27 @@ trigger:
     branch:
         - master
         - drone
+    event:
+        exclude:
+            - cron
+
+---
+kind: pipeline
+name: cron
+type: docker
+
+platform:
+    os: linux
+    arch: amd64
+
+steps:
+    -   name: outdated
+        image: composer
+        commands:
+            - composer global require hirak/prestissimo --no-progress --ansi --no-suggest --prefer-dist
+            - composer install --no-progress --ansi --no-suggest --ignore-platform-reqs --prefer-dist
+            - composer outdated --direct --minor-only --strict --ansi --ignore roave/security-advisories
+trigger:
+    event:
+        include:
+            - cron
