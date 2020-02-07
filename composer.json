@@ -9,21 +9,25 @@
     ],
     "scripts": {
         "test": [
+            "@phplint",
             "@phpstan"
         ],
         "phpstan": [
             "phpstan analyze --ansi --memory-limit=-1"
+        ],
+        "phplint": [
+            "phplint --no-cache --ansi -n"
         ]
     },
     "require": {
         "php": "~7.3",
-        "slim/slim": "^4.4.0",
-        "tracy/tracy": "^2.7.2",
-        "paragonie/random-lib": "^2.0.1",
-        "php-di/php-di": "^6.0.11",
-        "slim/psr7": "^1.0",
-        "slim/http": "^1.0",
-        "doctrine/annotations": "^1.8.0",
+        "slim/slim": "4.4.0",
+        "tracy/tracy": "2.7.2",
+        "paragonie/random-lib": "2.0.1",
+        "php-di/php-di": "6.0.11",
+        "slim/psr7": "1.0",
+        "slim/http": "1.0",
+        "doctrine/annotations": "1.8.0",
         "petrknap/php-singleton": "1.0.0",
         "jdorn/sql-formatter": "dev-master#7ef9b85961956aa572413693e1194b60f50ab9ab",
         "ext-xml": "*",
@@ -44,6 +48,7 @@
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",
-        "phpstan/phpstan": "^0.12.8"
+        "phpstan/phpstan": "^0.12.8",
+        "overtrue/phplint": "^1.2"
     }
 }

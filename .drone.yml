@@ -14,17 +14,17 @@ steps:
             - curl -sS https://getcomposer.org/installer | php --
             - ./composer.phar global require hirak/prestissimo --no-progress --ansi --no-suggest --prefer-dist
             - ./composer.phar install --no-progress --ansi --no-suggest --ignore-platform-reqs --prefer-dist
+    -   name: phplint
+        image: php:7.3
+        commands:
+            - ./composer.phar phplint
+        depends_on: [ install ]
     -   name: phpstan
         image: php:7.3
         commands:
             - docker-php-ext-install pdo_mysql > /dev/null # https://github.com/phpstan/phpstan/issues/2883
             - ./composer.phar phpstan
-        depends_on: [ install ]
-    -   name: outdated
-        image: php:7.3
-        commands:
-            - ./composer.phar outdated --direct --minor-only --strict --ansi --ignore roave/security-advisories
-        depends_on: [ install ]
+        depends_on: [ phplint ]
 
 trigger:
     branch:
@@ -36,7 +36,7 @@ trigger:
 
 ---
 kind: pipeline
-name: cron
+name: outdated
 type: docker
 
 platform:
@@ -44,13 +44,15 @@ platform:
     arch: amd64
 
 steps:
-    -   name: outdated
+    -   name: install
         image: composer
         commands:
             - composer global require hirak/prestissimo --no-progress --ansi --no-suggest --prefer-dist
-            - composer install --no-progress --ansi --no-suggest --ignore-platform-reqs --prefer-dist
-            - composer outdated --direct --minor-only --strict --ansi --ignore roave/security-advisories
+            - composer install --no-progress --ansi --no-suggest --ignore-platform-reqs --prefer-dist --no-dev
+    -   name: outdated
+        image: composer
+        commands:
+            - composer outdated -n --direct --strict --ansi --ignore roave/security-advisories
 trigger:
-    event:
-        include:
-            - cron
+    branch:
+        - master
