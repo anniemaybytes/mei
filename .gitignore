@@ -25,6 +25,11 @@ deleted/*
 logs/*
 
 # project files
+/phinx.yml
 /config/private.ini
 routes.cache.php
 CompiledContainer.php
+
+# these files might exist on production and we dont really want them
+/*.sh
+scripts/

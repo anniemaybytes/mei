@@ -52,7 +52,7 @@ steps:
     -   name: outdated
         image: composer
         commands:
-            - composer outdated -n --direct --strict --ansi --ignore roave/security-advisories
+            - composer outdated -n --direct --strict --ansi --ignore roave/security-advisories --ignore robmorgan/phinx
 trigger:
     branch:
         - master

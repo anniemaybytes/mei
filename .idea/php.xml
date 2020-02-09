@@ -10,6 +10,11 @@
       <fqn value="\RuntimeException" />
     </unchecked_exceptions>
   </component>
+  <component name="PhpIncludePathManager">
+    <include_path>
+      <path value="$PROJECT_DIR$/vendor" />
+    </include_path>
+  </component>
   <component name="PhpProjectServersManager">
     <servers>
       <server host="mei.animebytes.local" id="2c1369dd-ea56-4cc3-86ef-dfab1851bb20" name="mei.animebytes.local" port="443" use_path_mappings="true">
