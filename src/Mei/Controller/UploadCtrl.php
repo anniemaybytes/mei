@@ -12,6 +12,7 @@ use Mei\Utilities\StringUtil;
 use Mei\Utilities\Time;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\UploadedFileInterface;
 use Slim\Exception\HttpForbiddenException;
 
 /**
@@ -65,21 +66,24 @@ final class UploadCtrl extends BaseCtrl
 
         $dataToHandle = [];
 
-        $files = $request->getUploadedFiles();
+        $uploadedFiles = $request->getUploadedFiles();
         $url = $request->getParam('url');
-        if (!$files && !$url) {
+        if (!$uploadedFiles && !$url) {
             throw new GeneralException('No files to upload found');
         }
 
-        foreach ($files as $fileArray) {
-            if (!$fileArray) {
+        /*
+         * $uploadedFiles will hold an array with each element representing single upload
+         * (in case of html form, each input element is one upload, input element can have multiple files)
+         * each element is an array of UploadedFileInterface items
+         */
+        foreach ($uploadedFiles as $leaf) {
+            if (!is_array($leaf)) {
                 continue;
             }
-            foreach ($fileArray as $file) {
-                if (!$file->getSize()) {
-                    continue;
-                } // empty file?
-                if ($file->getSize() > $this->config['site.max_filesize']) {
+            foreach ($leaf as $file) {
+                /** @var UploadedFileInterface $file */
+                if (!$file->getSize() || $file->getSize() > $this->config['site.max_filesize']) {
                     continue;
                 }
                 $dataToHandle[] = $file->getStream()->getContents();
@@ -91,7 +95,9 @@ final class UploadCtrl extends BaseCtrl
 
         $images = $this->processUploadedData($dataToHandle, $token['ident']);
         if ($images) {
-            $qs = ['img' => $this->encryption->encryptUrl(implode('|', $images))];
+            $qs = [
+                'imgs' => $this->encryption->encryptUrl(implode('|', $images))
+            ];
             $urlString = '?' . http_build_query($qs);
 
             /** @var Response $response */
@@ -130,21 +136,24 @@ final class UploadCtrl extends BaseCtrl
             throw new HttpForbiddenException($request);
         }
 
-        $files = $request->getUploadedFiles();
-        if (!$files) {
+        $imageData = [];
+        $uploadedFiles = $request->getUploadedFiles();
+        if (!$uploadedFiles) {
             throw new GeneralException('No files to upload found');
         }
 
-        $imageData = [];
-        foreach ($files as $fileArray) {
-            if (!$fileArray) {
+        /*
+         * $uploadedFiles will hold an array with each element representing single upload
+         * (in case of html form, each input element is one upload, input element can have multiple files)
+         * each element is an array of UploadedFileInterface items
+         */
+        foreach ($uploadedFiles as $leaf) {
+            if (!is_array($leaf)) {
                 continue;
             }
-            foreach ($fileArray as $file) {
-                if (!$file->getSize()) {
-                    continue;
-                }
-                if ($file->getSize() > $this->config['site.max_filesize']) {
+            foreach ($leaf as $file) {
+                /** @var UploadedFileInterface $file */
+                if (!$file->getSize() || $file->getSize() > $this->config['site.max_filesize']) {
                     continue;
                 }
                 $bindata = $file->getStream()->getContents();
@@ -153,7 +162,6 @@ final class UploadCtrl extends BaseCtrl
                 if (!$metadata || $metadata['mime'] !== 'image/png') {
                     continue;
                 }
-
                 $imageData[] = $bindata;
             }
         }
@@ -196,7 +204,7 @@ final class UploadCtrl extends BaseCtrl
 
         $url = $request->getParam('url');
         $file = $request->getParam('file');
-        $files = $request->getUploadedFiles();
+        $uploadedFiles = $request->getUploadedFiles();
 
         if ($url) {
             $dataToHandle[] = $this->imageUtils->getDataFromUrl($url);
@@ -208,23 +216,25 @@ final class UploadCtrl extends BaseCtrl
                 $dataToHandle[] = $fileDecoded;
             }
         }
-
-        foreach ($files as $fileArray) {
-            if (!$fileArray) {
+        /*
+         * $uploadedFiles will hold an array with each element representing single upload
+         * (in case of html form, each input element is one upload, input element can have multiple files)
+         * each element is an array of UploadedFileInterface items
+         */
+        foreach ($uploadedFiles as $leaf) {
+            if (!is_array($leaf)) {
                 continue;
             }
-            foreach ($fileArray as $file) {
-                if (!$file->getSize()) {
-                    continue;
-                } // empty file?
-                if ($file->getSize() > $this->config['site.max_filesize']) {
+            foreach ($leaf as $file) {
+                /** @var UploadedFileInterface $file */
+                if (!$file->getSize() || $file->getSize() > $this->config['site.max_filesize']) {
                     continue;
                 }
                 $dataToHandle[] = $file->getStream()->getContents();
             }
         }
 
-        if (!$file && !$url && !$files) {
+        if (!$file && !$url && !$uploadedFiles) {
             throw new GeneralException('No files to upload found');
         }
 

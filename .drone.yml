@@ -1,3 +1,4 @@
+---
 kind: pipeline
 name: default
 type: docker
@@ -7,24 +8,52 @@ platform:
     arch: amd64
 
 steps:
+    -   name: restore-cache
+        image: meltwater/drone-cache
+        failure: ignore
+        settings:
+            backend: "filesystem"
+            restore: true
+            cache_key: '{{ checksum "composer.json" }}_{{ checksum "composer.lock" }}_default'
+            archive_format: "gzip"
+            mount:
+                - 'vendor'
+        volumes:
+            -   name: drone-cache
+                path: /tmp/cache
+        depends_on: [ clone ]
     -   name: install
-        image: php:7.3
+        image: thecodingmachine/php:7.3-v3-cli
         commands:
-            - DEBIAN_FRONTEND=noninteractive apt-get -qq update && apt-get -qq install git unzip --no-install-recommends > /dev/null
-            - curl -sS https://getcomposer.org/installer | php --
-            - ./composer.phar global require hirak/prestissimo --no-progress --ansi --no-suggest --prefer-dist
-            - ./composer.phar install --no-progress --ansi --no-suggest --ignore-platform-reqs --prefer-dist
+            - composer self-update
+            - composer --version
+            - php -v
+            - sudo composer install --no-progress --ansi --no-suggest --ignore-platform-reqs --prefer-dist
+        depends_on: [ restore-cache ]
     -   name: phplint
-        image: php:7.3
+        image: thecodingmachine/php:7.3-v3-cli
         commands:
-            - ./composer.phar phplint
+            - composer phplint
         depends_on: [ install ]
     -   name: phpstan
-        image: php:7.3
+        image: thecodingmachine/php:7.3-v3-cli
         commands:
-            - docker-php-ext-install pdo_mysql > /dev/null # https://github.com/phpstan/phpstan/issues/2883
-            - ./composer.phar phpstan
-        depends_on: [ phplint ]
+            - composer phpstan
+        depends_on: [ install ]
+    -   name: rebuild-cache
+        image: meltwater/drone-cache
+        failure: ignore
+        settings:
+            backend: "filesystem"
+            rebuild: true
+            cache_key: '{{ checksum "composer.json" }}_{{ checksum "composer.lock" }}_default'
+            archive_format: "gzip"
+            mount:
+                - 'vendor'
+        volumes:
+            -   name: drone-cache
+                path: /tmp/cache
+        depends_on: [ install ]
 
 trigger:
     branch:
@@ -33,6 +62,11 @@ trigger:
     event:
         exclude:
             - cron
+
+volumes:
+    -   name: drone-cache
+        host:
+            path: /var/lib/cache
 
 ---
 kind: pipeline
@@ -44,15 +78,59 @@ platform:
     arch: amd64
 
 steps:
+    -   name: restore-cache
+        image: meltwater/drone-cache
+        failure: ignore
+        settings:
+            backend: "filesystem"
+            restore: true
+            cache_key: '{{ checksum "composer.json" }}_{{ checksum "composer.lock" }}_outdated'
+            archive_format: "gzip"
+            mount:
+                - 'vendor'
+        volumes:
+            -   name: drone-cache
+                path: /tmp/cache
+        depends_on: [ clone ]
     -   name: install
-        image: composer
+        image: thecodingmachine/php:7.3-v3-cli
         commands:
-            - composer global require hirak/prestissimo --no-progress --ansi --no-suggest --prefer-dist
-            - composer install --no-progress --ansi --no-suggest --ignore-platform-reqs --prefer-dist --no-dev
+            - composer self-update
+            - composer --version
+            - php -v
+            - sudo composer install --no-progress --ansi --no-suggest --ignore-platform-reqs --prefer-dist --no-dev
+        depends_on: [ restore-cache ]
     -   name: outdated
-        image: composer
+        image: thecodingmachine/php:7.3-v3-cli
         commands:
             - composer outdated -n --direct --strict --ansi --ignore roave/security-advisories --ignore robmorgan/phinx
+        depends_on: [ install ]
+    -   name: rebuild-cache
+        image: meltwater/drone-cache
+        failure: ignore
+        settings:
+            backend: "filesystem"
+            rebuild: true
+            cache_key: '{{ checksum "composer.json" }}_{{ checksum "composer.lock" }}_outdated'
+            archive_format: "gzip"
+            mount:
+                - 'vendor'
+        volumes:
+            -   name: drone-cache
+                path: /tmp/cache
+        depends_on: [ install ]
+
 trigger:
     branch:
         - master
+        - drone
+
+volumes:
+    -   name: drone-cache
+        host:
+            path: /var/lib/cache
+---
+kind: signature
+hmac: f9241d7b4b61b0d2f98cf2e9c3ce4608dfee78151fc5a9729ea60859e05889b4
+
+...
