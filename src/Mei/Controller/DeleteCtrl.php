@@ -101,25 +101,9 @@ final class DeleteCtrl extends BaseCtrl
                             )
                         ]
                     ));
-                $urls[] = ($domain . $this->router->relativeUrlFor(
-                        'serve:legacy',
-                        [
-                            'img' => (
-                                $info['filename'] . '-' . $resInfo[0] . 'x' . $resInfo[1] . '.' . $info['extension']
-                            )
-                        ]
-                    ));
 
                 $urls[] = ($domain . $this->router->relativeUrlFor(
                         'serve',
-                        [
-                            'img' => (
-                                $info['filename'] . '-' . $resInfo[0] . 'x' . $resInfo[1] . '-crop.' . $info['extension']
-                            )
-                        ]
-                    ));
-                $urls[] = ($domain . $this->router->relativeUrlFor(
-                        'serve:legacy',
                         [
                             'img' => (
                                 $info['filename'] . '-' . $resInfo[0] . 'x' . $resInfo[1] . '-crop.' . $info['extension']
