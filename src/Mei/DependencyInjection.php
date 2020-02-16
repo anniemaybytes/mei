@@ -52,7 +52,7 @@ final class DependencyInjection
                 PDO::class => function (Container $di) {
                     $config = $di->get('config');
 
-                    $dsn = "mysql:dbname={$config['db.database']};charset=UTF8;";
+                    $dsn = "mysql:dbname={$config['db.database']};charset=utf8;";
 
                     if (isset($config['db.socket'])) {
                         $dsn .= "unix_socket={$config['db.socket']};";
