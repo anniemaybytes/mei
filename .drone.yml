@@ -21,32 +21,6 @@ steps:
 trigger:
     event:
         exclude:
-            - cron
-            - promote
-
----
-kind: pipeline
-name: dependencies
-type: docker
-
-steps:
-    -   name: install
-        image: thecodingmachine/php:7.3-v3-cli
-        commands:
-            - composer self-update
-            - composer --version
-            - php -v
-            - sudo composer install --no-progress --ansi --no-suggest --ignore-platform-reqs --prefer-dist --no-dev
-    -   name: outdated
-        image: thecodingmachine/php:7.3-v3-cli
-        commands:
-            - composer outdated -n --direct --strict --ansi --ignore roave/security-advisories --ignore robmorgan/phinx
-
-trigger:
-    branch:
-        - master
-    event:
-        exclude:
             - promote
 
 ---

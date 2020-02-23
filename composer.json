@@ -25,7 +25,7 @@
     "require": {
         "php": "~7.3",
         "slim/slim": "4.4.0",
-        "tracy/tracy": "2.7.2",
+        "tracy/tracy": "2.7.3",
         "paragonie/random-lib": "2.0.1",
         "robmorgan/phinx": "0.9.2",
         "php-di/php-di": "6.0.11",
@@ -52,7 +52,7 @@
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",
-        "phpstan/phpstan": "^0.12.8",
-        "overtrue/phplint": "^1.2"
+        "phpstan/phpstan": "0.12.11",
+        "overtrue/phplint": "1.2.1"
     }
 }

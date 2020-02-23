@@ -1,0 +1,12 @@
+{
+    "extends": [
+        "config:base"
+    ],
+    "ignorePaths": [
+        ".drone.yml"
+    ],
+    "ignoreDeps": [
+        "roave/security-advisories",
+        "robmorgan/phinx"
+    ]
+}
