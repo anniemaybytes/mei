@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Mei\Utilities;
 
@@ -284,8 +286,10 @@ final class ImageUtilities
     public static function resizeImage(Imagick $image, int $maxWidth, int $maxHeight, bool $crop = false): ?string
     {
         // check dimensions are valid
-        if (min([$maxWidth, $maxHeight]) < self::$allowedResizeRange['min'] ||
-            max([$maxWidth, $maxHeight]) > self::$allowedResizeRange['max']) {
+        if (
+            min([$maxWidth, $maxHeight]) < self::$allowedResizeRange['min'] ||
+            max([$maxWidth, $maxHeight]) > self::$allowedResizeRange['max']
+        ) {
             Debugger::log(
                 "Dimmensions $maxWidth x $maxHeight are outside acceptable range. Aborting.",
                 DEBUGGER::WARNING

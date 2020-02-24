@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Mei\Controller;
 
@@ -82,4 +84,3 @@ final class ErrorCtrl extends BaseCtrl
         Debugger::log($exception, Debugger::EXCEPTION);
     }
 }
-

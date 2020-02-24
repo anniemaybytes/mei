@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Mei\Controller;
 
@@ -79,11 +81,12 @@ final class ServeCtrl extends BaseCtrl
         }
 
         $savePath = pathinfo($fileEntity->Key);
-        if (!$bindata = ImageUtilities::getDataFromPath(
+        $bindata = ImageUtilities::getDataFromPath(
             $this->imageUtils->getSavePath(
                 $savePath['filename'] . '.' . $this->imageUtils::mapExtension($savePath['extension'])
             )
-        )) {
+        );
+        if (!$bindata) {
             throw new HttpNotFoundException($request, 'Image Not Found');
         }
 

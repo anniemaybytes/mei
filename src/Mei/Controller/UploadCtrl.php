@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Mei\Controller;
 
@@ -279,9 +281,7 @@ final class UploadCtrl extends BaseCtrl
             if ($this->filesMap->getByKey($metadata['checksum'] . '.' . $metadata['extension'])) {
                 $found = true;
                 $isLegacy = false;
-            } elseif ($this->filesMap->getByKey(
-                $metadata['checksum_legacy'] . '.' . $metadata['extension']
-            )) {
+            } elseif ($this->filesMap->getByKey($metadata['checksum_legacy'] . '.' . $metadata['extension'])) {
                 $found = true;
                 $isLegacy = true;
             }

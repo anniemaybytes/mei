@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Mei\PDO;
 
@@ -81,18 +83,20 @@ final class PDOTracyBarPanel implements IBarPanel
 
         SqlFormatter::$pre_attributes = 'style="color: black;"';
 
-        $html = '<h1 style="font-size:1.6em">' . get_class(
-                $this->pdo
-            ) . '</h1><div class="tracy-inner tracy-InfoPanel">';
+        $html = '<h1 style="font-size:1.6em">' . get_class($this->pdo) .
+            '</h1><div class="tracy-inner tracy-InfoPanel">';
         if (count($this->queries) > 0) {
             $html .= '<table><tr><th>Time</th><th>Statement</th></tr>';
             foreach ($this->queries as $query) {
-                $html .= '<tr><td><span>' . number_format(
+                $html .= '<tr><td><span>' .
+                    number_format(
                         $query['time'],
                         2,
                         '.',
                         '&nbsp;'
-                    ) . '&nbsp;ms</span></td><td>' . SqlFormatter::highlight(
+                    ) .
+                    '&nbsp;ms</span></td><td>' .
+                    SqlFormatter::highlight(
                         $query['statement']
                     ) . '</td></tr>';
             }

@@ -55,10 +55,12 @@ final class ProfilerPanel implements IBarPanel
         $table .= '<table><tr><td colspan="4" style="text-align: center">' . $this->getMemoryChart() . '</td></tr>
             <tr><th>Start</th><th>Finish</th><th>Time (absolute)</th><th>Memory change (absolute)</th></tr>';
 
+        // phpcs:disable PSR12.ControlStructures.ControlStructureSpacing.FirstExpressionLine
         $this->profilerService->iterateProfiles(
             static function (Profile $profile) use (&$table) {
                 if (($profile->meta[ProfilerService::TIME_LINE_ACTIVE] +
-                        (int)$profile->meta[ProfilerService::TIME_LINE_INACTIVE]) < 1) {
+                        (int)$profile->meta[ProfilerService::TIME_LINE_INACTIVE]) < 1
+                ) {
                     return /* continue */ ;
                 }
                 if ($profile->meta[Profiler::START_LABEL] === $profile->meta[Profiler::FINISH_LABEL]) {
@@ -97,6 +99,7 @@ final class ProfilerPanel implements IBarPanel
                 );
             }
         );
+        //phpcs:enable
 
         $table .= '</table>';
 

@@ -1,4 +1,6 @@
-<?php /** @noinspection StaticClosureCanBeUsedInspection */
+<?php
+
+/** @noinspection StaticClosureCanBeUsedInspection */
 
 declare(strict_types=1);
 
@@ -61,7 +63,8 @@ final class DependencyInjection
                     }
 
                     $w = new PDOWrapper(
-                        $dsn, $config['db.username'],
+                        $dsn,
+                        $config['db.username'],
                         $config['db.password'],
                         [
                             PDO::ATTR_PERSISTENT => false,

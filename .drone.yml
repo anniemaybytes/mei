@@ -12,6 +12,11 @@ steps:
         commands:
             - composer phplint
         depends_on: [ install ]
+    -   name: phpcs
+        image: thecodingmachine/php:7.3-v3-cli
+        commands:
+            - composer phpcs
+        depends_on: [ install ]
     -   name: phpstan
         image: thecodingmachine/php:7.3-v3-cli
         commands:

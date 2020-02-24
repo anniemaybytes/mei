@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Mei\Controller;
 
@@ -81,51 +83,56 @@ final class DeleteCtrl extends BaseCtrl
             $uri = $request->getUri();
             $domain = $uri->getScheme() . '://' . $uri->getHost();
             $urls = [
-                ($domain . $this->router->relativeUrlFor(
+                (
+                    $domain . $this->router->relativeUrlFor(
                         'serve',
                         ['img' => $info['filename'] . '.' . $info['extension']]
-                    )),
-                ($domain . $this->router->relativeUrlFor(
+                    )
+                ),
+                (
+                    $domain . $this->router->relativeUrlFor(
                         'serve:legacy',
                         ['img' => $info['filename'] . '.' . $info['extension']]
-                    ))
+                    )
+                )
             ];
 
-            foreach (ServeCtrl::$legacySizes as $resInfo) // handling common resolutions + crop
-            {
-                $urls[] = ($domain . $this->router->relativeUrlFor(
+            // handling common resolutions + crop
+            foreach (ServeCtrl::$legacySizes as $resInfo) {
+                $urls[] = (
+                    $domain . $this->router->relativeUrlFor(
                         'serve',
                         [
                             'img' => (
                                 $info['filename'] . '-' . $resInfo[0] . 'x' . $resInfo[1] . '.' . $info['extension']
                             )
                         ]
-                    ));
+                    )
+                );
 
-                $urls[] = ($domain . $this->router->relativeUrlFor(
+                $urls[] = (
+                    $domain . $this->router->relativeUrlFor(
                         'serve',
                         [
                             'img' => (
                                 $info['filename'] . '-' . $resInfo[0] . 'x' . $resInfo[1] . '-crop.' . $info['extension']
                             )
                         ]
-                    ));
+                    )
+                );
             }
 
             try {
                 $this->filesMap->delete($fileEntity);
-                if (!$this->filesMap->getByKey(
-                    $fileEntity->Key
-                )) { // file does not exist anymore anywhere, remove it
+                if (!$this->filesMap->getByKey($fileEntity->Key)) {
                     $savePath = pathinfo($fileEntity->Key);
                     ImageUtilities::deleteImage(
                         $this->imageUtils->getSavePath(
-                            $savePath['filename'] . '.' . $this->imageUtils::mapExtension(
-                                $savePath['extension']
-                            )
+                            $savePath['filename'] . '.' .
+                            $this->imageUtils::mapExtension($savePath['extension'])
                         )
                     );
-                }
+                } // file does not exist anymore anywhere, remove it
             } catch (Exception $e) {
                 $success--;
                 Debugger::log($e, Debugger::EXCEPTION);

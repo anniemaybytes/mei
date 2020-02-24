@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace RunTracy\Helpers\Profiler;
 
@@ -17,5 +19,4 @@ final class Profiler extends AdvancedProfiler
         ProfilerService::init();
         parent::enable($realUsage);
     }
-
 }
