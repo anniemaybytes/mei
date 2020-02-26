@@ -8,5 +8,8 @@
     "ignoreDeps": [
         "roave/security-advisories",
         "robmorgan/phinx"
-    ]
+    ],
+    "lockFileMaintenance": {
+        "enabled": true
+    }
 }
