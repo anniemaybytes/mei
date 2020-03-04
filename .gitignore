@@ -9,6 +9,7 @@ nbproject/*
 desktop.ini
 .buildpath
 .project
+.phplint-cache
 
 # general extensions of files we dont want
 *.sql.gz

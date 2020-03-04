@@ -88,12 +88,6 @@ final class DeleteCtrl extends BaseCtrl
                         'serve',
                         ['img' => $info['filename'] . '.' . $info['extension']]
                     )
-                ),
-                (
-                    $domain . $this->router->relativeUrlFor(
-                        'serve:legacy',
-                        ['img' => $info['filename'] . '.' . $info['extension']]
-                    )
                 )
             ];
 
