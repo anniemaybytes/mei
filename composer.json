@@ -24,7 +24,7 @@
             "phplint --ansi -n"
         ],
         "phpcs": [
-            "phpcs -n"
+            "phpcs -n --cache=.phpcs-cache"
         ],
         "phpcbf": [
             "phpcbf"

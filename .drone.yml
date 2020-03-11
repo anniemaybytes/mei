@@ -10,11 +10,15 @@ steps:
             - sudo composer install --no-progress --ansi --no-suggest --ignore-platform-reqs --prefer-dist
     -   name: phplint
         image: thecodingmachine/php:7.3-v3-cli
+        environment:
+            PHP_INI_ERROR_REPORTING: E_ALL & ~(E_STRICT | E_NOTICE | E_WARNING | E_DEPRECATED)
         commands:
             - composer phplint
         depends_on: [ install ]
     -   name: phpcs
         image: thecodingmachine/php:7.3-v3-cli
+        environment:
+            PHP_INI_ERROR_REPORTING: E_ALL & ~(E_STRICT | E_NOTICE | E_WARNING | E_DEPRECATED)
         commands:
             - composer phpcs
         depends_on: [ install ]
