@@ -242,10 +242,9 @@ final class UploadCtrl extends BaseCtrl
 
         $images = $this->processUploadedData($dataToHandle);
         if ($images) {
-            /** @var Response $response */
-            $response = $response->withHeader('Content-Type', 'application/json');
-            $response->getBody()->write(json_encode($images));
-            return $response->withStatus(201);
+            return $response->withStatus(201)->withJson(
+                ['success' => true, 'images' => $images]
+            );
         }
 
         throw new NoImages(

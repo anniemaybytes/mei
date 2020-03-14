@@ -36,15 +36,14 @@ final class ErrorCtrl extends BaseCtrl
     {
         try {
             $statusCode = 500;
-            $message = '500 Internal Server Error';
+            $message = null;
             if ($exception instanceof HttpException) {
                 $statusCode = $exception->getCode();
-                $message = $exception->getTitle();
             } elseif ($exception instanceof NoImages) {
                 $statusCode = 415;
-                $message = '415 Unsupported Media Type - ' . $exception->getMessage();
+                $message = $exception->getMessage();
             } elseif ($exception instanceof GeneralException) {
-                $message .= " - {$exception->getMessage()}";
+                $message = $exception->getMessage();
             }
             $this->logError($request, $exception, $statusCode);
 
@@ -64,7 +63,9 @@ final class ErrorCtrl extends BaseCtrl
                 }
             }
 
-            return $response->withStatus($statusCode)->write($message);
+            return $response->withStatus($statusCode)->withJson(
+                ['success' => false, 'error' => $statusCode, 'message' => $message]
+            );
         } catch (Throwable $e) {
             return (new FatalErrorCtrl())->handleError($request, $response, $e);
         }
