@@ -45,7 +45,10 @@ final class ErrorCtrl extends BaseCtrl
             } elseif ($exception instanceof GeneralException) {
                 $message = $exception->getMessage();
             }
-            $this->logError($request, $exception, $statusCode);
+
+            if ($statusCode === 500) {
+                Debugger::log($exception, Debugger::EXCEPTION);
+            }
 
             // clear the body first
             $body = $response->getBody();
@@ -69,19 +72,5 @@ final class ErrorCtrl extends BaseCtrl
         } catch (Throwable $e) {
             return (new FatalErrorCtrl())->handleError($request, $response, $e);
         }
-    }
-
-    /**
-     * @param Request $request
-     * @param Throwable $exception
-     * @param int $status
-     */
-    private function logError(Request $request, Throwable $exception, int $status): void
-    {
-        if ($status !== 500) {
-            return;
-        }
-
-        Debugger::log($exception, Debugger::EXCEPTION);
     }
 }
