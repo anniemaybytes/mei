@@ -13,6 +13,7 @@ echo Adding repositories
 cd /vagrantroot/configs/etc/apt
 cp -avu * /etc/apt/
 apt-key adv --no-tty --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
+curl -sSL https://packages.sury.org/php/apt.gpg | apt-key add -
 
 echo
 echo Updating apt cache
@@ -24,7 +25,10 @@ apt-get -y dist-upgrade
 
 echo
 echo Installing packages...
-apt-get -y install software-properties-common nginx php7.3 php7.3-curl php7.3-fpm php7.3-bcmath php7.3-mysqlnd mariadb-server php7.3-common php7.3-gd php7.3-geoip php7.3-imagick phpunit pv php7.3-dev php-pear libcurl3-openssl-dev build-essential php7.3-cli git libpq5 libodbc1 unzip zip libmysqlclient18 libmariadb3 php7.3-mbstring
+apt-get -y install software-properties-common nginx php7.3 php7.3-xml php7.3-curl php7.3-fpm php7.3-bcmath \
+php7.3-mysqlnd mariadb-server php7.3-common php7.3-gd php7.3-geoip php7.3-imagick phpunit pv php7.3-dev php-pear \
+libcurl3-openssl-dev build-essential php7.3-cli git libpq5 libodbc1 unzip zip libmysqlclient18 libmariadb3 \
+php7.3-mbstring php7.3-json
 
 pecl install xdebug-2.7.2
 
