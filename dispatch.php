@@ -36,7 +36,7 @@ Profiler::finish('initApp');
 $di = $app->getContainer();
 
 // disable further profiling based on run mode
-if ($di->get('config')['mode'] === 'production') {
+if ($di->get('config')['mode'] !== 'development') {
     Profiler::disable();
 }
 
@@ -53,9 +53,8 @@ Debugger::enable(
         Debugger::DEVELOPMENT : Debugger::PRODUCTION,
     $di->get('config')['logs_dir']
 );
-
-// tracy resets error_reporting to E_ALL when it's enabled, silence it on production please
-if ($di->get('config')['mode'] === 'production') {
+if ($di->get('config')['mode'] !== 'development') {
+    // tracy resets error_reporting to E_ALL when it's enabled, silence it on production please
     error_reporting(ERROR_REPORTING);
 }
 
@@ -88,14 +87,14 @@ $app->addBodyParsingMiddleware(); // parses xml and json body
 $app->add(new OutputBufferingMiddleware(new StreamFactory(), OutputBufferingMiddleware::APPEND));
 
 // 'after' middleware (calls next middleware with modified body)
-if ($di->get('config')['mode'] === 'production') {
+if ($di->get('config')['mode'] !== 'development') {
     $contentLengthMiddleware = new ContentLengthMiddleware();
     $app->add($contentLengthMiddleware); // adds content-length but only on production
 }
 $app->addRoutingMiddleware();
 
 // error handler must be added before everything else on request or it won't handle errors from middleware stack
-if ($di->get('config')['mode'] === 'production') {
+if ($di->get('config')['mode'] !== 'development') {
     $errorHandler = $app->addErrorMiddleware(false, false, false);
 
     $errorHandler->setErrorHandler( // handling for built-in errors when route not found or method not allowed

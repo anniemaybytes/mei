@@ -77,13 +77,12 @@ final class Dispatcher implements SingletonInterface
         $config = ConfigLoader::load();
         Profiler::finish('initConfig');
 
-        $allowedModes = ['production', 'development'];
+        $allowedModes = ['production', 'staging', 'development'];
         if (!in_array($config['mode'], $allowedModes, true)) {
             throw new RuntimeException(
-                'Can not start application with non-recognized mode: ' . $config['mode'] . '. Must be one of: ' . implode(
-                    ', ',
-                    $allowedModes
-                )
+                'Can not start application with non-recognized mode: ' .
+                $config['mode'] .
+                '. Must be one of: ' . implode(', ', $allowedModes)
             );
         }
 
