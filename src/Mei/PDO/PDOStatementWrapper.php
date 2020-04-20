@@ -11,8 +11,6 @@ use PDOStatement;
 /**
  * Class PDOStatementWrapper
  *
- * {@inheritDoc}
- *
  * @package Mei\PDO
  */
 final class PDOStatementWrapper extends PDOStatement

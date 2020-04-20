@@ -66,7 +66,11 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
         return static::getAttributesFromColumns(static::$columns);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @param array $columns
+     *
+     * @return array
+     */
     private static function getAttributesFromColumns(array $columns): array
     {
         $attributes = [];
@@ -92,7 +96,9 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     }
 
     /**
-     * @inheritDoc
+     * @param array $columns
+     *
+     * @return array
      * @throws Exception
      */
     private static function getDefaultsFromColumns(array $columns): array
@@ -118,7 +124,11 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
         return static::getIdAttributesFromColumns(static::$columns);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @param array $columns
+     *
+     * @return array
+     */
     private static function getIdAttributesFromColumns(array $columns): array
     {
         $ids = [];
@@ -259,7 +269,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     }
 
     /** {@inheritDoc} */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         $this->__unset($offset);
     }
@@ -277,7 +287,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
      * @inheritDoc
      * @throws Exception
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->__set($offset, $value);
     }

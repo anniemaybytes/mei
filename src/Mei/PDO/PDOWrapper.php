@@ -12,8 +12,6 @@ use Tracy\Debugger;
 /**
  * Class PDOInstrumentationWrapper
  *
- * {@inheritDoc}
- *
  * @package Mei\Instrumentation
  */
 final class PDOWrapper extends PDO

@@ -8,6 +8,7 @@ use DateTime;
 use Exception;
 use InvalidArgumentException;
 use Mei\Utilities\Time;
+use RuntimeException;
 
 /**
  * Class EntityAttributeType
@@ -39,12 +40,18 @@ final class EntityAttributeType
                 $val = Time::fromSql($val);
                 break;
             case 'array':
-                $val = unserialize($val, ['allowed_classes' => false]);
+                $val = EntityHelper::safelyUnserialize($val);
+                if ($val === null) {
+                    $val = [];
+                } elseif (!is_array($val)) {
+                    throw new RuntimeException('Failed to decode value');
+                }
                 break;
             case 'json':
+                /** @noinspection JsonEncodingApiUsageInspection */
                 $val = json_decode($val, true);
                 if (JSON_ERROR_NONE !== json_last_error()) {
-                    throw new InvalidArgumentException('Failed to decode value');
+                    throw new RuntimeException('Failed to decode value');
                 }
                 break;
             case 'enum-bool':
@@ -86,6 +93,7 @@ final class EntityAttributeType
                 $val = serialize($val);
                 break;
             case 'json':
+                /** @noinspection JsonEncodingApiUsageInspection */
                 $val = json_encode($val);
                 if (JSON_ERROR_NONE !== json_last_error()) {
                     throw new InvalidArgumentException('Failed to encode value');

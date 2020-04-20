@@ -39,7 +39,7 @@ steps:
         commands:
             - composer validate --ansi --no-check-all --no-check-publish
             - sudo composer install --no-progress --ansi --no-suggest --ignore-platform-reqs --prefer-dist
-    -   name: phpspec
+    -   name: phpunit
         image: thecodingmachine/php:7.3-v3-cli
         commands:
-            - composer phpspec
+            - composer phpunit

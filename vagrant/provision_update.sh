@@ -30,5 +30,11 @@ systemctl start mariadb
 cd /code
 
 echo
+echo Migrating
+cd /code
+su -s /bin/bash vagrant -c 'composer phinx migrate'
+
+echo
 echo Updating composer from lock file
-sudo -u vagrant composer install
+composer self-update
+su -s /bin/bash vagrant -c 'composer install'

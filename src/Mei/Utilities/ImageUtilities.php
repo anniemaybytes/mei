@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Mei\Utilities;
 
+use ErrorException;
 use Imagick;
 use ImagickException;
 use InvalidArgumentException;
+use JsonException;
 use Mei\Exception\GeneralException;
 use Tracy\Debugger;
 
@@ -242,13 +244,13 @@ final class ImageUtilities
 
         $dir = dirname($savePath);
         if (!mkdir($dir, 0750, true) && !is_dir($dir)) {
-            Debugger::log("Unable to create directory $dir.", DEBUGGER::ERROR);
+            Debugger::log(new ErrorException("Unable to create directory $dir."), DEBUGGER::ERROR);
         }
         if (file_put_contents($savePath, $bindata) === false) {
-            Debugger::log("Unable to save binary data on $savePath.", DEBUGGER::ERROR);
+            Debugger::log(new ErrorException("Unable to save binary data on $savePath."), DEBUGGER::ERROR);
         }
         if (chmod($savePath, 0640) === false) {
-            Debugger::log("Unable to set mode on $savePath.", DEBUGGER::ERROR);
+            Debugger::log(new ErrorException("Unable to set mode on $savePath."), DEBUGGER::ERROR);
             return false;
         }
         return true;
@@ -322,6 +324,8 @@ final class ImageUtilities
 
     /**
      * @param array $urls
+     *
+     * @throws JsonException
      */
     public function clearCacheForImage(array $urls): void
     {
@@ -347,7 +351,7 @@ final class ImageUtilities
                         'Content-Type: application/json'
                     ],
                     CURLOPT_CUSTOMREQUEST => 'DELETE',
-                    CURLOPT_POSTFIELDS => json_encode(['files' => $urls])
+                    CURLOPT_POSTFIELDS => json_encode(['files' => $urls], JSON_THROW_ON_ERROR, 512)
                 ]
             );
             $result = $curl->exec();
@@ -358,14 +362,19 @@ final class ImageUtilities
                     "cURL error: {$err}",
                     DEBUGGER::WARNING
                 );
-                Debugger::log('Failed to clear cache for ' . implode(', ', $urls), DEBUGGER::ERROR);
+                Debugger::log(new ErrorException('Failed to clear cache for ' . implode(', ', $urls)), DEBUGGER::ERROR);
                 return;
             }
             unset($curl);
 
+            /**
+             * will most likely fail if api is down as it would return html error page instead
+             *
+             * @noinspection JsonEncodingApiUsageInspection
+             */
             $result = json_decode($result, true);
-            if (!$result['success']) { // log it as error since we want bluescreen for debugging
-                Debugger::log('Failed to clear cache for ' . implode(', ', $urls), DEBUGGER::ERROR);
+            if (@!$result['success']) { // log it as error since we want bluescreen for debugging
+                Debugger::log(new ErrorException('Failed to clear cache for ' . implode(', ', $urls)), DEBUGGER::ERROR);
             }
         }
     }

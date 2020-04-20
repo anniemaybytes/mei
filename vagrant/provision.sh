@@ -76,5 +76,5 @@ mysql -umei -pmei mei < /vagrantroot/mei.sql
 
 echo
 echo Creating required directories
-sudo -u vagrant mkdir -p /code/images
-sudo -u vagrant mkdir -p /code/logs
+su -s /bin/bash vagrant -c 'mkdir -p /code/images'
+su -s /bin/bash vagrant -c 'mkdir -p /code/logs'

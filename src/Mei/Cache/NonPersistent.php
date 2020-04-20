@@ -182,7 +182,6 @@ final class NonPersistent implements IKeyStore
         $this->time += (microtime(true) - $start) * 1000;
     }
 
-    /** {@inheritDoc} */
     public function doFlush(): void
     {
         foreach ($this->inner as $key => $value) {

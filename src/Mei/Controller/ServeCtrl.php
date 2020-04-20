@@ -126,13 +126,10 @@ final class ServeCtrl extends BaseCtrl
                     'Content-Security-Policy',
                     "default-src 'none'; img-src data:; style-src 'unsafe-inline'"
                 );
-                $response = $response->withHeader(
+                return $response->withHeader(
                     'X-Accel-Redirect',
                     str_replace($this->config['site.images_root'], '/x-accel', $path)
                 );
-                return $response->write(
-                    'Performing internal redirect...'
-                ); // todo https://github.com/slimphp/Slim/issues/2924
             } // otherwise we have to stream file ourselves
             return $response->withHeader(
                 'Content-Security-Policy',

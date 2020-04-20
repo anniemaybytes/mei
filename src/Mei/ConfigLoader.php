@@ -68,14 +68,4 @@ final class ConfigLoader
         }
         return self::loadFile($configPath . 'private.ini');
     }
-
-    /**
-     * @param string $config
-     *
-     * @return array
-     */
-    public static function loadString(string $config): array
-    {
-        return self::parseArray(parse_ini_string($config, true, INI_SCANNER_TYPED), '');
-    }
 }

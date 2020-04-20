@@ -2,9 +2,16 @@
     "extends": [
         "config:base"
     ],
-    "ignorePresets": [
-        ":prHourlyLimit2"
+    "labels": [
+        "kind/deps"
     ],
+    "vulnerabilityAlerts": {
+        "labels": [
+            "kind/security"
+        ]
+    },
+    "stabilityDays": 3,
+    "semanticCommits": false,
     "ignorePaths": [
         ".drone.yml"
     ],
@@ -13,6 +20,19 @@
         "robmorgan/phinx"
     ],
     "lockFileMaintenance": {
-        "enabled": true
-    }
+        "enabled": true,
+        "schedule": [
+            "before 3am on friday"
+        ]
+    },
+    "packageRules": [
+        {
+            "depTypeList": [
+                "require-dev"
+            ],
+            "extends": [
+                "schedule:weekends"
+            ]
+        }
+    ]
 }

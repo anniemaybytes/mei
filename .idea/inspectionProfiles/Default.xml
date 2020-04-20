@@ -1,361 +1,24 @@
 <component name="InspectionProjectProfileManager">
   <profile version="1.0">
     <option name="myName" value="Project Default" />
-    <inspection_tool class="AccessModifierPresentedInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="AdditionOperationOnArraysInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="AliasFunctionsUsageInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="AlterInForeachInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="AmbiguousMethodsCallsInArrayMappingInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="ArgumentEqualsDefaultValueInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="ArgumentUnpackingCanBeUsedInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="ArrayPushMissUseInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="ArraySearchUsedAsInArrayInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="ArrayUniqueCanBeUsedInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
     <inspection_tool class="AutoloadingIssuesInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
       <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="BacktickOperatorUsageInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="BadExceptionsProcessingInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
     </inspection_tool>
     <inspection_tool class="BashFloatArithmetic" enabled="false" level="INFO" enabled_by_default="false" />
     <inspection_tool class="BashReplaceWithDoubleBrackets" enabled="false" level="INFO" enabled_by_default="false" />
     <inspection_tool class="BashSimpleArrayUse" enabled="false" level="INFO" enabled_by_default="false" />
-    <inspection_tool class="CallableInLoopTerminationConditionInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="CallableMethodValidityInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="CallableParameterUseCaseInTypeContextInspection" enabled="false" level="WARNING" enabled_by_default="false">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="CascadeStringReplacementInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="CascadingDirnameCallsInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="CaseInsensitiveStringFunctionsMissUseInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="ClassConstantCanBeUsedInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="ClassConstantUsageCorrectnessInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="ClassMethodNameMatchesFieldNameInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
+    <inspection_tool class="CallableParameterUseCaseInTypeContextInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="ClassMockingCorrectnessInspection" enabled="true" level="ERROR" enabled_by_default="true">
       <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="ClassOverridesFieldOfSuperClassInspection" enabled="false" level="WARNING" enabled_by_default="false">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="ClassReImplementsParentInterfaceInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="CompactArgumentsInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="CompactCanBeUsedInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="ComparisonOperandsOrderInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="ConstantCanBeUsedInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="CryptographicallySecureAlgorithmsInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="CryptographicallySecureRandomnessInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="CurlSslServerSpoofingInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="DateIntervalSpecificationInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="DateTimeConstantsUsageInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="DateTimeSetTimeUsageInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="DateUsageInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="DeclareDirectiveCorrectnessInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="DegradedSwitchInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="DeprecatedConstructorStyleInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="DeprecatedIniOptionsInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="DirectoryConstantCanBeUsedInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="DisallowWritingIntoStaticPropertiesInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="DisconnectedForeachInstructionInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="DuplicateArrayKeysInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
     </inspection_tool>
     <inspection_tool class="DuplicatedCode" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
-    <inspection_tool class="DynamicCallsToScopeIntrospectionInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="DynamicInvocationViaScopeResolutionInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
     <inspection_tool class="ES6ConvertModuleExportToExport" enabled="false" level="INFORMATION" enabled_by_default="false" />
     <inspection_tool class="ES6ConvertRequireIntoImport" enabled="false" level="INFORMATION" enabled_by_default="false" />
     <inspection_tool class="ES6ConvertToForOf" enabled="false" level="INFORMATION" enabled_by_default="false" />
     <inspection_tool class="ES6ConvertVarToLetConst" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
-    <inspection_tool class="EfferentObjectCouplingInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="ElvisOperatorCanBeUsedInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="EmptyClassInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="EncryptionInitializationVectorRandomnessInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="FixedTimeStartWithInspection" enabled="false" level="WARNING" enabled_by_default="false">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
     <inspection_tool class="FlowJSConfig" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="FlowJSFlagCommentPlacement" enabled="false" level="WARNING" enabled_by_default="false" />
-    <inspection_tool class="FopenBinaryUnsafeUsageInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="ForeachInvariantsInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
     <inspection_tool class="ForgottenDebugOutputInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false">
-        <option name="configuration">
-          <list>
-            <option value="\Codeception\Util\Debug::debug" />
-            <option value="\Codeception\Util\Debug::pause" />
-            <option value="\Doctrine\Common\Util\Debug::dump" />
-            <option value="\Doctrine\Common\Util\Debug::export" />
-            <option value="\Illuminate\Support\Debug\Dumper::dump" />
-            <option value="\Symfony\Component\Debug\Debug::enable" />
-            <option value="\Symfony\Component\Debug\DebugClassLoader::enable" />
-            <option value="\Symfony\Component\Debug\ErrorHandler::register" />
-            <option value="\Symfony\Component\Debug\ExceptionHandler::register" />
-            <option value="\TYPO3\CMS\Core\Utility\DebugUtility::debug" />
-            <option value="\Zend\Debug\Debug::dump" />
-            <option value="\Zend\Di\Display\Console::export" />
-            <option value="dd" />
-            <option value="debug_print_backtrace" />
-            <option value="debug_zval_dump" />
-            <option value="dpm" />
-            <option value="dpq" />
-            <option value="dsm" />
-            <option value="dump" />
-            <option value="dvm" />
-            <option value="error_log" />
-            <option value="kpr" />
-            <option value="phpinfo" />
-            <option value="print_r" />
-            <option value="var_dump" />
-            <option value="var_export" />
-            <option value="xdebug_break" />
-            <option value="xdebug_call_class" />
-            <option value="xdebug_call_file" />
-            <option value="xdebug_call_function" />
-            <option value="xdebug_call_line" />
-            <option value="xdebug_code_coverage_started" />
-            <option value="xdebug_debug_zval" />
-            <option value="xdebug_debug_zval_stdout" />
-            <option value="xdebug_dump_superglobals" />
-            <option value="xdebug_enable" />
-            <option value="xdebug_get_code_coverage" />
-            <option value="xdebug_get_collected_errors" />
-            <option value="xdebug_get_declared_vars" />
-            <option value="xdebug_get_function_stack" />
-            <option value="xdebug_get_headers" />
-            <option value="xdebug_get_monitored_functions" />
-            <option value="xdebug_get_profiler_filename" />
-            <option value="xdebug_get_stack_depth" />
-            <option value="xdebug_get_tracefile_name" />
-            <option value="xdebug_is_enabled" />
-            <option value="xdebug_memory_usage" />
-            <option value="xdebug_peak_memory_usage" />
-            <option value="xdebug_print_function_stack" />
-            <option value="xdebug_start_code_coverage" />
-            <option value="xdebug_start_error_collection" />
-            <option value="xdebug_start_function_monitor" />
-            <option value="xdebug_start_trace" />
-            <option value="xdebug_stop_code_coverage" />
-            <option value="xdebug_stop_error_collection" />
-            <option value="xdebug_stop_function_monitor" />
-            <option value="xdebug_stop_trace" />
-            <option value="xdebug_time_index" />
-            <option value="xdebug_var_dump" />
-          </list>
-        </option>
-        <option name="migratedIntoUserSpace" value="true" />
-      </scope>
-      <scope name="migrations" level="ERROR" enabled="false">
-        <option name="configuration">
-          <list>
-            <option value="\Codeception\Util\Debug::debug" />
-            <option value="\Codeception\Util\Debug::pause" />
-            <option value="\Doctrine\Common\Util\Debug::dump" />
-            <option value="\Doctrine\Common\Util\Debug::export" />
-            <option value="\Illuminate\Support\Debug\Dumper::dump" />
-            <option value="\Symfony\Component\Debug\Debug::enable" />
-            <option value="\Symfony\Component\Debug\DebugClassLoader::enable" />
-            <option value="\Symfony\Component\Debug\ErrorHandler::register" />
-            <option value="\Symfony\Component\Debug\ExceptionHandler::register" />
-            <option value="\TYPO3\CMS\Core\Utility\DebugUtility::debug" />
-            <option value="\Zend\Debug\Debug::dump" />
-            <option value="\Zend\Di\Display\Console::export" />
-            <option value="dd" />
-            <option value="debug_print_backtrace" />
-            <option value="debug_zval_dump" />
-            <option value="dpm" />
-            <option value="dpq" />
-            <option value="dsm" />
-            <option value="dump" />
-            <option value="dvm" />
-            <option value="error_log" />
-            <option value="kpr" />
-            <option value="phpinfo" />
-            <option value="print_r" />
-            <option value="var_dump" />
-            <option value="var_export" />
-            <option value="xdebug_break" />
-            <option value="xdebug_call_class" />
-            <option value="xdebug_call_file" />
-            <option value="xdebug_call_function" />
-            <option value="xdebug_call_line" />
-            <option value="xdebug_code_coverage_started" />
-            <option value="xdebug_debug_zval" />
-            <option value="xdebug_debug_zval_stdout" />
-            <option value="xdebug_dump_superglobals" />
-            <option value="xdebug_enable" />
-            <option value="xdebug_get_code_coverage" />
-            <option value="xdebug_get_collected_errors" />
-            <option value="xdebug_get_declared_vars" />
-            <option value="xdebug_get_function_stack" />
-            <option value="xdebug_get_headers" />
-            <option value="xdebug_get_monitored_functions" />
-            <option value="xdebug_get_profiler_filename" />
-            <option value="xdebug_get_stack_depth" />
-            <option value="xdebug_get_tracefile_name" />
-            <option value="xdebug_is_enabled" />
-            <option value="xdebug_memory_usage" />
-            <option value="xdebug_peak_memory_usage" />
-            <option value="xdebug_print_function_stack" />
-            <option value="xdebug_start_code_coverage" />
-            <option value="xdebug_start_error_collection" />
-            <option value="xdebug_start_function_monitor" />
-            <option value="xdebug_start_trace" />
-            <option value="xdebug_stop_code_coverage" />
-            <option value="xdebug_stop_error_collection" />
-            <option value="xdebug_stop_function_monitor" />
-            <option value="xdebug_stop_trace" />
-            <option value="xdebug_time_index" />
-            <option value="xdebug_var_dump" />
-          </list>
-        </option>
-        <option name="migratedIntoUserSpace" value="true" />
-      </scope>
       <option name="configuration">
         <list>
           <option value="\Codeception\Util\Debug::debug" />
@@ -421,19 +84,7 @@
       </option>
       <option name="migratedIntoUserSpace" value="true" />
     </inspection_tool>
-    <inspection_tool class="GetClassUsageInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="GetTypeMissUseInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
     <inspection_tool class="HamlNestedTagContent" enabled="false" level="WARNING" enabled_by_default="false" />
-    <inspection_tool class="HostnameSubstitutionInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
     <inspection_tool class="HtmlDeprecatedTag" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="HtmlFormInputWithoutLabel" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="HtmlRequiredAltAttribute" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -456,62 +107,6 @@
       <option name="myCustomValuesEnabled" value="true" />
     </inspection_tool>
     <inspection_tool class="HtmlUnknownTarget" enabled="false" level="WARNING" enabled_by_default="false" />
-    <inspection_tool class="IfReturnReturnSimplificationInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="ImplodeArgumentsOrderInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="InArrayMissUseInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="IncorrectRandomRangeInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="IncrementDecrementOperationEquivalentInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="InfinityLoopInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="InstanceofCanBeUsedInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="InvertedIfElseConstructsInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="IsCountableCanBeUsedInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="IsEmptyFunctionUsageInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="IsIterableCanBeUsedInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="IsNullFunctionUsageInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="IssetArgumentExistenceInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="IssetConstructsCanBeMergedInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
     <inspection_tool class="JSArrowFunctionBracesCanBeRemoved" enabled="false" level="INFORMATION" enabled_by_default="false" />
     <inspection_tool class="JSEqualityComparisonWithCoercion" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="JSFunctionExpressionToArrowFunction" enabled="false" level="INFORMATION" enabled_by_default="false" />
@@ -520,387 +115,51 @@
     <inspection_tool class="JSUndefinedPropertyAssignment" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="JSValidateTypes" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="JsonEncodingApiUsageInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false">
-        <option name="HARDEN_ERRORS_HANDLING" value="false" />
-      </scope>
-      <scope name="migrations" level="WEAK WARNING" enabled="false">
-        <option name="HARDEN_ERRORS_HANDLING" value="false" />
-      </scope>
-      <option name="HARDEN_ERRORS_HANDLING" value="false" />
-    </inspection_tool>
-    <inspection_tool class="LongInheritanceChainInspection" enabled="false" level="WARNING" enabled_by_default="false">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="LoopWhichDoesNotLoopInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="MagicMethodsValidityInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
+      <scope name="migrations" level="WEAK WARNING" enabled="false" />
+      <scope name="Tests" level="WEAK WARNING" enabled="false" />
     </inspection_tool>
     <inspection_tool class="MarkdownUnresolvedFileReference" enabled="false" level="WARNING" enabled_by_default="false" />
-    <inspection_tool class="MisorderedModifiersInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="MissUsingParentKeywordInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="MissingArrayInitializationInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="MissingIssetImplementationInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="MissingOrEmptyGroupStatementInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="MkdirRaceConditionInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="MktimeUsageInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="MockingMethodsCorrectnessInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="MultiAssignmentUsageInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="MultipleReturnStatementsInspection" enabled="false" level="WARNING" enabled_by_default="false">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="NestedAssignmentsUsageInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="NestedNotOperatorsInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="NestedPositiveIfStatementsInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="NestedTernaryOperatorInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="NonSecureCryptUsageInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="NonSecureExtractUsageInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="NonSecureParseStrUsageInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="NonSecureUniqidUsageInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="NotOptimalIfConditionsInspection" enabled="false" level="WARNING" enabled_by_default="false">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="NotOptimalRegularExpressionsInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="NullCoalescingOperatorCanBeUsedInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="NullPointerExceptionInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="ObGetCleanCanBeUsedInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="OffsetOperationsInspection" enabled="false" level="ERROR" enabled_by_default="false">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="OneTimeUseVariablesInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="OnlyWritesOnParameterInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="OpAssignShortSyntaxInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
+    <inspection_tool class="NotOptimalIfConditionsInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="PackageJsonMismatchedDependency" enabled="false" level="WARNING" enabled_by_default="false" />
-    <inspection_tool class="PackedHashtableOptimizationInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="ParameterDefaultValueIsNotNullInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="PassingByReferenceCorrectnessInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="PdoApiUsageInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
     <inspection_tool class="PhingDomInspection" enabled="false" level="ERROR" enabled_by_default="false" />
-    <inspection_tool class="PhpCompoundNamespaceDepthInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
+    <inspection_tool class="PhpCompoundNamespaceDepthInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="PhpDivisionByZeroInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpIllegalPsrClassPathInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <scope name="Tests" level="WARNING" enabled="false" />
+    </inspection_tool>
     <inspection_tool class="PhpIncludeInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="PhpInconsistentReturnPointsInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
-    <inspection_tool class="PhpLongTypeFormInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="PhpMissingDocCommentInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
+    <inspection_tool class="PhpLongTypeFormInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpMissingDocCommentInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="PhpMissingParentCallMagicInspection" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="PhpMissingStrictTypesDeclarationInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="migrations" level="WARNING" enabled="false" />
-      <scope name="Tests" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="PhpMissingVisibilityInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="PhpModifierOrderInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="PhpMultipleClassesDeclarationsInOneFile" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="PhpNewClassMissingParameterListInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
+    <inspection_tool class="PhpMissingStrictTypesDeclarationInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpMissingVisibilityInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpModifierOrderInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+    <inspection_tool class="PhpNewClassMissingParameterListInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="PhpNonCanonicalElementsOrderInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
-    <inspection_tool class="PhpSeparateElseIfInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
+    <inspection_tool class="PhpPossiblePolymorphicInvocationInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PhpSeparateElseIfInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="PhpShortOpenTagInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="PhpStrictTypeCheckingInspection" enabled="true" level="ERROR" enabled_by_default="true">
       <option name="ENABLE_WITHOUT_DECLARE_STRICT_DIRECTIVE" value="true" />
     </inspection_tool>
     <inspection_tool class="PhpTraditionalSyntaxArrayLiteralInspection" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="PhpTraitsUseListInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
+    <inspection_tool class="PhpTraitsUseListInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="PhpUndefinedClassInspection" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="DONT_REPORT_MULTI_RESOLVE" value="true" />
     </inspection_tool>
     <inspection_tool class="PhpUndefinedMethodInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false">
-        <option name="DOWNGRADE_SEVERITY" value="true" />
-      </scope>
       <option name="DOWNGRADE_SEVERITY" value="true" />
     </inspection_tool>
-    <inspection_tool class="PhpUnitDeprecationsInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+    <inspection_tool class="PhpUnhandledExceptionInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
       <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="PhpUnitTestsInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
     </inspection_tool>
     <inspection_tool class="PhpUnused" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="PhpUnusedParameterInspection" enabled="false" level="WARNING" enabled_by_default="false" />
-    <inspection_tool class="PhpVarUsageInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="PotentialMalwareInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="PowerOperatorCanBeUsedInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="PregQuoteUsageInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="PreloadingUsageCorrectnessInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="PrintfScanfArgumentsInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="ProperNullCoalescingOperatorUsageInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="PropertyCanBeStaticInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="PropertyInitializationFlawsInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="RandomApiMigrationInspection" enabled="false" level="WARNING" enabled_by_default="false">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="RealpathInStreamContextInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="RedundantElseClauseInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="ReferencingObjectsInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
+    <inspection_tool class="PhpVarUsageInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+    <inspection_tool class="RandomApiMigrationInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="RegExpSingleCharAlternation" enabled="false" level="WARNING" enabled_by_default="false" />
-    <inspection_tool class="ReturnTypeCanBeDeclaredInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
     <inspection_tool class="SecurityAdvisoriesInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false">
-        <option name="optionConfiguration">
-          <list>
-            <option value="barryvdh/laravel-debugbar" />
-            <option value="behat/behat" />
-            <option value="brianium/paratest" />
-            <option value="codeception/codeception" />
-            <option value="codedungeon/phpunit-result-printer" />
-            <option value="composer/composer" />
-            <option value="doctrine/coding-standard" />
-            <option value="filp/whoops" />
-            <option value="friendsofphp/php-cs-fixer" />
-            <option value="humbug/humbug" />
-            <option value="infection/infection" />
-            <option value="jakub-onderka/php-parallel-lint" />
-            <option value="johnkary/phpunit-speedtrap" />
-            <option value="kalessil/production-dependencies-guard" />
-            <option value="mikey179/vfsStream" />
-            <option value="mockery/mockery" />
-            <option value="mybuilder/phpunit-accelerator" />
-            <option value="orchestra/testbench" />
-            <option value="pdepend/pdepend" />
-            <option value="phan/phan" />
-            <option value="phing/phing" />
-            <option value="phpcompatibility/php-compatibility" />
-            <option value="phpmd/phpmd" />
-            <option value="phpro/grumphp" />
-            <option value="phpspec/phpspec" />
-            <option value="phpspec/prophecy" />
-            <option value="phpstan/phpstan" />
-            <option value="phpunit/phpunit" />
-            <option value="povils/phpmnd" />
-            <option value="roave/security-advisories" />
-            <option value="satooshi/php-coveralls" />
-            <option value="sebastian/phpcpd" />
-            <option value="slevomat/coding-standard" />
-            <option value="spatie/phpunit-watcher" />
-            <option value="squizlabs/php_codesniffer" />
-            <option value="sstalle/php7cc" />
-            <option value="symfony/debug" />
-            <option value="symfony/maker-bundle" />
-            <option value="symfony/phpunit-bridge" />
-            <option value="symfony/var-dumper" />
-            <option value="vimeo/psalm" />
-            <option value="wimg/php-compatibility" />
-            <option value="wp-coding-standards/wpcs" />
-            <option value="yiisoft/yii2-coding-standards" />
-            <option value="yiisoft/yii2-debug" />
-            <option value="yiisoft/yii2-gii" />
-            <option value="zendframework/zend-coding-standard" />
-            <option value="zendframework/zend-debug" />
-            <option value="zendframework/zend-test" />
-          </list>
-        </option>
-      </scope>
-      <scope name="migrations" level="WARNING" enabled="false">
-        <option name="optionConfiguration">
-          <list>
-            <option value="barryvdh/laravel-debugbar" />
-            <option value="behat/behat" />
-            <option value="brianium/paratest" />
-            <option value="codeception/codeception" />
-            <option value="codedungeon/phpunit-result-printer" />
-            <option value="composer/composer" />
-            <option value="doctrine/coding-standard" />
-            <option value="filp/whoops" />
-            <option value="friendsofphp/php-cs-fixer" />
-            <option value="humbug/humbug" />
-            <option value="infection/infection" />
-            <option value="jakub-onderka/php-parallel-lint" />
-            <option value="johnkary/phpunit-speedtrap" />
-            <option value="kalessil/production-dependencies-guard" />
-            <option value="mikey179/vfsStream" />
-            <option value="mockery/mockery" />
-            <option value="mybuilder/phpunit-accelerator" />
-            <option value="orchestra/testbench" />
-            <option value="pdepend/pdepend" />
-            <option value="phan/phan" />
-            <option value="phing/phing" />
-            <option value="phpcompatibility/php-compatibility" />
-            <option value="phpmd/phpmd" />
-            <option value="phpro/grumphp" />
-            <option value="phpspec/phpspec" />
-            <option value="phpspec/prophecy" />
-            <option value="phpstan/phpstan" />
-            <option value="phpunit/phpunit" />
-            <option value="povils/phpmnd" />
-            <option value="roave/security-advisories" />
-            <option value="satooshi/php-coveralls" />
-            <option value="sebastian/phpcpd" />
-            <option value="slevomat/coding-standard" />
-            <option value="spatie/phpunit-watcher" />
-            <option value="squizlabs/php_codesniffer" />
-            <option value="sstalle/php7cc" />
-            <option value="symfony/debug" />
-            <option value="symfony/maker-bundle" />
-            <option value="symfony/phpunit-bridge" />
-            <option value="symfony/var-dumper" />
-            <option value="vimeo/psalm" />
-            <option value="wimg/php-compatibility" />
-            <option value="wp-coding-standards/wpcs" />
-            <option value="yiisoft/yii2-coding-standards" />
-            <option value="yiisoft/yii2-debug" />
-            <option value="yiisoft/yii2-gii" />
-            <option value="zendframework/zend-coding-standard" />
-            <option value="zendframework/zend-debug" />
-            <option value="zendframework/zend-test" />
-          </list>
-        </option>
-      </scope>
       <option name="optionConfiguration">
         <list>
           <option value="barryvdh/laravel-debugbar" />
@@ -955,42 +214,6 @@
         </list>
       </option>
     </inspection_tool>
-    <inspection_tool class="SelfClassReferencingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="SenselessMethodDuplicationInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="SenselessProxyMethodInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="SenselessTernaryOperatorInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="ShortEchoTagCanBeUsedInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="ShortListSyntaxCanBeUsedInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="ShortOpenTagUsageInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="SimpleXmlLoadFileUsageInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="SlowArrayOperationsInLoopInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
     <inspection_tool class="SpellCheckingInspection" enabled="false" level="TYPO" enabled_by_default="false">
       <option name="processCode" value="true" />
       <option name="processLiterals" value="true" />
@@ -1013,207 +236,13 @@
     <inspection_tool class="SqlResolveInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="SqlShouldBeInGroupByInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="SqlTypeInspection" enabled="false" level="WARNING" enabled_by_default="false" />
-    <inspection_tool class="StaticClosureCanBeUsedInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="StaticInvocationViaThisInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="StrStrUsedAsStrPosInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="StrTrUsageAsStrReplaceInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="StringCaseManipulationInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="StringNormalizationInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="StringsFirstCharactersCompareInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="StrlenInEmptyStringCheckContextInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="StrtotimeUsageInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="SubStrShortHandUsageInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="SubStrUsedAsArrayAccessInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="SubStrUsedAsStrPosInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="SuspiciousAssignmentsInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="SuspiciousBinaryOperationInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="SuspiciousFunctionCallsInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="SuspiciousLoopInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="SuspiciousReturnInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="SuspiciousSemicolonInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="SuspiciousTernaryOperatorInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="SwitchContinuationInLoopInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="TernaryOperatorSimplifyInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="ThrowRawExceptionInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="TraitsPropertiesConflictsInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
     <inspection_tool class="TypeScriptAccessibilityCheck" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="TypeScriptCheckImport" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="TypeScriptUnresolvedFunction" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="TypeScriptUnresolvedVariable" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="TypeScriptValidateJSTypes" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="TypeScriptValidateTypes" enabled="false" level="ERROR" enabled_by_default="false" />
-    <inspection_tool class="TypeUnsafeArraySearchInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="TypeUnsafeComparisonInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="TypesCastingCanBeUsedInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="UnNecessaryDoubleQuotesInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="UnSafeIsSetOverArrayInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WARNING" enabled="false" />
-      <scope name="migrations" level="WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="UnknownInspectionInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="UnnecessaryAssertionInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="UnnecessaryCastingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="UnnecessaryFinalModifierInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="UnnecessaryIssetArgumentsInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="UnnecessarySemicolonInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="UnnecessaryUseAliasInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="UnqualifiedReferenceInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
     <inspection_tool class="UnresolvedReference" enabled="false" level="ERROR" enabled_by_default="false" />
-    <inspection_tool class="UnserializeExploitsInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="UnsetConstructsCanBeMergedInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="UnsupportedEmptyListAssignmentsInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="UnsupportedStringOffsetOperationsInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="UnterminatedStatementJS" enabled="false" level="WARNING" enabled_by_default="false">
-      <option name="ignoreSemicolonAtEndOfBlock" value="true" />
-    </inspection_tool>
-    <inspection_tool class="UntrustedInclusionInspection" enabled="false" level="ERROR" enabled_by_default="false">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="UnusedConstructorDependenciesInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="UnusedGotoLabelInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="UselessReturnInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="UselessUnsetInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="UsingInclusionOnceReturnValueInspection" enabled="true" level="ERROR" enabled_by_default="true">
-      <scope name="Tests" level="ERROR" enabled="false" />
-      <scope name="migrations" level="ERROR" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="UsingInclusionReturnValueInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
-    <inspection_tool class="VariableFunctionsUsageInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <scope name="Tests" level="WEAK WARNING" enabled="false" />
-      <scope name="migrations" level="WEAK WARNING" enabled="false" />
-    </inspection_tool>
     <inspection_tool class="XsltDeclarations" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="XsltTemplateInvocation" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="XsltUnusedDeclaration" enabled="false" level="WARNING" enabled_by_default="false" />

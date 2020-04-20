@@ -57,6 +57,8 @@ final class UploadCtrl extends BaseCtrl
          * method: 'account'
          * ident: userId
          * tvalue: (valid until)
+         *
+         * @noinspection JsonEncodingApiUsageInspection
          **/
         $token = json_decode(
             $this->encryption->decryptString($request->getParam('token', '')),
@@ -102,7 +104,6 @@ final class UploadCtrl extends BaseCtrl
             ];
             $urlString = '?' . http_build_query($qs);
 
-            /** @var Response $response */
             return $response->withStatus(303)->withHeader('Location', "{$this->config['api.redirect']}{$urlString}");
         }
 
@@ -129,6 +130,8 @@ final class UploadCtrl extends BaseCtrl
          * method: 'screenshot'
          * ident: userId
          * tvalue: (valid until)
+         *
+         * @noinspection JsonEncodingApiUsageInspection
          **/
         $token = json_decode(
             $this->encryption->decryptString($request->getParam('token', '')),

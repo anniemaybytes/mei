@@ -55,9 +55,14 @@ final class DeleteCtrl extends BaseCtrl
             return $response->withStatus(403)->withJson(['success' => false, 'reason' => 'access denied']);
         }
 
-        $imgs = json_decode($request->getParam('imgs'), true);
-        $success = count($imgs);
+        try {
+            $imgs = json_decode($request->getParam('imgs'), true, 512, JSON_THROW_ON_ERROR);
+        } catch (Exception $e) {
+            Debugger::log($e, Debugger::EXCEPTION);
+            return $response->withStatus(200)->withJson(['success' => false, 'reason' => 'unable to parse imgs array']);
+        }
 
+        $success = count($imgs);
         if (!$success) {
             return $response->withStatus(200)->withJson(['success' => false, 'reason' => 'imgs array was empty']);
         }

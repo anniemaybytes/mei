@@ -16,3 +16,5 @@ parameters:
         -
             message: '#Parameter \#1 \$exception_handler of function set_exception_handler expects#'
             path: public/index.php
+includes:
+    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
