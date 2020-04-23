@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+    <component name="ExternalDependencies">
+        <plugin id="com.kalessil.phpStorm.phpInspectionsEA"/>
+        <plugin id="org.editorconfig.editorconfigjetbrains"/>
+        <plugin id="org.jetbrains.plugins.phpstorm-remote-interpreter"/>
+        <plugin id="org.jetbrains.plugins.vagrant"/>
+    </component>
+</project>

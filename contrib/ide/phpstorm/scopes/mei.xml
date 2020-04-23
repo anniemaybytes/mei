@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+    <scope name="mei" pattern="file:dispatch.php||file:public/index.php||file:src/Mei//*"/>
+</component>

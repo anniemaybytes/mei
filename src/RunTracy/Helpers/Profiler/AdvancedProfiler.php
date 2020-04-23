@@ -42,9 +42,11 @@ class AdvancedProfiler extends SimpleProfiler
     }
 
     /**
-     * @inheritdoc
-     *
+     * @param string|null $labelOrFormat
+     * @param mixed $args
      * @param mixed $opt
+     *
+     * @return bool
      */
     public static function start(?string $labelOrFormat = null, $args = null, $opt = null): bool
     {
@@ -87,9 +89,11 @@ class AdvancedProfiler extends SimpleProfiler
     }
 
     /**
-     * @inheritdoc
-     *
+     * @param string|null $labelOrFormat
+     * @param null $args
      * @param mixed $opt
+     *
+     * @return bool|Profile
      */
     public static function finish(?string $labelOrFormat = null, $args = null, $opt = null)
     {

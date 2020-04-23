@@ -13,8 +13,5 @@ parameters:
         - '#Call to an undefined method Psr\\Http\\Message\\ResponseInterface::write#'
         - '#Call to an undefined method Psr\\Http\\Message\\ResponseInterface::withRedirect#'
         - '#Call to an undefined method Psr\\Http\\Message\\ResponseInterface::withJson#'
-        -
-            message: '#Parameter \#1 \$exception_handler of function set_exception_handler expects#'
-            path: public/index.php
 includes:
     - vendor/phpstan/phpstan-deprecation-rules/rules.neon

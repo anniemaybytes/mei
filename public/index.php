@@ -8,6 +8,8 @@ set_error_handler(
         die('Sorry, something went horribly wrong / PR Environment Error: ' . $errno);
     }
 );
+
+/** @phpstan-ignore-next-line */
 set_exception_handler(
     static function (Throwable $e) {
         error_log((string)$e);
