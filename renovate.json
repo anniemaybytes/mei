@@ -1,38 +1,38 @@
 {
-    "extends": [
-        "config:base"
-    ],
+  "extends": [
+    "config:base"
+  ],
+  "labels": [
+    "kind/deps"
+  ],
+  "vulnerabilityAlerts": {
     "labels": [
-        "kind/deps"
-    ],
-    "vulnerabilityAlerts": {
-        "labels": [
-            "kind/security"
-        ]
-    },
-    "stabilityDays": 3,
-    "semanticCommits": false,
-    "ignorePaths": [
-        ".drone.yml"
-    ],
-    "ignoreDeps": [
-        "roave/security-advisories",
-        "robmorgan/phinx"
-    ],
-    "lockFileMaintenance": {
-        "enabled": true,
-        "schedule": [
-            "before 3am on friday"
-        ]
-    },
-    "packageRules": [
-        {
-            "depTypeList": [
-                "require-dev"
-            ],
-            "extends": [
-                "schedule:weekends"
-            ]
-        }
+      "kind/security"
     ]
+  },
+  "stabilityDays": 1,
+  "semanticCommits": false,
+  "ignorePaths": [
+    ".drone.yml"
+  ],
+  "ignoreDeps": [
+    "roave/security-advisories",
+    "robmorgan/phinx"
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": [
+      "before 3am on friday"
+    ]
+  },
+  "packageRules": [
+    {
+      "depTypeList": [
+        "require-dev"
+      ],
+      "extends": [
+        "schedule:weekends"
+      ]
+    }
+  ]
 }

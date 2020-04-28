@@ -1,3 +1,4 @@
+---
 kind: pipeline
 name: compliance
 type: docker
@@ -28,6 +29,11 @@ steps:
             - composer phpstan
         depends_on: [ install ]
 
+trigger:
+    ref:
+        - refs/heads/master
+        - refs/pull/**
+        - refs/tags/**
 ---
 kind: pipeline
 name: tests
@@ -43,3 +49,9 @@ steps:
         image: thecodingmachine/php:7.3-v3-cli
         commands:
             - composer phpunit
+
+trigger:
+    ref:
+        - refs/heads/master
+        - refs/pull/**
+        - refs/tags/**

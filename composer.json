@@ -1,75 +1,75 @@
 {
-    "name": "animebytes/mei-image-server",
-    "description": "Tentacles Image Server",
-    "authors": [
-        {
-            "name": "AnimeBytes",
-            "email": "staff@animebytes.tv"
-        }
-    ],
-    "scripts": {
-        "test": [
-            "@phplint",
-            "@phpcs",
-            "@phpstan",
-            "@phpunit"
-        ],
-        "phpstan": [
-            "phpstan analyze --ansi --memory-limit=-1"
-        ],
-        "phpunit": [
-            "phpunit --colors=always"
-        ],
-        "phplint": [
-            "phplint --ansi -n"
-        ],
-        "phpcs": [
-            "phpcs -n --cache=.phpcs-cache"
-        ],
-        "phpcbf": [
-            "phpcbf"
-        ],
-        "phinx": [
-            "phinx"
-        ]
-    },
-    "require": {
-        "php": "~7.3",
-        "slim/slim": "4.5.0",
-        "tracy/tracy": "2.7.4",
-        "paragonie/random-lib": "2.0.1",
-        "robmorgan/phinx": "0.9.2",
-        "php-di/php-di": "6.1.0",
-        "slim/psr7": "1.0",
-        "slim/http": "1.0",
-        "doctrine/annotations": "1.10.1",
-        "petrknap/php-singleton": "1.0.0",
-        "jdorn/sql-formatter": "dev-master#7ef9b85961956aa572413693e1194b60f50ab9ab",
-        "ext-xml": "*",
-        "ext-json": "*",
-        "ext-gd": "*",
-        "ext-pdo": "*",
-        "ext-imagick": "*",
-        "ext-zlib": "*",
-        "ext-date": "*",
-        "ext-openssl": "*",
-        "ext-curl": "*",
-        "ext-zend-opcache": "*"
-    },
-    "autoload": {
-        "psr-4": {
-            "Mei\\": "src/Mei/",
-            "RunTracy\\": "src/RunTracy/"
-        }
-    },
-    "require-dev": {
-        "roave/security-advisories": "dev-master",
-        "phpstan/phpstan": "0.12.19",
-        "phpstan/phpstan-deprecation-rules": "0.12.2",
-        "overtrue/phplint": "2.0.0",
-        "squizlabs/php_codesniffer": "3.5.5",
-        "mikey179/vfsstream": "1.6.8",
-        "dg/bypass-finals": "1.1.2",
-        "phpunit/phpunit": "8.5.3"
+  "name": "animebytes/mei-image-server",
+  "description": "Tentacles Image Server",
+  "authors": [
+    {
+      "name": "AnimeBytes",
+      "email": "staff@animebytes.tv"
     }
+  ],
+  "scripts": {
+    "test": [
+      "@phplint",
+      "@phpcs",
+      "@phpstan",
+      "@phpunit"
+    ],
+    "phpstan": [
+      "phpstan analyze --ansi --memory-limit=-1"
+    ],
+    "phpunit": [
+      "phpunit --colors=always"
+    ],
+    "phplint": [
+      "phplint --ansi -n"
+    ],
+    "phpcs": [
+      "phpcs -n --cache=.phpcs-cache"
+    ],
+    "phpcbf": [
+      "phpcbf"
+    ],
+    "phinx": [
+      "phinx"
+    ]
+  },
+  "require": {
+    "php": "~7.3",
+    "slim/slim": "4.5.0",
+    "tracy/tracy": "2.7.4",
+    "paragonie/random-lib": "2.0.1",
+    "robmorgan/phinx": "0.9.2",
+    "php-di/php-di": "6.1.0",
+    "slim/psr7": "1.0",
+    "slim/http": "1.0",
+    "doctrine/annotations": "1.10.2",
+    "petrknap/php-singleton": "1.0.0",
+    "jdorn/sql-formatter": "dev-master#7ef9b85961956aa572413693e1194b60f50ab9ab",
+    "ext-xml": "*",
+    "ext-json": "*",
+    "ext-gd": "*",
+    "ext-pdo": "*",
+    "ext-imagick": "*",
+    "ext-zlib": "*",
+    "ext-date": "*",
+    "ext-openssl": "*",
+    "ext-curl": "*",
+    "ext-zend-opcache": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Mei\\": "src/Mei/",
+      "RunTracy\\": "src/RunTracy/"
+    }
+  },
+  "require-dev": {
+    "roave/security-advisories": "dev-master",
+    "phpstan/phpstan": "0.12.19",
+    "phpstan/phpstan-deprecation-rules": "0.12.2",
+    "overtrue/phplint": "2.0.2",
+    "squizlabs/php_codesniffer": "3.5.5",
+    "mikey179/vfsstream": "1.6.8",
+    "dg/bypass-finals": "1.1.2",
+    "phpunit/phpunit": "9.1.3"
+  }
 }
