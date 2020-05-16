@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="migrations" pattern="file[mei-image-server]:migrations/*" />
+</component>
