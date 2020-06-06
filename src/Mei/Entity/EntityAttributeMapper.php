@@ -13,9 +13,9 @@ use InvalidArgumentException;
  */
 final class EntityAttributeMapper implements IAttributeMapper
 {
-    private $attributeMap;
-    private $defaultValues; // stored in db string form
-    private $changedAttributes;
+    private array $attributeMap;
+    private array $defaultValues; // stored in db string form
+    private array $changedAttributes;
 
     /**
      * EntityAttributeMapper constructor.

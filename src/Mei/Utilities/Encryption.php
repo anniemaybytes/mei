@@ -18,7 +18,7 @@ final class Encryption
     /**
      * @var string
      */
-    protected $encryptionKey;
+    protected string $encryptionKey;
 
     /**
      * Encryption constructor.

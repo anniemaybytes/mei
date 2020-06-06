@@ -17,5 +17,5 @@ abstract class BaseCtrl
      * @Inject("config")
      * @var array
      */
-    protected $config;
+    protected array $config;
 }

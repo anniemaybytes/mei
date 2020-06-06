@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mei\Controller;
 
+use DI\Container;
 use Mei\Exception\GeneralException;
 use Mei\Exception\NoImages;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -20,10 +21,25 @@ use Tracy\Debugger;
 final class ErrorCtrl extends BaseCtrl
 {
     /**
-     * @Inject("obLevel")
      * @var int
      */
-    private $obLevel;
+    private int $obLevel;
+
+    /**
+     * @var Container
+     */
+    private Container $di;
+
+    /**
+     * ErrorCtrl constructor.
+     *
+     * @param Container $di
+     */
+    public function __construct(Container $di)
+    {
+        $this->di = $di;
+        $this->obLevel = $di->get('obLevel');
+    }
 
     /**
      * @param Request $request
@@ -70,7 +86,7 @@ final class ErrorCtrl extends BaseCtrl
                 ['success' => false, 'error' => $statusCode, 'message' => $message]
             );
         } catch (Throwable $e) {
-            return (new FatalErrorCtrl())->handleError($request, $response, $e);
+            return (new FatalErrorCtrl($this->di))->handleError($request, $response, $e);
         }
     }
 }

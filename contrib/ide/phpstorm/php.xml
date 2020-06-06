@@ -31,7 +31,7 @@
       </server>
     </servers>
   </component>
-  <component name="PhpProjectSharedConfiguration" php_language_level="7.3" />
+  <component name="PhpProjectSharedConfiguration" php_language_level="7.4" />
   <component name="PhpUnit">
     <phpunit_settings>
       <phpunit_by_interpreter interpreter_id="3a49d5c1-8648-405f-97d9-16fdbaffa414" configuration_file_path="/code/phpunit.xml.dist" custom_loader_path="/code/vendor/autoload.php" phpunit_phar_path="" use_configuration_file="true" />

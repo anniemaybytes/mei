@@ -5,8 +5,8 @@ ENV["LC_ALL"] = "en_US.UTF-8"
 
 Vagrant.configure(2) do |config|
   # box
-  config.vm.box = "debian/buster64"
-  config.vm.box_version = ">= 10.0.0"
+  config.vm.box = "debian/contrib-buster64"
+  config.vm.box_version = ">= 10.4.0"
   
   # custom
   config.vm.graceful_halt_timeout = 30

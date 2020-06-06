@@ -23,18 +23,18 @@ final class ServeCtrl extends BaseCtrl
      * @Inject
      * @var ImageUtilities
      */
-    private $imageUtils;
+    private ImageUtilities $imageUtils;
 
     /**
      * @Inject
      * @var FilesMap
      */
-    private $filesMap;
+    private FilesMap $filesMap;
 
     /**
      * @var array
      */
-    public static $legacySizes = [
+    public static array $legacySizes = [
         'small' => [80, 150],
         'front' => [200, 150],
         'imgupl' => [120, 100],

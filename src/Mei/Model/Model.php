@@ -21,12 +21,12 @@ abstract class Model implements IModel
     /**
      * @var PDO
      */
-    protected $db;
+    protected PDO $db;
 
     /**
      * @var IKeyStore
      */
-    protected $cache;
+    protected IKeyStore $cache;
 
     /**
      * callable that takes an ICacheable as argument and returns an entity
@@ -38,7 +38,7 @@ abstract class Model implements IModel
     /**
      * @var bool $inTransaction
      */
-    protected $inTransaction;
+    protected bool $inTransaction;
 
     /**
      * Model constructor.

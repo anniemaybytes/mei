@@ -16,7 +16,7 @@ final class XDebugHelper implements IBarPanel
     /**
      * @var string
      */
-    protected $ideKey;
+    protected string $ideKey;
 
     /**
      * XDebugHelper constructor.

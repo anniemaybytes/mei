@@ -23,12 +23,12 @@ final class ImageUtilities
      * @Inject("config")
      * @var array
      */
-    private $config;
+    private array $config;
 
     /**
      * @var array
      */
-    private static $allowedTypes = [
+    private static array $allowedTypes = [
         'image/jpeg' => 'jpg',
         'image/gif' => 'gif',
         'image/png' => 'png',
@@ -38,12 +38,12 @@ final class ImageUtilities
     /**
      * @var array
      */
-    private static $allowedResizeRange = ['min' => 20, 'max' => 1000];
+    private static array $allowedResizeRange = ['min' => 20, 'max' => 1000];
 
     /**
      * @var array
      */
-    private static $allowedUrlScheme = ['http', 'https'];
+    private static array $allowedUrlScheme = ['http', 'https'];
 
     /**
      * @param string $extension

@@ -16,32 +16,32 @@ final class EntityCache implements ICacheable
     /**
      * @var string
      */
-    private $key;
+    private string $key;
 
     /**
      * @var string
      */
-    private $id;
+    private string $id;
 
     /**
      * @var int
      */
-    private $duration;
+    private int $duration;
 
     /**
      * @var bool
      */
-    private $dirty;
+    private bool $dirty;
 
     /**
      * @var array
      */
-    private $dbRow;
+    private array $dbRow;
 
     /**
      * @var array
      */
-    private $loadedValues;
+    private array $loadedValues;
 
     /**
      * EntityCache constructor.
@@ -74,11 +74,6 @@ final class EntityCache implements ICacheable
     /** {@inheritDoc} */
     public function setId(array $id): ICacheable
     {
-        $row = $this->getRow();
-        if (!is_array($row)) {
-            $row = [];
-        }
-
         $str = '';
         foreach ($id as $key => $value) {
             $row[$key] = $value;
@@ -89,7 +84,6 @@ final class EntityCache implements ICacheable
         }
         $id = $str;
         $this->id = $id;
-        $this->setRow($row);
 
         return $this;
     }
@@ -108,7 +102,7 @@ final class EntityCache implements ICacheable
     }
 
     /** {@inheritDoc} */
-    public function getRow(): ?array
+    public function getRow(): array
     {
         return $this->dbRow;
     }

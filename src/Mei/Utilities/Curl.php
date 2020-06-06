@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Mei\Utilities;
 
+use Mei\Dispatcher;
+
 use function curl_close;
 use function curl_error;
 use function curl_exec;
@@ -20,10 +22,9 @@ use function curl_setopt_array;
 final class Curl
 {
     /**
-     * @Inject("config")
      * @var array
      */
-    private $config;
+    private array $config;
 
     /**
      * @var null|resource $curl
@@ -37,6 +38,8 @@ final class Curl
      */
     public function __construct(?string $url = null)
     {
+        $this->config = Dispatcher::getConfig();
+
         if ($url === null) {
             $this->curl = curl_init();
         } else {

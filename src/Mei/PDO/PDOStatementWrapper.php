@@ -18,12 +18,12 @@ final class PDOStatementWrapper extends PDOStatement
     /**
      * @var PDOWrapper
      */
-    private $pdo;
+    private PDOWrapper $pdo;
 
     /**
      * @var array
      */
-    private $bindings = [];
+    private array $bindings;
 
     /**
      * PDOStatementWrapper constructor.
@@ -33,6 +33,7 @@ final class PDOStatementWrapper extends PDOStatement
     protected function __construct(PDOWrapper $pdo)
     {
         $this->pdo = $pdo;
+        $this->bindings = [];
     }
 
     /** {@inheritDoc} */
@@ -65,6 +66,7 @@ final class PDOStatementWrapper extends PDOStatement
     public function execute($params = null, int $retries = 3): bool
     {
         if (is_array($params)) {
+            /** @var array $params */
             $this->bindings = $params;
         }
 

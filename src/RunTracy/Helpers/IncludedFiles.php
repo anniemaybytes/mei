@@ -16,7 +16,7 @@ final class IncludedFiles implements IBarPanel
     /**
      * @var string
      */
-    private $icon = '';
+    private string $icon = '';
 
     /**
      * @return string

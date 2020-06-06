@@ -5,7 +5,6 @@
 declare(strict_types=1);
 
 define('BASE_ROOT', __DIR__);
-define('ERROR_REPORTING', E_ALL & ~(E_STRICT | E_NOTICE | E_WARNING | E_DEPRECATED));
 require_once BASE_ROOT . '/vendor/autoload.php'; // set up autoloading
 
 use DI\Container;
@@ -100,7 +99,7 @@ if ($di->get('config')['mode'] !== 'development') {
     $errorHandler->setErrorHandler( // handling for built-in errors when route not found or method not allowed
         HttpException::class,
         function (Request $request, Throwable $exception) use ($di) {
-            return (new ErrorCtrl())->handleException(
+            return (new ErrorCtrl($di))->handleException(
                 $request,
                 $di->get(ResponseFactoryInterface::class)->createResponse(),
                 $exception
@@ -109,7 +108,7 @@ if ($di->get('config')['mode'] !== 'development') {
     );
     $errorHandler->setDefaultErrorHandler( // default error handler
         function (Request $request, Throwable $exception) use ($di) {
-            return (new ErrorCtrl())->handleException(
+            return (new ErrorCtrl($di))->handleException(
                 $request,
                 $di->get(ResponseFactoryInterface::class)->createResponse(),
                 $exception

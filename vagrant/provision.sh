@@ -26,20 +26,19 @@ apt-get update
 
 echo
 echo Updating currently installed packages
-apt-get -y dist-upgrade
+apt-get -y -o Dpkg::Options::="--force-confnew" dist-upgrade
 
 echo
 echo Installing packages...
-apt-get -y install software-properties-common nginx php7.3 php7.3-xml php7.3-curl php7.3-fpm php7.3-bcmath \
-    php7.3-mysqlnd mariadb-server php7.3-common php7.3-gd php7.3-geoip php7.3-imagick phpunit pv php7.3-dev php-pear \
-    libcurl3-openssl-dev build-essential php7.3-cli git libpq5 libodbc1 unzip zip libmysqlclient18 libmariadb3 \
-    php7.3-mbstring php7.3-json
+apt-get -y -o Dpkg::Options::="--force-confold" install software-properties-common nginx php7.4 php7.4-xml php7.4-curl \
+    php7.4-fpm php7.4-bcmath php7.4-mysqlnd mariadb-server php7.4-common php7.4-gd php7.4-geoip php7.4-imagick phpunit \
+    pv php7.4-dev php-pear libcurl3-openssl-dev build-essential php7.4-cli git libpq5 libodbc1 unzip zip \
+    libmysqlclient18 libmariadb3 php7.4-mbstring php7.4-json
 
-pecl install xdebug-2.7.2
+pecl install xdebug-2.9.6
 
 echo
 echo Setting up packages...
-# disable default nginx site
 rm -f /etc/nginx/sites-enabled/default
 rm -rf /etc/nginx/conf.d
 cd /vagrantroot/configs
@@ -63,13 +62,13 @@ echo
 echo Configuring daemons...
 systemctl daemon-reload
 systemctl disable nginx
-systemctl disable php7.3-fpm
+systemctl disable php7.4-fpm
 systemctl disable mariadb
 
 echo
 echo Stopping daemons...
 systemctl stop nginx
-systemctl stop php7.3-fpm
+systemctl stop php7.4-fpm
 systemctl stop mariadb
 systemctl stop cron
 
@@ -77,7 +76,7 @@ echo
 echo Starting daemons...
 systemctl daemon-reload
 systemctl start nginx
-systemctl start php7.3-fpm
+systemctl start php7.4-fpm
 systemctl start mariadb
 systemctl start cron
 

@@ -23,22 +23,22 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     /**
      * @var ICacheable
      */
-    protected $cache;
+    protected ICacheable $cache;
 
     /**
      * @var IAttributeMapper
      */
-    protected $mapper;
+    protected IAttributeMapper $mapper;
 
     /**
      * @var bool
      */
-    protected $new;
+    protected bool $new;
 
     // array of arrays; each array represents one field;
     // first argument is the field name, 2nd is the type, 3rd is default value,
     // 4th if set to true denotes a primary key
-    protected static $columns = [];
+    protected static array $columns = [];
 
     /**
      * Entity constructor.

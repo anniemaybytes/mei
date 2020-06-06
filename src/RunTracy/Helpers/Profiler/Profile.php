@@ -23,35 +23,35 @@ final class Profile implements JsonSerializable
     /**
      * @var array
      */
-    public $meta = [];
+    public array $meta = [];
 
     /**
      * Absolute duration in seconds
      *
      * @var float
      */
-    public $absoluteDuration;
+    public float $absoluteDuration;
 
     /**
      * Duration in seconds
      *
      * @var float
      */
-    public $duration;
+    public float $duration;
 
     /**
      * Absolute memory usage change in bytes
      *
      * @var int
      */
-    public $absoluteMemoryUsageChange;
+    public int $absoluteMemoryUsageChange;
 
     /**
      * Memory usage change in bytes
      *
      * @var int
      */
-    public $memoryUsageChange;
+    public int $memoryUsageChange;
 
     /**
      * @inheritdoc

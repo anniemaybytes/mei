@@ -19,7 +19,7 @@ final class ProfilerPanel implements IBarPanel
     /**
      * @var ProfilerService
      */
-    private $profilerService;
+    private ProfilerService $profilerService;
 
     /**
      * ProfilerPanel constructor.

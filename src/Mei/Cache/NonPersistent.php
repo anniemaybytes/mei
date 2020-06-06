@@ -18,27 +18,27 @@ final class NonPersistent implements IKeyStore
     /**
      * @var array $inner
      */
-    private $inner = [];
+    private array $inner = [];
 
     /**
      * @var string $keyPrefix
      */
-    private $keyPrefix;
+    private string $keyPrefix;
 
     /**
      * @var bool $clearOnGet
      */
-    private $clearOnGet = false;
+    private bool $clearOnGet = false;
 
     /**
      * @var array $cacheHits
      */
-    private $cacheHits = [];
+    private array $cacheHits = [];
 
     /**
      * @var float $time
      */
-    private $time = 0;
+    private float $time = 0;
 
     /**
      * NonPersistent constructor.

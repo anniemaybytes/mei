@@ -16,9 +16,9 @@ interface ICacheable
     /**
      * Get the row used to represent the entity
      *
-     * @return string[]|null
+     * @return string[]
      */
-    public function getRow(): ?array;
+    public function getRow(): array;
 
     /**
      * Set the row used to represent the entity

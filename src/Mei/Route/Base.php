@@ -16,7 +16,7 @@ abstract class Base
     /**
      * @var App
      */
-    protected $app;
+    protected App $app;
 
     /**
      * Base constructor.

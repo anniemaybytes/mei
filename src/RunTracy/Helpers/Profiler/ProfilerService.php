@@ -28,12 +28,12 @@ final class ProfilerService implements SingletonInterface
     /**
      * @var mixed[]
      */
-    private $metaData = [];
+    private array $metaData = [];
 
     /**
      * @var Profile[]
      */
-    private $profiles = [];
+    private array $profiles = [];
 
     private function __construct()
     {

@@ -12,12 +12,10 @@
   },
   "stabilityDays": 1,
   "semanticCommits": false,
-  "ignorePaths": [
-    ".drone.yml"
-  ],
   "ignoreDeps": [
     "roave/security-advisories",
-    "robmorgan/phinx"
+    "robmorgan/phinx",
+    "thecodingmachine/php"
   ],
   "lockFileMaintenance": {
     "enabled": true,

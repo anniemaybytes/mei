@@ -16,12 +16,12 @@ class AdvancedProfiler extends SimpleProfiler
     /**
      * @var bool
      */
-    protected static $enabled;
+    protected static bool $enabled;
 
     /**
      * @var Profile[]
      */
-    protected static $stack;
+    protected static array $stack;
 
     /**
      * @var callable

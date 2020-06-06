@@ -13,7 +13,7 @@ class ConfigLoaderTest extends PHPUnit\Framework\TestCase
     /**
      * @var vfs\vfsStreamDirectory
      */
-    private $root;
+    private vfs\vfsStreamDirectory $root;
 
     public function setUp(): void
     {

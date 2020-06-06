@@ -23,19 +23,19 @@ final class DeleteCtrl extends BaseCtrl
      * @Inject
      * @var RouteParser
      */
-    private $router;
+    private RouteParser $router;
 
     /**
      * @Inject
      * @var ImageUtilities
      */
-    private $imageUtils;
+    private ImageUtilities $imageUtils;
 
     /**
      * @Inject
      * @var FilesMap
      */
-    private $filesMap;
+    private FilesMap $filesMap;
 
     /**
      * @param Request $request

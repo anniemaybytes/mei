@@ -28,17 +28,17 @@ final class Dispatcher implements SingletonInterface
     /**
      * @var App $app
      */
-    private $app;
+    private App $app;
 
     /**
      * @var array $config
      */
-    private $config;
+    private array $config;
 
     /**
      * @var Container $di
      */
-    private $di;
+    private Container $di;
 
     /**
      * Returns the slim application object

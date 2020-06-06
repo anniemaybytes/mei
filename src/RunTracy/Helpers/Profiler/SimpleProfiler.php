@@ -27,19 +27,19 @@ class SimpleProfiler
     /**
      * @var bool
      */
-    protected static $enabled = false;
+    protected static bool $enabled = false;
 
     /**
      * @var Profile[]
      */
-    protected static $stack = [];
+    protected static array $stack = [];
 
     /**
      * memory_get_usage
      *
      * @var bool
      */
-    protected static $realUsage = false;
+    protected static bool $realUsage = false;
 
     /**
      * Enable profiler

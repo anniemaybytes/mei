@@ -23,20 +23,20 @@ echo
 echo Configuring daemons...
 systemctl daemon-reload
 systemctl disable nginx
-systemctl disable php7.3-fpm
+systemctl disable php7.4-fpm
 systemctl disable mariadb
 
 echo
 echo Stopping daemons...
 systemctl stop nginx
-systemctl stop php7.3-fpm
+systemctl stop php7.4-fpm
 systemctl stop mariadb
 systemctl stop cron
 
 echo
 echo Starting daemons...
 systemctl start nginx
-systemctl start php7.3-fpm
+systemctl start php7.4-fpm
 systemctl start mariadb
 systemctl start cron
 

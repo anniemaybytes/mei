@@ -28,19 +28,19 @@ final class UploadCtrl extends BaseCtrl
      * @Inject
      * @var ImageUtilities
      */
-    private $imageUtils;
+    private ImageUtilities $imageUtils;
 
     /**
      * @Inject
      * @var FilesMap
      */
-    private $filesMap;
+    private FilesMap $filesMap;
 
     /**
      * @Inject
      * @var Encryption
      */
-    private $encryption;
+    private Encryption $encryption;
 
     /**
      * @param Request $request

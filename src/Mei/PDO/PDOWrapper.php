@@ -19,14 +19,14 @@ final class PDOWrapper extends PDO
     /**
      * @var array $transactionQueue
      */
-    private $transactionQueue = [];
+    private array $transactionQueue = [];
 
     /**
      * Logged queries.
      *
      * @var array
      */
-    private $log = [];
+    private array $log = [];
 
     /**
      * PDOInstrumentationWrapper constructor.
