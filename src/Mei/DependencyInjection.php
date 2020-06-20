@@ -77,7 +77,7 @@ final class DependencyInjection
                     $bar = new PDOTracyBarPanel($w);
                     Debugger::getBar()->addPanel($bar);
                     Debugger::getBlueScreen()->addPanel(
-                        static function (?Throwable $e) use ($bar) {
+                        function (?Throwable $e) use ($bar) {
                             if ($e) {
                                 return null;
                             }
