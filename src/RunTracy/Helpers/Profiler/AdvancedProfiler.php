@@ -1,5 +1,7 @@
 <?php
 
+/** @noinspection PropertyInitializationFlawsInspection */
+
 declare(strict_types=1);
 
 namespace RunTracy\Helpers\Profiler;
@@ -16,12 +18,12 @@ class AdvancedProfiler extends SimpleProfiler
     /**
      * @var bool
      */
-    protected static bool $enabled;
+    protected static bool $enabled = false;
 
     /**
      * @var Profile[]
      */
-    protected static array $stack;
+    protected static array $stack = [];
 
     /**
      * @var callable
@@ -90,7 +92,7 @@ class AdvancedProfiler extends SimpleProfiler
 
     /**
      * @param string|null $labelOrFormat
-     * @param null $args
+     * @param mixed $args
      * @param mixed $opt
      *
      * @return bool|Profile
