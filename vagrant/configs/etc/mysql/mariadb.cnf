@@ -20,7 +20,9 @@ collation-server = utf8_unicode_ci
 character-set-server = utf8
 skip-external-locking
 skip_name_resolve
-performance_schema      = OFF
+
+default_tmp_storage_engine = MEMORY
+performance_schema      = ON
 bind-address    = 0.0.0.0
 max_allowed_packet  = 32M
 max_heap_table_size     = 64M
@@ -31,20 +33,17 @@ query_cache_limit = 128K
 query_cache_size = 50M
 query_cache_type  = 1
 
-innodb_buffer_pool_size = 512M
-# https://dev.mysql.com/doc/refman/5.6/en/innodb-multiple-buffer-pools.html
-innodb_buffer_pool_instances = 2
+innodb_buffer_pool_size = 128M
 innodb_flush_method = O_DIRECT_NO_FSYNC
-innodb_log_buffer_size = 16M
-innodb_log_file_size = 256M
-innodb_log_files_in_group = 2
-# these two are copy of default values but keep it here for future
-innodb_read_io_threads = 4
+# innodb_log_file_size should be equal to 1/4 of buffer pool size if possible.
+innodb_log_file_size = 32M
 innodb_thread_concurrency = 0
-innodb_write_io_threads = 2
-innodb_flush_log_at_trx_commit = 2
+innodb_flush_log_at_trx_commit = 0
+innodb_max_dirty_pages_pct = 90
 innodb_flush_neighbors = 0
 innodb_log_compressed_pages = 0
+innodb_flush_sync = ON
+innodb_io_capacity = 100
 
 [mysql]
 default-character-set = utf8

@@ -43,10 +43,7 @@ rm -f /etc/nginx/sites-enabled/default
 rm -rf /etc/nginx/conf.d
 cd /vagrantroot/configs
 cp -av * /
-chmod 755 /etc/mysql/my.cnf
-chown -R root:root /etc/mysql/{,mariadb.}conf.d
-chmod -R 644 /etc/mysql/{,mariadb.}conf.d/
-chmod +x /etc/mysql/{,mariadb.}conf.d/
+chmod 755 /etc/mysql/mariadb.cnf
 echo never >/sys/kernel/mm/transparent_hugepage/defrag
 echo never >/sys/kernel/mm/transparent_hugepage/enabled
 
