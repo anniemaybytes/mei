@@ -6,6 +6,7 @@ type: docker
 steps:
     -   name: install
         image: thecodingmachine/php:7.4-v3-cli
+        pull: always
         commands:
             - composer validate --ansi --no-check-all --no-check-publish
             - sudo composer install --no-progress --ansi --no-suggest --ignore-platform-reqs --prefer-dist
@@ -42,6 +43,7 @@ type: docker
 steps:
     -   name: install
         image: thecodingmachine/php:7.4-v3-cli
+        pull: always
         commands:
             - composer validate --ansi --no-check-all --no-check-publish
             - sudo composer install --no-progress --ansi --no-suggest --ignore-platform-reqs --prefer-dist

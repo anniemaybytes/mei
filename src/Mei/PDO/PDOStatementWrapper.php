@@ -66,7 +66,6 @@ final class PDOStatementWrapper extends PDOStatement
     public function execute($params = null, int $retries = 3): bool
     {
         if (is_array($params)) {
-            /** @var array $params */
             $this->bindings = $params;
         }
 

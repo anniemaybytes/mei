@@ -27,7 +27,7 @@ final class StringUtil
     }
 
     /**
-     * @param string $string
+     * @param string|null $string
      *
      * @return string
      */

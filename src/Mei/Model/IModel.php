@@ -64,7 +64,7 @@ interface IModel
      * This method must not mutate the entity passed as a parameter.
      * This method must return back entity given as parameter.
      *
-     * @param IEntity $entity
+     * @param IEntity|null $entity
      *
      * @return IEntity|null
      */

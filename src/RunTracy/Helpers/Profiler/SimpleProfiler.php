@@ -144,10 +144,14 @@ class SimpleProfiler
             $profile->meta[self::FINISH_LABEL] = $label;
             $profile->meta[self::FINISH_TIME] = $now;
             $profile->meta[self::FINISH_MEMORY_USAGE] = $memoryUsage;
+            /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
             $profile->absoluteDuration = $profile->meta[self::FINISH_TIME] - $profile->meta[self::START_TIME];
+            /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
             $profile->duration = $profile->absoluteDuration - $profile->meta[self::TIME_OFFSET];
+            /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
             $profile->absoluteMemoryUsageChange = $profile->meta[self::FINISH_MEMORY_USAGE] -
                 $profile->meta[self::START_MEMORY_USAGE];
+            /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
             $profile->memoryUsageChange = $profile->absoluteMemoryUsageChange -
                 $profile->meta[self::MEMORY_USAGE_OFFSET];
 
