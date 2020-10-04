@@ -118,7 +118,7 @@ final class Encryption
      *
      * @return string
      */
-    public function decryptUrl($encryptedData): string
+    public function decryptUrl(string $encryptedData): string
     {
         return $this->decrypt(StringUtil::base64UrlDecode($encryptedData));
     }

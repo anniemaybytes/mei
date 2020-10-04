@@ -110,10 +110,7 @@ final class EntityCache implements ICacheable
     /** {@inheritDoc} */
     public function getLoaded(string $key)
     {
-        if (!array_key_exists($key, $this->loadedValues)) {
-            return null;
-        }
-        return $this->loadedValues[$key];
+        return $this->loadedValues[$key] ?? null;
     }
 
     /** {@inheritDoc} */

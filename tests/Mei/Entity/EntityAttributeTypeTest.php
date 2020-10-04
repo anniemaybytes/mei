@@ -11,61 +11,61 @@ class EntityAttributeTypeTest extends PHPUnit\Framework\TestCase
 {
     public function testMapsBoolFromString(): void
     {
-        $this->assertEquals(false, EntityAttributeType::fromTo('bool', '0'));
-        $this->assertEquals(true, EntityAttributeType::fromTo('bool', '1'));
+        self::assertEquals(false, EntityAttributeType::fromTo('bool', '0'));
+        self::assertEquals(true, EntityAttributeType::fromTo('bool', '1'));
     }
 
     public function testMapsEnumBoolFromString(): void
     {
-        $this->assertEquals(false, EntityAttributeType::fromTo('enum-bool', '0'));
-        $this->assertEquals(true, EntityAttributeType::fromTo('enum-bool', '1'));
+        self::assertEquals(false, EntityAttributeType::fromTo('enum-bool', '0'));
+        self::assertEquals(true, EntityAttributeType::fromTo('enum-bool', '1'));
     }
 
     public function testMapsIntFromString(): void
     {
         $val = rand();
 
-        $this->assertEquals($val, EntityAttributeType::fromTo('int', sprintf('%d', $val)));
+        self::assertEquals($val, EntityAttributeType::fromTo('int', sprintf('%d', $val)));
     }
 
     public function testMapsFlotFromString(): void
     {
         $val = rand(500, 5000) / rand(1, 1000);
 
-        $this->assertEqualsWithDelta($val, EntityAttributeType::fromTo('float', sprintf('%f', $val)), 0.000001);
+        self::assertEqualsWithDelta($val, EntityAttributeType::fromTo('float', sprintf('%f', $val)), 0.000001);
     }
 
     public function testMapsStringFromString(): void
     {
-        $this->assertEquals('hello', EntityAttributeType::fromTo('string', 'hello'));
+        self::assertEquals('hello', EntityAttributeType::fromTo('string', 'hello'));
     }
 
     public function testMapsDateTimeFromString(): void
     {
         $val = '2009-04-09 23:24:53';
 
-        $this->assertEquals($val, EntityAttributeType::fromTo('datetime', $val)->format('Y-m-d H:i:s'));
+        self::assertEquals($val, EntityAttributeType::fromTo('datetime', $val)->format('Y-m-d H:i:s'));
     }
 
     public function testMapsArrayFromString(): void
     {
         $val = 'a:3:{i:0;s:6:"georgi";i:1;s:2:"is";i:2;s:7:"awesome";}';
 
-        $this->assertEquals(unserialize($val), EntityAttributeType::fromTo('array', $val));
+        self::assertEquals(unserialize($val), EntityAttributeType::fromTo('array', $val));
     }
 
     public function testMapsJsonFromString(): void
     {
         $val = '["For realz"]';
 
-        $this->assertEquals(json_decode($val), EntityAttributeType::fromTo('json', $val));
+        self::assertEquals(json_decode($val), EntityAttributeType::fromTo('json', $val));
     }
 
     public function testMapsEpochFromString(): void
     {
         $val = time();
 
-        $this->assertEquals($val, EntityAttributeType::fromTo('epoch', sprintf('%s', $val))->getTimestamp());
+        self::assertEquals($val, EntityAttributeType::fromTo('epoch', sprintf('%s', $val))->getTimestamp());
     }
 
     public function testThrowsOnInvalidType(): void
@@ -93,28 +93,28 @@ class EntityAttributeTypeTest extends PHPUnit\Framework\TestCase
 
     public function testMapsBoolToString(): void
     {
-        $this->assertEquals('0', EntityAttributeType::toString('bool', false));
-        $this->assertEquals('1', EntityAttributeType::toString('bool', true));
+        self::assertEquals('0', EntityAttributeType::toString('bool', false));
+        self::assertEquals('1', EntityAttributeType::toString('bool', true));
     }
 
     public function testMapsEnumBoolToString(): void
     {
-        $this->assertEquals('0', EntityAttributeType::toString('enum-bool', false));
-        $this->assertEquals('1', EntityAttributeType::toString('enum-bool', true));
+        self::assertEquals('0', EntityAttributeType::toString('enum-bool', false));
+        self::assertEquals('1', EntityAttributeType::toString('enum-bool', true));
     }
 
     public function testMapsIntToString(): void
     {
         $val = rand();
 
-        $this->assertEquals(sprintf('%d', $val), EntityAttributeType::toString('int', $val));
+        self::assertEquals(sprintf('%d', $val), EntityAttributeType::toString('int', $val));
     }
 
     public function testMapsFloatToString(): void
     {
         $val = rand(500, 5000) / rand(1, 1000);
 
-        $this->assertEquals(
+        self::assertEquals(
             sprintf('%.7f', $val),
             sprintf('%.7f', EntityAttributeType::toString('float', $val))
         );
@@ -122,17 +122,17 @@ class EntityAttributeTypeTest extends PHPUnit\Framework\TestCase
 
     public function testMapsStringToString(): void
     {
-        $this->assertEquals('hello', EntityAttributeType::toString('string', 'hello'));
+        self::assertEquals('hello', EntityAttributeType::toString('string', 'hello'));
     }
 
     public function testMapsDateTimeToString(): void
     {
-        $this->assertEquals(
+        self::assertEquals(
             '2009-04-09 00:00:00',
             EntityAttributeType::toString('datetime', new DateTime('2009-04-09'))
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             '2009-04-09 23:24:53',
             EntityAttributeType::toString('datetime', new DateTime('2009-04-09 23:24:53'))
         );
@@ -140,7 +140,7 @@ class EntityAttributeTypeTest extends PHPUnit\Framework\TestCase
 
     public function itMapsArrayToString(): void
     {
-        $this->assertEquals(
+        self::assertEquals(
             'a:3:{i:0;s:6:"georgi";i:1;s:2:"is";i:2;s:7:"awesome";}',
             EntityAttributeType::toString('array', ['georgi', 'is', 'awesome'])
         );
@@ -148,7 +148,7 @@ class EntityAttributeTypeTest extends PHPUnit\Framework\TestCase
 
     public function itMapsJsonToString(): void
     {
-        $this->assertEquals(
+        self::assertEquals(
             '["For realz"]',
             EntityAttributeType::toString('json', ['For realz'])
         );
@@ -158,6 +158,6 @@ class EntityAttributeTypeTest extends PHPUnit\Framework\TestCase
     {
         $val = new DateTime();
 
-        $this->assertEquals((string)$val->getTimestamp(), EntityAttributeType::toString('epoch', $val));
+        self::assertEquals((string)$val->getTimestamp(), EntityAttributeType::toString('epoch', $val));
     }
 }

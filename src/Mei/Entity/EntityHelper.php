@@ -25,7 +25,7 @@ final class EntityHelper
      * @return array
      * @throws JsonException
      */
-    public static function objectToArray($d): array
+    public static function objectToArray(object $d): array
     {
         return json_decode(json_encode($d, JSON_THROW_ON_ERROR, 512), true, 512, JSON_THROW_ON_ERROR);
     }
