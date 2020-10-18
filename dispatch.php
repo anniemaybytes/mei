@@ -1,7 +1,5 @@
 <?php
 
-/** @noinspection StaticClosureCanBeUsedInspection */
-
 declare(strict_types=1);
 
 define('BASE_ROOT', __DIR__);

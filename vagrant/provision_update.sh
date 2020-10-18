@@ -31,19 +31,22 @@ systemctl stop mariadb
 systemctl stop cron
 
 echo
-echo Starting daemons...
-systemctl start nginx
-systemctl start php7.4-fpm
-systemctl start mariadb
-systemctl start cron
+echo Updating composer from lock file...
+cd /code
+composer self-update
+su -s /bin/bash vagrant -c 'composer install'
 
 echo
-echo Migrating
+echo Starting MariaDB...
+systemctl start mariadb
+
+echo
+echo Migrating...
 cd /code
 su -s /bin/bash vagrant -c 'composer phinx migrate'
 
 echo
-echo Updating composer from lock file
-cd /code
-composer self-update
-su -s /bin/bash vagrant -c 'composer install'
+echo Starting daemons...
+systemctl start nginx
+systemctl start php7.4-fpm
+systemctl start cron
