@@ -20,12 +20,12 @@ use UnexpectedValueException;
 final class EntityHelper
 {
     /**
-     * @param object $d
+     * @param object|object[] $d
      *
      * @return array
      * @throws JsonException
      */
-    public static function objectToArray(object $d): array
+    public static function objectToArray($d): array
     {
         return json_decode(json_encode($d, JSON_THROW_ON_ERROR, 512), true, 512, JSON_THROW_ON_ERROR);
     }
