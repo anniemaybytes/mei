@@ -53,6 +53,10 @@ final class PDOWrapper extends PDO
     {
         if ($this->transactionQueue) {
             Debugger::log('PDO transaction queue was not empty on destruct!', Debugger::WARNING);
+            /**
+             * https://github.com/phpstan/phpstan/issues/3995
+             * @phpstan-ignore-next-line
+             */
             while (count($this->transactionQueue) > 0) {
                 $this->rollBack();
             }
