@@ -33,7 +33,11 @@ systemctl stop cron
 echo
 echo Updating composer from lock file...
 cd /code
-composer self-update
+if composer --version -n | grep "1\."; then
+    composer self-update -n --2 # update to composer v2
+else
+    composer self-update -n
+fi
 su -s /bin/bash vagrant -c 'composer install'
 
 echo

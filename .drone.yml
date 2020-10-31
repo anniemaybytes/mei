@@ -9,7 +9,7 @@ steps:
         pull: always
         commands:
             - composer validate --ansi --no-check-all --no-check-publish
-            - sudo composer install --no-progress --ansi --no-suggest --ignore-platform-reqs --prefer-dist
+            - sudo composer install -n --no-progress --ansi --ignore-platform-reqs --prefer-dist
     -   name: phplint
         image: thecodingmachine/php:7.4-v3-cli
         environment:
@@ -46,7 +46,7 @@ steps:
         pull: always
         commands:
             - composer validate --ansi --no-check-all --no-check-publish
-            - sudo composer install --no-progress --ansi --no-suggest --ignore-platform-reqs --prefer-dist
+            - sudo composer install -n --no-progress --ansi --ignore-platform-reqs --prefer-dist
     -   name: phpunit
         image: thecodingmachine/php:7.4-v3-cli
         commands:
