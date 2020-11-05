@@ -70,11 +70,6 @@ systemctl stop mariadb
 systemctl stop cron
 
 echo
-echo Resetting MariaDB storage...
-rm -f /var/lib/mysql/ibdata1 /var/lib/mysql/ib_buffer_file /var/lib/mysql/ib_logfile0
-rm -rf '/var/lib/mysql/#rocksdb'
-
-echo
 echo Starting MariaDB...
 systemctl start mariadb
 
