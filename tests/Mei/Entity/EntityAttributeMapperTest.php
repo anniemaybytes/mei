@@ -11,7 +11,7 @@ use Mei\Entity\ICacheable;
  */
 class EntityAttributeMapperTest extends PHPUnit\Framework\TestCase
 {
-    public function testGet(): void
+    public function test_get(): void
     {
         $attr = [
             'A' => 'string',
@@ -48,7 +48,7 @@ class EntityAttributeMapperTest extends PHPUnit\Framework\TestCase
         self::assertEquals('B', $m->get($c, 'B'));
     }
 
-    public function testIsSet(): void
+    public function test_is_set(): void
     {
         $attr = [
             'A' => 'string',
@@ -91,7 +91,7 @@ class EntityAttributeMapperTest extends PHPUnit\Framework\TestCase
         self::assertTrue($m->isAttributeSet($c, 'B'));
     }
 
-    public function testSet(): void
+    public function test_set(): void
     {
         $attr = [
             'A' => 'string',
@@ -120,7 +120,7 @@ class EntityAttributeMapperTest extends PHPUnit\Framework\TestCase
         self::assertTrue($r instanceof $c);
     }
 
-    public function testUnset(): void
+    public function test_unset(): void
     {
         $attr = [
             'A' => 'string',
@@ -140,7 +140,7 @@ class EntityAttributeMapperTest extends PHPUnit\Framework\TestCase
         self::assertTrue($r instanceof $c);
     }
 
-    public function testInvalidGet(): void
+    public function test_invalid_get(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Tried to get unknown key name 'C' - not in allowed attributes");
@@ -159,7 +159,7 @@ class EntityAttributeMapperTest extends PHPUnit\Framework\TestCase
         $m->get($c, 'C');
     }
 
-    public function testInvalidSet(): void
+    public function test_invalid_set(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Tried to set unknown key name 'C'");
@@ -178,7 +178,7 @@ class EntityAttributeMapperTest extends PHPUnit\Framework\TestCase
         $m->set($c, 'C', mt_rand());
     }
 
-    public function testUnsetAccess(): void
+    public function test_unset_access(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Tried to get attribute that hasn't been set");
@@ -197,7 +197,7 @@ class EntityAttributeMapperTest extends PHPUnit\Framework\TestCase
         $m->get($c, 'A');
     }
 
-    public function testGetChangedValues(): void
+    public function test_get_changed_values(): void
     {
         $attr = [
             'A' => 'string',
@@ -258,7 +258,7 @@ class EntityAttributeMapperTest extends PHPUnit\Framework\TestCase
         self::assertEquals(['A' => 'A', 'B' => 'B'], $m->getChangedValues($bAndA));
     }
 
-    public function testGetValues(): void
+    public function test_get_values(): void
     {
         $attr = [
             'A' => 'string',

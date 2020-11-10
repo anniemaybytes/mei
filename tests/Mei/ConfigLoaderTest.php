@@ -15,7 +15,7 @@ class ConfigLoaderTest extends PHPUnit\Framework\TestCase
      */
     private vfs\vfsStreamDirectory $root;
 
-    public function setUp(): void
+    public function setup(): void
     {
         $this->root = vfs\vfsStream::setup('configLoaderTest');
     }
@@ -23,7 +23,7 @@ class ConfigLoaderTest extends PHPUnit\Framework\TestCase
     /**
      * Config loader should bork if configs are missing
      */
-    public function testShouldFailIfConfigMissing(): void
+    public function test_should_fail_if_config_missing(): void
     {
         $this->expectException(RuntimeException::class);
         $this->root->removeChild('config');
@@ -35,7 +35,7 @@ class ConfigLoaderTest extends PHPUnit\Framework\TestCase
     /**
      * Config loader should correctly load file
      */
-    public function testCheckLoadFile(): void
+    public function test_check_load_file(): void
     {
         $this->root->removeChild('config');
         vfs\vfsStream::create(
@@ -54,7 +54,7 @@ test=true',
     /**
      * Config loader should correctly parse structures
      */
-    public function testParsesIni(): void
+    public function test_parses_ini(): void
     {
         $this->root->removeChild('config');
         vfs\vfsStream::create(
