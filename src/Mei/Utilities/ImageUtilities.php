@@ -45,6 +45,8 @@ final class ImageUtilities
      */
     private static array $allowedUrlScheme = ['http', 'https'];
 
+    private const USER_AGENT = 'mei-image-server/1.0';
+
     /**
      * @param string $extension
      *
@@ -129,14 +131,13 @@ final class ImageUtilities
             $curl->setoptArray(
                 [
                     CURLOPT_ENCODING => 'UTF-8',
-                    CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36',
+                    CURLOPT_USERAGENT => self::USER_AGENT,
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_POST => false,
                     CURLOPT_FOLLOWLOCATION => true,
                     CURLOPT_HEADER => false,
                     CURLOPT_VERBOSE => false,
                     CURLOPT_SSL_VERIFYPEER => true,
-                    CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2,
                     CURLOPT_SSL_VERIFYHOST => 2,
                     CURLOPT_MAXREDIRS => 3,
                     CURLOPT_HTTPHEADER => ['Host: ' . $host],
@@ -202,7 +203,7 @@ final class ImageUtilities
      * @return Imagick
      * @throws GeneralException
      */
-    public function readImage(string $bindata): Imagick
+    public function openImage(string $bindata): Imagick
     {
         $data = $this->readImageData($bindata);
         if (!$data) {
@@ -236,7 +237,7 @@ final class ImageUtilities
         } // let code assume it succeeded
 
         if ($stripExif && $bindata) {
-            $bindata = self::stripImage($this->readImage($bindata)); // strip image of EXIF, profiles and comments
+            $bindata = self::stripImage($this->openImage($bindata)); // strip image of EXIF, profiles and comments
         }
         if (!$bindata) {
             return false;
@@ -336,14 +337,13 @@ final class ImageUtilities
             $curl->setoptArray(
                 [
                     CURLOPT_ENCODING => 'UTF-8',
-                    CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36',
+                    CURLOPT_USERAGENT => self::USER_AGENT,
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_POST => true,
                     CURLOPT_FOLLOWLOCATION => false,
                     CURLOPT_HEADER => false,
                     CURLOPT_VERBOSE => false,
                     CURLOPT_SSL_VERIFYPEER => true,
-                    CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2,
                     CURLOPT_SSL_VERIFYHOST => 2,
                     CURLOPT_HTTPHEADER => [
                         'Host: api.cloudflare.com',

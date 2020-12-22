@@ -73,7 +73,7 @@ final class UploadCtrl extends BaseCtrl
         $uploadedFiles = $request->getUploadedFiles();
         $url = $request->getParam('url');
         if (!$uploadedFiles && !$url) {
-            throw new GeneralException('No files to upload found');
+            throw new NoImages('No files to upload found');
         }
 
         /*
@@ -144,7 +144,7 @@ final class UploadCtrl extends BaseCtrl
         $imageData = [];
         $uploadedFiles = $request->getUploadedFiles();
         if (!$uploadedFiles) {
-            throw new GeneralException('No files to upload found');
+            throw new NoImages('No files to upload found');
         }
 
         /*

@@ -35,8 +35,8 @@ apt-get -y -o Dpkg::Options::="--force-confnew" upgrade
 echo
 echo Installing packages...
 apt-get -y -o Dpkg::Options::="--force-confold" install php-xdebug php7.4 php7.4-xml php7.4-fpm php7.4-cli php7.4-gd \
-    php7.4-curl php7.4-mysqlnd php7.4-bcmath php7.4-imagick php7.4-geoip php7.4-mbstring php7.4-json pv git unzip zip \
-    htop iotop nginx libmysqlclient18 libmariadb3 mariadb-server
+    php7.4-curl php7.4-mysqlnd php7.4-bcmath php7.4-imagick php7.4-mbstring php7.4-json pv git unzip zip htop iotop \
+    nginx libmysqlclient18 libmariadb3 mariadb-server
 
 echo
 echo Setting up packages...

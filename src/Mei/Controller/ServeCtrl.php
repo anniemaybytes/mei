@@ -96,7 +96,7 @@ final class ServeCtrl extends BaseCtrl
 
         // resize if necessary
         if (isset($info['width'])) {
-            $image = $this->imageUtils->readImage($bindata);
+            $image = $this->imageUtils->openImage($bindata);
             $bindata = ImageUtilities::resizeImage(
                 $image,
                 $info['width'],
