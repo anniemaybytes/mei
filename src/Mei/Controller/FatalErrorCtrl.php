@@ -64,6 +64,8 @@ final class FatalErrorCtrl
             }
         }
 
-        return $response->withStatus(500)->write('500 Interval Server Error');
+        return $response
+            ->withStatus(500)
+            ->withJson(['success' => false, 'error' => 'Interval Server Error']);
     }
 }

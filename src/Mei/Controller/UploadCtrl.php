@@ -5,17 +5,20 @@ declare(strict_types=1);
 namespace Mei\Controller;
 
 use Exception;
-use Mei\Exception\GeneralException;
-use Mei\Exception\NoImages;
+use ImagickException;
 use Mei\Model\FilesMap;
+use Mei\Utilities\Curl;
 use Mei\Utilities\Encryption;
 use Mei\Utilities\ImageUtilities;
+use Mei\Utilities\Imagick as ImagickUtility;
 use Mei\Utilities\StringUtil;
 use Mei\Utilities\Time;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\UploadedFileInterface;
+use RuntimeException;
 use Slim\Exception\HttpForbiddenException;
+use Tracy\Debugger;
 
 /**
  * Class UploadCtrl
@@ -24,12 +27,6 @@ use Slim\Exception\HttpForbiddenException;
  */
 final class UploadCtrl extends BaseCtrl
 {
-    /**
-     * @Inject
-     * @var ImageUtilities
-     */
-    private ImageUtilities $imageUtils;
-
     /**
      * @Inject
      * @var FilesMap
@@ -43,37 +40,66 @@ final class UploadCtrl extends BaseCtrl
     private Encryption $encryption;
 
     /**
+     * @var array
+     */
+    private static array $allowedUrlScheme = ['http', 'https'];
+
+    /**
      * @param Request $request
      * @param Response $response
      * @param array $args
      *
      * @return Response
-     * @throws Exception
+     * @throws HttpForbiddenException|Exception
      */
-    public function account(Request $request, Response $response, array $args): Response
+    public function user(Request $request, Response $response, array $args): Response
     {
         /**
-         * token:
-         * method: 'account'
-         * ident: userId
-         * tvalue: (valid until)
+         * Token specification:
+         *  mime (optional): specific mime-type from allowable range to restrict newly uploaded images
+         *  tvalue (required): valid until
+         *  referer (required): url for redirection after upload
+         *
+         * Token might additionally contain additional arbitrary keys. Site owner can use the fact that on success
+         * we return whole token, as a way to pass over some additonal data (such as userId) to endpoint indicated by
+         * value given in `referer` key.
          *
          * @noinspection JsonEncodingApiUsageInspection
          **/
-        $token = json_decode(
-            $this->encryption->decryptString($request->getParam('token', '')),
-            true
-        );
-        if (!$token || $token['method'] !== 'account' || time() > $token['tvalid']) {
+        $token = json_decode($this->encryption->decryptString($request->getParam('token', '')), true);
+        if (time() > ($token['tvalid'] ?? 0)) {
             throw new HttpForbiddenException($request);
         }
 
-        $dataToHandle = [];
+        $referer = $token['referer'] ?? '';
+        if ($referer === '' || !filter_var($referer, FILTER_VALIDATE_URL)) {
+            return $response
+                ->withStatus(400)
+                ->withJson(['success' => false, 'error' => 'No valid Referer given']);
+        }
 
+        $allowedTypes = ImageUtilities::$allowedTypes;
+        if (@$token['mime']) {
+            if (array_key_exists($token['mime'], ImageUtilities::$allowedTypes)) {
+                $allowedTypes = [
+                    $token['mime'] => ImageUtilities::$allowedTypes[$token['mime']]
+                ];
+            } else {
+                return $response
+                    ->withStatus(400)
+                    ->withJson(
+                        ['success' => false, 'error' => "Unacceptable MIME type restriction ({$token['mime']})"]
+                    );
+            }
+        }
+
+        $images = [];
+        $errors = [];
         $uploadedFiles = $request->getUploadedFiles();
-        $url = $request->getParam('url');
-        if (!$uploadedFiles && !$url) {
-            throw new NoImages('No files to upload found');
+        if (!$uploadedFiles) {
+            return $response
+                ->withStatus(400)
+                ->withJson(['success' => false, 'error' => 'Empty request (no images supplied)']);
         }
 
         /*
@@ -86,30 +112,45 @@ final class UploadCtrl extends BaseCtrl
                 continue;
             }
             foreach ($leaf as $file) {
-                /** @var UploadedFileInterface $file */
-                if (!$file->getSize() || $file->getSize() > $this->config['site.max_filesize']) {
+                if ($file->getError() === 4) {
                     continue;
                 }
-                $dataToHandle[] = $file->getStream()->getContents();
+
+                /** @var UploadedFileInterface $file */
+                if (!$file->getSize() || $file->getSize() > $this->config['app.max_filesize']) {
+                    $errors[] = "File {$file->getClientFilename()} exceeds maximum filesize ({$this->config['app.max_filesize']})";
+                    continue;
+                }
+
+                try {
+                    $bindata = $file->getStream()->getContents();
+                    $metadata = ImageUtilities::getImageInfo($bindata);
+                    if (!array_key_exists($metadata['mime'], $allowedTypes)) {
+                        $errors[] = "File {$file->getClientFilename()} has MIME type ({$metadata['mime']}) which is not allowable";
+                        continue;
+                    }
+                    $images[] = $this->processImage($bindata);
+                } catch (Exception $e) {
+                    Debugger::log($e, Debugger::EXCEPTION);
+                    $errors[] = "Encountered error while processing image {$file->getClientFilename()}";
+                }
             }
         }
-        if ($url) {
-            $dataToHandle[] = $this->imageUtils->getDataFromUrl($url);
+
+        if (empty($images)) {
+            return $response
+                ->withStatus(415)
+                ->withJson(['success' => false, 'error' => 'No valid images were processed', 'warnings' => $errors]);
         }
 
-        $images = $this->processUploadedData($dataToHandle, $token['ident']);
-        if ($images) {
-            $qs = [
-                'imgs' => $this->encryption->encryptUrl(implode('|', $images))
-            ];
-            $urlString = '?' . http_build_query($qs);
+        $token['images'] = $images;
+        $token = $this->encryption->encryptUrl(json_encode($token, JSON_THROW_ON_ERROR));
+        $qs = (parse_url($referer, PHP_URL_QUERY) ? '&' : '?') . "token=$token";
 
-            return $response->withStatus(303)->withHeader('Location', "{$this->config['api.redirect']}{$urlString}");
-        }
-
-        throw new NoImages(
-            'No processed images found. Possibly file was more than ' . $this->config['site.max_filesize'] . ' bytes?'
-        );
+        return $response
+            ->withStatus(303)
+            ->withHeader('Location', $referer . $qs)
+            ->withJson(['success' => true, 'warnings' => $errors]);
     }
 
     /**
@@ -119,197 +160,179 @@ final class UploadCtrl extends BaseCtrl
      *
      * @return Response
      * @throws HttpForbiddenException
-     * @throws GeneralException
-     * @throws NoImages
-     * @throws Exception
-     */
-    public function screenshot(Request $request, Response $response, array $args): Response
-    {
-        /**
-         * token:
-         * method: 'screenshot'
-         * ident: userId
-         * tvalue: (valid until)
-         *
-         * @noinspection JsonEncodingApiUsageInspection
-         **/
-        $token = json_decode(
-            $this->encryption->decryptString($request->getParam('token', '')),
-            true
-        );
-        if (!$token || $token['method'] !== 'screenshot' || time() > $token['tvalid']) {
-            throw new HttpForbiddenException($request);
-        }
-
-        $imageData = [];
-        $uploadedFiles = $request->getUploadedFiles();
-        if (!$uploadedFiles) {
-            throw new NoImages('No files to upload found');
-        }
-
-        /*
-         * $uploadedFiles will hold an array with each element representing single upload
-         * (in case of html form, each input element is one upload, input element can have multiple files)
-         * each element is an array of UploadedFileInterface items
-         */
-        foreach ($uploadedFiles as $leaf) {
-            if (!is_array($leaf)) {
-                continue;
-            }
-            foreach ($leaf as $file) {
-                /** @var UploadedFileInterface $file */
-                if (!$file->getSize() || $file->getSize() > $this->config['site.max_filesize']) {
-                    continue;
-                }
-                $bindata = $file->getStream()->getContents();
-                $metadata = $this->imageUtils->readImageData($bindata);
-
-                if (!$metadata || $metadata['mime'] !== 'image/png') {
-                    continue;
-                }
-                $imageData[] = $bindata;
-            }
-        }
-
-        $images = $this->processUploadedData($imageData, $token['ident'], (int)$args['torrentid']);
-
-        if ($images) {
-            $qs = [
-                'action' => 'takeupload',
-                'torrentid' => (int)$args['torrentid'],
-                'imgs' => $this->encryption->encryptUrl(implode('|', $images))
-            ];
-            $urlString = '?' . http_build_query($qs);
-
-            return $response->withStatus(303)->withHeader('Location', "{$this->config['api.redirect']}{$urlString}");
-        }
-
-        throw new NoImages(
-            'No processed images found. Possibly file was more than ' . $this->config['site.max_filesize'] . ' bytes or image was not PNG?'
-        );
-    }
-
-    /**
-     * @param Request $request
-     * @param Response $response
-     * @param array $args
-     *
-     * @return Response
-     * @throws Exception
      */
     public function api(Request $request, Response $response, array $args): Response
     {
         $auth = $request->getParam('auth');
-
         if (!hash_equals($auth, $this->config['api.auth_key'])) {
             throw new HttpForbiddenException($request);
         }
 
-        $dataToHandle = [];
-
-        $url = $request->getParam('url');
-        $file = $request->getParam('file');
-        $uploadedFiles = $request->getUploadedFiles();
-
-        if ($url) {
-            $dataToHandle[] = $this->imageUtils->getDataFromUrl($url);
+        $images = [];
+        $errors = [];
+        $urls = $request->getParam('url');
+        if (is_string($urls)) {
+            $urls = [$urls]; // handle both url[] and url
+        }
+        if (empty($urls)) {
+            return $response
+                ->withStatus(400)
+                ->withJson(['success' => false, 'error' => 'Empty request (no images supplied)']);
         }
 
-        if ($file) {
-            $fileDecoded = base64_decode($file);
-            if (strlen($fileDecoded) <= $this->config['site.max_filesize']) {
-                $dataToHandle[] = $fileDecoded;
-            }
-        }
-        /*
-         * $uploadedFiles will hold an array with each element representing single upload
-         * (in case of html form, each input element is one upload, input element can have multiple files)
-         * each element is an array of UploadedFileInterface items
-         */
-        foreach ($uploadedFiles as $leaf) {
-            if (!is_array($leaf)) {
+        foreach ($urls as $url) {
+            if (!$url || !filter_var($url, FILTER_VALIDATE_URL)) {
+                $errors[] = "Invalid URL ($url) provided (FILTER_VALIDATE_URL)";
                 continue;
             }
-            foreach ($leaf as $file) {
-                /** @var UploadedFileInterface $file */
-                if (!$file->getSize() || $file->getSize() > $this->config['site.max_filesize']) {
+
+            $scheme = parse_url($url, PHP_URL_SCHEME);
+            $host = parse_url($url, PHP_URL_HOST);
+            if (!in_array($scheme, self::$allowedUrlScheme, true)) {
+                $errors[] = "Scheme ($scheme) of URL ($url) is not allowed to be fetched from";
+                continue;
+            }
+
+            $curl = new Curl($url);
+            $curl->setoptArray(
+                [
+                    CURLOPT_ENCODING => 'UTF-8',
+                    CURLOPT_USERAGENT => ImageUtilities::USER_AGENT,
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_POST => false,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HEADER => false,
+                    CURLOPT_VERBOSE => false,
+                    CURLOPT_SSL_VERIFYPEER => true,
+                    CURLOPT_SSL_VERIFYHOST => 2,
+                    CURLOPT_MAXREDIRS => 3,
+                    CURLOPT_HTTPHEADER => ["Host: $host"],
+                    CURLOPT_MAXFILESIZE => $this->config['app.max_filesize'],
+                    CURLOPT_NOPROGRESS => false,
+                    CURLOPT_PROGRESSFUNCTION => fn(
+                        $ch,
+                        $dt,
+                        $d,
+                        $ut,
+                        $u
+                    ) => (int)($d > $this->config['app.max_filesize']),
+                ]
+            );
+
+            $content = $curl->exec();
+            $err = $curl->error();
+            if ($err !== '') {
+                $message = "URL ({$url} encountered cURL error: {$err}";
+                Debugger::log($message, DEBUGGER::WARNING);
+                $errors[] = $message;
+                continue;
+            }
+
+            $cl = (int)$curl->getInfo(CURLINFO_CONTENT_LENGTH_DOWNLOAD);
+            $respcode = (int)$curl->getInfo(CURLINFO_HTTP_CODE);
+            unset($curl);
+
+            if (!$content) {
+                $message = "No data received from $url with Content-Length $cl and response $respcode";
+                Debugger::log($message, DEBUGGER::WARNING);
+                $errors[] = $message;
+            }
+
+            try {
+                $metadata = ImageUtilities::getImageInfo($content);
+                if (!array_key_exists($metadata['mime'], ImageUtilities::$allowedTypes)) {
+                    $errors[] = "File {$url} has MIME type ({$metadata['mime']} which is not allowable";
                     continue;
                 }
-                $dataToHandle[] = $file->getStream()->getContents();
+                $images[] = $this->processImage($content);
+            } catch (Exception $e) {
+                Debugger::log($e, Debugger::EXCEPTION);
+                $errors[] = "Encountered error while processing image {$url}";
             }
         }
 
-        if (!$file && !$url && !$uploadedFiles) {
-            throw new GeneralException('No files to upload found');
+        if (empty($images)) {
+            return $response
+                ->withStatus(415)
+                ->withJson(['success' => false, 'error' => 'No valid images were processed', 'warnings' => $errors]);
         }
 
-        $images = $this->processUploadedData($dataToHandle);
-        if ($images) {
-            return $response->withStatus(201)->withJson(
-                ['success' => true, 'images' => $images]
-            );
-        }
-
-        throw new NoImages(
-            'No processed images found. Possibly file was more than ' . $this->config['site.max_filesize'] . ' bytes?'
-        );
+        return $response
+            ->withStatus(201)
+            ->withJson(['success' => true, 'images' => $images, 'warnings' => $errors]);
     }
 
     /**
-     * @param array $dataToHandle
-     * @param int $uploaderId
-     * @param int $torrentId
+     * @param string $bindata
+     * @param int $protected
      *
-     * @return array
-     * @throws GeneralException
-     * @throws Exception
+     * @return string
+     * @throws ImagickException|Exception
      */
-    private function processUploadedData(array $dataToHandle, int $uploaderId = 0, int $torrentId = 0): array
+    private function processImage(string $bindata, int $protected = 0): string
     {
-        $images = [];
-        foreach ($dataToHandle as $bindata) {
-            if (!$bindata) {
-                continue;
-            }
-            $metadata = $this->imageUtils->readImageData($bindata);
+        $metadata = ImageUtilities::getImageInfo($bindata);
 
-            // invalid data, or not allowed format
-            if (!$metadata) {
-                $images[] = 'error.jpg';
-                continue;
-            }
-
-            $found = $isLegacy = false;
-            if ($this->filesMap->getByKey($metadata['checksum'] . '.' . $metadata['extension'])) {
-                $found = true;
-                $isLegacy = false;
-            } elseif ($this->filesMap->getByKey($metadata['checksum_legacy'] . '.' . $metadata['extension'])) {
-                $found = true;
-                $isLegacy = true;
-            }
-
-            $checksum = $isLegacy ? $metadata['checksum_legacy'] : $metadata['checksum'];
-            if (!$found) {
-                $savePath = $this->imageUtils->getSavePath($checksum . '.' . $metadata['extension']);
-                if (!$this->imageUtils->saveData($bindata, $savePath, false)) {
-                    throw new GeneralException('Unable to save file');
-                }
-            }
-
-            $filename = StringUtil::generateRandomString(11) . '.' . $metadata['extension'];
-            $newImage = $this->filesMap->createEntity(
-                [
-                    'Key' => $checksum . '.' . $metadata['extension'],
-                    'FileName' => $filename,
-                    'UploaderId' => $uploaderId,
-                    'TorrentId' => $torrentId,
-                    'Protected' => 0,
-                    'UploadTime' => Time::now()
-                ]
-            );
-            $this->filesMap->save($newImage);
-            $images[] = $filename;
+        $found = $isLegacy = false;
+        if ($this->filesMap->getByKey("{$metadata['hash']}.{$metadata['extension']}")) {
+            $found = true;
+            $isLegacy = false;
+        } elseif ($this->filesMap->getByKey("{$metadata['md5']}.{$metadata['extension']}")) {
+            $found = true;
+            $isLegacy = true;
         }
-        return $images;
+
+        $key = ($isLegacy ? $metadata['md5'] : $metadata['hash']) . ".{$metadata['extension']}";
+        if (!$found) {
+            // verify image is valid by trying to open it using ImageMagick, will throw if necessary
+            new ImagickUtility($bindata);
+
+            // strip EXIF is requested
+            if ($this->config['app.strip_exif']) {
+                $image = new ImagickUtility($bindata);
+                $bindata = $image->stripExif()->getImagesBlob();
+            }
+
+            // flush file to disk
+            self::saveImage($bindata, ImageUtilities::getSavePath($key));
+        }
+
+        // generate new image entry in database and associate it with file on disk
+        $filename = StringUtil::generateRandomString($this->config['images.name_len']) . ".{$metadata['extension']}";
+        $newImage = $this->filesMap->createEntity(
+            [
+                'Key' => $key,
+                'FileName' => $filename,
+                'Protected' => $protected,
+                'UploadTime' => Time::now()
+            ]
+        );
+        $this->filesMap->save($newImage);
+
+        return $filename;
+    }
+
+    /**
+     * @param string $bindata
+     * @param string $path
+     *
+     * @throws RuntimeException
+     */
+    private static function saveImage(string $bindata, string $path): void
+    {
+        if (file_exists($path)) {
+            return;
+        }
+
+        $dir = dirname($path);
+        if (!@mkdir($dir, 0750, true) && !is_dir($dir)) {
+            throw new RuntimeException("Unable to create directory $dir");
+        }
+        if (file_put_contents($path, $bindata) === false) {
+            throw new RuntimeException("Unable to save binary data on $path");
+        }
+        if (chmod($path, 0640) === false) {
+            throw new RuntimeException("Unable to set mode on $path");
+        }
     }
 }

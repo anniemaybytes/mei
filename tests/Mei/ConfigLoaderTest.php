@@ -41,14 +41,16 @@ class ConfigLoaderTest extends PHPUnit\Framework\TestCase
         vfs\vfsStream::create(
             [
                 'config' => [
-                    'private.ini' => '[site]
-test=true',
+                    'private.ini' => '
+[app]
+test = true
+',
                 ]
             ]
         );
         $c = ConfigLoader::load(vfs\vfsStream::url('configLoaderTest/config/'));
-        self::assertArrayHasKey('site.test', $c);
-        self::assertEquals(true, $c['site.test']);
+        self::assertArrayHasKey('app.test', $c);
+        self::assertEquals(true, $c['app.test']);
     }
 
     /**
@@ -60,17 +62,15 @@ test=true',
         vfs\vfsStream::create(
             [
                 'config' => [
-                    'private.ini' => 'mode = development
+                    'private.ini' => '
+mode = development
 logs_dir = logs
 proxy = false
-timeout = 30
 
-[site]
-site_root =
-images_root = images
+[app]
 max_filesize = 5242880
 salt = "[b,W3=Ryrt`:uQ=S"
-errors = true',
+',
                 ]
             ]
         );
@@ -80,12 +80,8 @@ errors = true',
                 'mode' => 'development',
                 'logs_dir' => 'logs',
                 'proxy' => false,
-                'timeout' => 30,
-                'site.site_root' => '',
-                'site.images_root' => 'images',
-                'site.max_filesize' => 5242880,
-                'site.salt' => '[b,W3=Ryrt`:uQ=S',
-                'site.errors' => true
+                'app.max_filesize' => 5242880,
+                'app.salt' => '[b,W3=Ryrt`:uQ=S',
             ],
             $c
         );

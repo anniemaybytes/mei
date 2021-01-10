@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Mei\Controller;
 
+use ErrorException;
 use Exception;
+use JsonException;
 use Mei\Model\FilesMap;
+use Mei\Utilities\Curl;
 use Mei\Utilities\ImageUtilities;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Exception\HttpForbiddenException;
 use Slim\Routing\RouteParser;
 use Tracy\Debugger;
 
@@ -27,12 +31,6 @@ final class DeleteCtrl extends BaseCtrl
 
     /**
      * @Inject
-     * @var ImageUtilities
-     */
-    private ImageUtilities $imageUtils;
-
-    /**
-     * @Inject
      * @var FilesMap
      */
     private FilesMap $filesMap;
@@ -43,107 +41,154 @@ final class DeleteCtrl extends BaseCtrl
      * @param array $args
      *
      * @return Response
+     * @throws JsonException|HttpForbiddenException
      */
     public function delete(Request $request, Response $response, array $args): Response
     {
         // dont abort if client disconnects
         ignore_user_abort(true);
 
-        $auth = $request->getParam('auth');
-
+        $auth = $request->getParam('auth', '');
         if (!hash_equals($auth, $this->config['api.auth_key'])) {
-            return $response->withStatus(403)->withJson(['success' => false, 'reason' => 'access denied']);
+            throw new HttpForbiddenException($request);
         }
 
         try {
-            $imgs = json_decode($request->getParam('imgs'), true, 512, JSON_THROW_ON_ERROR);
+            $imgs = json_decode($request->getParam('imgs', ''), true, 512, JSON_THROW_ON_ERROR);
         } catch (Exception $e) {
             Debugger::log($e, Debugger::EXCEPTION);
-            return $response->withStatus(200)->withJson(['success' => false, 'reason' => 'unable to parse imgs array']);
+            return $response->withStatus(400)->withJson(
+                ['success' => false, 'reason' => 'Unable to parse list of images']
+            );
         }
 
         $success = count($imgs);
         if (!$success) {
-            return $response->withStatus(200)->withJson(['success' => false, 'reason' => 'imgs array was empty']);
+            return $response->withStatus(400)->withJson(['success' => false, 'error' => 'No images to delete given']);
         }
 
         foreach ($imgs as $img) {
             $info = pathinfo($img);
-            $fileEntity = $this->filesMap->getByFileName(
-                $info['filename'] . '.' . $info['extension']
-            );
-
+            $fileEntity = $this->filesMap->getByFileName("{$info['filename']}.{$info['extension']}");
             if (!$fileEntity) {
                 $success--;
                 continue;
             }
+
             if ($fileEntity->Protected) {
                 $fileEntity->Protected--;
-                $this->filesMap->save($fileEntity); // decrease protected count by one
+                $this->filesMap->save($fileEntity);
 
                 $success--;
                 continue;
             }
 
-            $uri = $request->getUri();
-            $domain = $uri->getScheme() . '://' . $uri->getHost();
-            $urls = [
-                (
-                    $domain . $this->router->relativeUrlFor(
-                        'serve',
-                        ['img' => $info['filename'] . '.' . $info['extension']]
-                    )
-                )
-            ];
-
-            // handling common resolutions + crop
-            foreach (ServeCtrl::$legacySizes as $resInfo) {
-                $urls[] = (
-                    $domain . $this->router->relativeUrlFor(
-                        'serve',
-                        [
-                            'img' => (
-                                $info['filename'] . '-' . $resInfo[0] . 'x' . $resInfo[1] . '.' . $info['extension']
-                            )
-                        ]
-                    )
-                );
-
-                $urls[] = (
-                    $domain . $this->router->relativeUrlFor(
-                        'serve',
-                        [
-                            'img' => (
-                                $info['filename'] . '-' . $resInfo[0] . 'x' . $resInfo[1] . '-crop.' . $info['extension']
-                            )
-                        ]
-                    )
-                );
-            }
-
             try {
                 $this->filesMap->delete($fileEntity);
-                if (!$this->filesMap->getByKey($fileEntity->Key)) {
-                    $savePath = pathinfo($fileEntity->Key);
-                    ImageUtilities::deleteImage(
-                        $this->imageUtils->getSavePath(
-                            $savePath['filename'] . '.' .
-                            $this->imageUtils::mapExtension($savePath['extension'])
-                        )
-                    );
-                } // file does not exist anymore anywhere, remove it
             } catch (Exception $e) {
                 $success--;
                 Debugger::log($e, Debugger::EXCEPTION);
+                continue;
             }
 
             try {
-                $this->imageUtils->clearCacheForImage($urls);
+                // remove file from disk when it's not referenced anymore
+                if (!$this->filesMap->getByKey($fileEntity->Key)) {
+                    self::deleteImage($fileEntity->Key);
+                }
             } catch (Exception $e) {
                 Debugger::log($e, Debugger::EXCEPTION);
+            }
+
+            if ($this->config['cloudflare.enabled']) {
+                $urls = [
+                    $this->router->fullUrlFor($request->getUri(), 'serve', ['img' => $img])
+                ];
+                foreach (ServeCtrl::$legacySizes as $resInfo) {
+                    $filename = "{$info['filename']}-{$resInfo[0]}x{$resInfo[1]}";
+
+                    $urls[] = $this->router->fullUrlFor(
+                        $request->getUri(),
+                        'serve',
+                        ['img' => "$filename.{$info['extension']}"]
+                    );
+                    $urls[] = $this->router->fullUrlFor(
+                        $request->getUri(),
+                        'serve',
+                        ['img' => "$filename-crop.{$info['extension']}"]
+                    );
+                }
+
+                $curl = new Curl(
+                    "https://api.cloudflare.com/client/v4/zones/{$this->config['cloudflare.zone']}/purge_cache"
+                );
+                $curl->setoptArray(
+                    [
+                        CURLOPT_ENCODING => 'UTF-8',
+                        CURLOPT_USERAGENT => ImageUtilities::USER_AGENT,
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_POST => true,
+                        CURLOPT_FOLLOWLOCATION => false,
+                        CURLOPT_HEADER => false,
+                        CURLOPT_VERBOSE => false,
+                        CURLOPT_SSL_VERIFYPEER => true,
+                        CURLOPT_SSL_VERIFYHOST => 2,
+                        CURLOPT_HTTPHEADER => [
+                            'Host: api.cloudflare.com',
+                            "Authorization: Bearer {$this->config['cloudflare.api']}",
+                            'Content-Type: application/json'
+                        ],
+                        CURLOPT_CUSTOMREQUEST => 'DELETE',
+                        CURLOPT_POSTFIELDS => json_encode(['files' => $urls], JSON_THROW_ON_ERROR)
+                    ]
+                );
+                $result = $curl->exec();
+                $err = $curl->error();
+                if ($err !== '') {
+                    Debugger::log(new ErrorException('Failed to clear CDN cache: ' . $err), DEBUGGER::ERROR);
+                    return $response->withStatus(200)->withJson(['success' => $success]);
+                }
+                unset($curl);
+
+                try {
+                    // will most likely fail if api is down as it would return html error page instead
+                    $result = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
+                } catch (JsonException $e) {
+                    Debugger::log(
+                        new ErrorException(
+                            'Failed to clear CDN cache',
+                            0,
+                            1,
+                            __FILE__,
+                            __LINE__,
+                            $e
+                        ),
+                        DEBUGGER::ERROR
+                    );
+                }
+
+                if (!@$result['success']) {
+                    try {
+                        $err = json_encode($result['errors'], JSON_THROW_ON_ERROR);
+                    } catch (JsonException $e) {
+                        Debugger::log($e, DEBUGGER::WARNING);
+                        $err = '(unparsable error)';
+                    }
+                    Debugger::log(new ErrorException('Failed to clear CDN cache: ' . $err), DEBUGGER::ERROR);
+                }
             }
         }
 
         return $response->withStatus(200)->withJson(['success' => $success]);
+    }
+
+    /**
+     * @param string $filename
+     *
+     * @return bool
+     */
+    private static function deleteImage(string $filename): bool
+    {
+        return unlink(ImageUtilities::getSavePath($filename));
     }
 }

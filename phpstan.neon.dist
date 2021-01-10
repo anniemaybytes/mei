@@ -5,7 +5,7 @@ parameters:
         - dispatch.php
         - public/index.php
     bootstrapFiles:
-        - phpstan-bootstrap.php
+        - phpstan.bootstrap.php
     inferPrivatePropertyTypeFromConstructor: true
     checkMissingIterableValueType: false
     ignoreErrors:

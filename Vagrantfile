@@ -35,6 +35,6 @@ Vagrant.configure(2) do |config|
   
   # provision scripts
   config.vm.provision "shell", path: "./vagrant/provision.sh"
-  config.vm.provision "shell", run: "always", path: "./vagrant/provision_update.sh"
+  config.vm.provision "shell", run: "always", path: "./vagrant/update.sh"
   
 end

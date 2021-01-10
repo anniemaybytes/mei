@@ -12,7 +12,6 @@ use Mei\Model\FilesMap;
 use Mei\PDO\PDOTracyBarPanel;
 use Mei\PDO\PDOWrapper;
 use Mei\Utilities\Encryption;
-use Mei\Utilities\ImageUtilities;
 use Mei\Utilities\Time;
 use PDO;
 use Psr\Container\ContainerInterface as Container;
@@ -44,7 +43,6 @@ final class DependencyInjection
                 // utilites
                 Encryption::class => DI\autowire()->constructorParameter('config', DI\get('config')),
                 Time::class => DI\autowire(),
-                ImageUtilities::class => DI\autowire(),
                 // runtime
                 IKeyStore::class => function () {
                     return new Cache\NonPersistent('');

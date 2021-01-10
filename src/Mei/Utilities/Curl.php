@@ -38,7 +38,7 @@ final class Curl
      */
     public function __construct(?string $url = null)
     {
-        $this->config = Dispatcher::getConfig();
+        $this->config = Dispatcher::config();
 
         if ($url === null) {
             $this->curl = curl_init();

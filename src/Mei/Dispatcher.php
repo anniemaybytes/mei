@@ -51,10 +51,16 @@ final class Dispatcher implements SingletonInterface
     }
 
     /**
-     * @return array
+     * @param string|null $key
+     *
+     * @return mixed
      */
-    public static function getConfig(): array
+    public static function config(?string $key = null)
     {
+        if ($key) {
+            return self::getInstance()->config[$key];
+        }
+
         return self::getInstance()->config;
     }
 
@@ -86,7 +92,7 @@ final class Dispatcher implements SingletonInterface
             );
         }
 
-        $config['site.images_root'] = BASE_ROOT . '/' . $config['site.images_root'];
+        $config['images.directory'] = BASE_ROOT . '/' . $config['images.directory'];
         $config['logs_dir'] = BASE_ROOT . '/' . $config['logs_dir'];
         $this->config = $config;
     }

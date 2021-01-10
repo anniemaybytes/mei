@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
-define('ERROR_REPORTING', E_ALL & ~(E_STRICT | E_NOTICE | E_WARNING | E_DEPRECATED));
-
 set_error_handler(
     static function (int $errno, string $errstr, string $errfile, int $errline) {
         error_log("$errstr ($errno) - $errfile:$errline");
         die('Sorry, something went horribly wrong / PR Environment Error: ' . $errno);
-    }
+    },
+    E_ERROR | E_PARSE
 );
 
 set_exception_handler(

@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Mei\Controller;
 
 use DI\Container;
-use Mei\Exception\GeneralException;
-use Mei\Exception\NoImages;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Exception\HttpException;
@@ -52,14 +50,10 @@ final class ErrorCtrl extends BaseCtrl
     {
         try {
             $statusCode = 500;
-            $message = null;
+            $message = 'Unexpected condition encountered preventing server from fulfilling request.';
             if ($exception instanceof HttpException) {
                 $statusCode = $exception->getCode();
-            } elseif ($exception instanceof NoImages) {
-                $statusCode = 415;
-                $message = $exception->getMessage();
-            } elseif ($exception instanceof GeneralException) {
-                $message = $exception->getMessage();
+                $message = $exception->getDescription();
             }
 
             if ($statusCode === 500) {
@@ -82,9 +76,9 @@ final class ErrorCtrl extends BaseCtrl
                 }
             }
 
-            return $response->withStatus($statusCode)->withJson(
-                ['success' => false, 'error' => $statusCode, 'message' => $message]
-            );
+            return $response
+                ->withStatus($statusCode)
+                ->withJson(['success' => false, 'error' => $message]);
         } catch (Throwable $e) {
             return (new FatalErrorCtrl($this->di))->handleError($request, $response, $e);
         }

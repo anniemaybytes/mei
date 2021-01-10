@@ -27,10 +27,8 @@ final class Main extends Base
         // upload
         $app->group('', function (RouteCollectorProxy $group) {
             $group->group('/upload', function (RouteCollectorProxy $group) {
-                $group->post('/account', UploadCtrl::class . ':account')
-                    ->setName('upload:account');
-                $group->post('/screenshot/{torrentid:[0-9]+}', UploadCtrl::class . ':screenshot')
-                    ->setName('upload:screenshot');
+                $group->post('/user', UploadCtrl::class . ':user')
+                    ->setName('upload:user');
                 $group->post('/api', UploadCtrl::class . ':api')
                     ->setName('upload:api');
             });
@@ -40,26 +38,29 @@ final class Main extends Base
                 ->setName('delete');
 
             // serve
-            $group->get('/images/error.jpg', function (Request $request, Response $response, array $args) {
-                return $response->withRedirect('/error.jpg');
-            });
-
             $group->get(
                 '/{img:(?:[a-zA-Z0-9]{32}|[a-zA-Z0-9]{64}|[a-zA-Z0-9]{11})(?:-\d{2,3}x\d{2,3}(?:-crop)?)?\.[a-zA-Z]{3,4}}',
                 ServeCtrl::class . ':serve'
             )->setName('serve');
-            $group->get(
-                '/images/{img:[a-zA-Z0-9]{32}(?:-\d{2,3}x\d{2,3}(?:-crop)?)?\.[a-zA-Z]{3,4}}',
-                function (Request $request, Response $response, array $args) {
-                    /** @var Container $this */
-                    return $response->withStatus(301)->withRedirect(
-                        $this->get(RouteParser::class)->relativeUrlFor(
-                            'serve',
-                            ['img' => $args['img']]
-                        ) // legacy redirect
-                    );
-                }
-            );
+
+            // legacy redirects
+            $group->group('/images', function (RouteCollectorProxy $group) {
+                $group->get('/error.jpg', function (Request $request, Response $response, array $args) {
+                    return $response->withRedirect('/error.jpg');
+                });
+                $group->get(
+                    '/{img:[a-zA-Z0-9]{32}(?:-\d{2,3}x\d{2,3}(?:-crop)?)?\.[a-zA-Z]{3,4}}',
+                    function (Request $request, Response $response, array $args) {
+                        /** @var Container $this */
+                        return $response->withStatus(301)->withRedirect(
+                            $this->get(RouteParser::class)->relativeUrlFor(
+                                'serve',
+                                ['img' => $args['img']]
+                            )
+                        );
+                    }
+                );
+            });
         });
     }
     /** @formatter:on */

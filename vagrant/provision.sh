@@ -36,7 +36,7 @@ echo
 echo Installing packages...
 apt-get -y -o Dpkg::Options::="--force-confold" install php-xdebug php7.4 php7.4-xml php7.4-fpm php7.4-cli php7.4-gd \
     php7.4-curl php7.4-mysqlnd php7.4-bcmath php7.4-imagick php7.4-mbstring php7.4-json pv git unzip zip htop iotop \
-    nginx libmysqlclient18 libmariadb3 mariadb-server
+    nginx libmysqlclient18 libmariadb3 mariadb-server imagemagick
 
 echo
 echo Setting up packages...
@@ -81,7 +81,7 @@ echo "DELETE FROM user WHERE (User = 'root' AND Host != 'localhost') OR (User = 
 
 echo
 echo Importing database...
-mysql -umei -pmei mei </vagrantroot/mei.sql
+find /vagrantroot/fixtures -type f -name '*.sql' -exec bash -c 'cat '{}' | mysql -umei -pmei mei' \;
 
 echo
 echo Restarting MariaDB...

@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Mei\Controller;
 
 use Exception;
+use ImagickException;
 use Mei\Model\FilesMap;
 use Mei\Utilities\ImageUtilities;
+use Mei\Utilities\Imagick as ImagickUtility;
 use Mei\Utilities\Time;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use RuntimeException;
 use Slim\Exception\HttpNotFoundException;
 
 /**
@@ -21,15 +24,14 @@ final class ServeCtrl extends BaseCtrl
 {
     /**
      * @Inject
-     * @var ImageUtilities
-     */
-    private ImageUtilities $imageUtils;
-
-    /**
-     * @Inject
      * @var FilesMap
      */
     private FilesMap $filesMap;
+
+    /**
+     * @var array
+     */
+    private static array $allowedResizeRange = ['min' => 80, 'max' => 450];
 
     /**
      * @var array
@@ -43,14 +45,15 @@ final class ServeCtrl extends BaseCtrl
         'groupimg' => [200, 400],
     ];
 
+    private const CSP_RULE = "default-src 'none'; style-src 'unsafe-inline'; sandbox";
+
     /**
      * @param Request $request
      * @param Response $response
      * @param array $args
      *
      * @return Response
-     * @throws HttpNotFoundException
-     * @throws Exception
+     * @throws HttpNotFoundException|ImagickException|Exception
      */
     public function serve(Request $request, Response $response, array $args): Response
     {
@@ -80,67 +83,77 @@ final class ServeCtrl extends BaseCtrl
             throw new HttpNotFoundException($request, 'Image Not Found');
         }
 
-        $savePath = pathinfo($fileEntity->Key);
-        $bindata = ImageUtilities::getDataFromPath(
-            $this->imageUtils->getSavePath(
-                $savePath['filename'] . '.' . $this->imageUtils::mapExtension($savePath['extension'])
-            )
-        );
-        if (!$bindata) {
-            throw new HttpNotFoundException($request, 'Image Not Found');
-        }
-
-        if (!$meta = $this->imageUtils->readImageData($bindata)) {
-            throw new HttpNotFoundException($request, 'Image Not Found');
-        }
+        $bindata = self::getImageFromPath($fileEntity->Key);
+        $metadata = ImageUtilities::getImageInfo($bindata);
 
         // resize if necessary
-        if (isset($info['width'])) {
-            $image = $this->imageUtils->openImage($bindata);
-            $bindata = ImageUtilities::resizeImage(
-                $image,
-                $info['width'],
-                $info['height'],
-                $info['crop']
-            );
+        if (
+            isset($info['width']) &&
+            min([$info['width'], $info['height']]) >= self::$allowedResizeRange['min'] &&
+            max([$info['width'], $info['height']]) <= self::$allowedResizeRange['max']
+        ) {
+            $image = new ImagickUtility($bindata);
+            $bindata = $image->resize($info['width'], $info['height'], $info['crop'])->getImagesBlob();
+            /*
+             * To avoid \Imagick object taking unnecessary memory while streaming, we destroy it here after we
+             * fetch blob of image that we need.
+             */
+            unset($image);
         }
 
         $eTag = md5($bindata);
-        $path = $this->imageUtils->getSavePath(
-            $savePath['filename'] . '.' . $this->imageUtils::mapExtension($savePath['extension'])
-        );
-        $timeStamp = Time::timeIsNonZero($fileEntity->UploadTime) ? $fileEntity->UploadTime->getTimestamp() : filemtime(
-            $path
-        );
+        $path = ImageUtilities::getSavePath($fileEntity->Key, false);
+        $ts = Time::timeIsNonZero($fileEntity->UploadTime)
+            ? $fileEntity->UploadTime->getTimestamp() : filemtime("{$this->config['images.directory']}$path");
 
-        $response = $response->withHeader('Content-Type', $meta['mime']);
+        $response = $response->withHeader('Content-Type', $metadata['mime']);
         $response = $response->withHeader('Content-Length', (string)strlen($bindata));
         $response = $response->withHeader('Cache-Control', 'public, max-age=' . (strtotime('+30 days') - time()));
         $response = $response->withHeader('ETag', '"' . $eTag . '"');
         $response = $response->withHeader('Expires', date('r', strtotime('+30 days')));
-        $response = $response->withHeader('Last-Modified', date('r', $timeStamp));
+        $response = $response->withHeader('Last-Modified', date('r', $ts));
 
-        if ($request->getHeader('If-None-Match')[0] !== $eTag) { // does not match etag?
-            if (!isset($info['width'])) { // if no resize is taking place we can just ask nginx to stream file for us
+        // does not match etag (might be empty array)
+        if (@$request->getHeader('If-None-Match')[0] !== $eTag) {
+            if (!isset($info['width'])) {
+                // if no resize is taking place we can just ask nginx to stream file for us
                 $response = $response->withHeader(
                     'Content-Security-Policy',
-                    "default-src 'none'; img-src data:; style-src 'unsafe-inline'"
+                    self::CSP_RULE
                 );
-                return $response->withHeader(
-                    'X-Accel-Redirect',
-                    str_replace($this->config['site.images_root'], '/x-accel', $path)
-                );
-            } // otherwise we have to stream file ourselves
+                return $response->withHeader('X-Accel-Redirect', "/x-accel$path");
+            }
+            // otherwise we have to stream file ourselves
             return $response->withHeader(
                 'Content-Security-Policy',
-                "default-src 'none'; img-src data:; style-src 'unsafe-inline'"
+                self::CSP_RULE
             )->write($bindata);
         }
 
         // matches etag, return 304
         return $response->withStatus(304)->withHeader(
             'Content-Security-Policy',
-            "default-src 'none'; img-src data:; style-src 'unsafe-inline'"
+            self::CSP_RULE
         );
+    }
+
+    /**
+     * @param string $filename
+     *
+     * @return string
+     */
+    private static function getImageFromPath(string $filename): string
+    {
+        $file = ImageUtilities::getSavePath($filename);
+        if (!is_file($file)) {
+            throw new RuntimeException("Image missing from filesystem - $filename");
+        }
+
+        $contents = file_get_contents($file, false);
+        if (!$contents) {
+            throw new RuntimeException("Can't fetch contents of file - $filename");
+        }
+
+        return $contents;
     }
 }

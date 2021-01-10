@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 define('BASE_ROOT', __DIR__);
+define('ERROR_REPORTING', E_ALL & ~(E_STRICT | E_NOTICE | E_DEPRECATED));
 require_once BASE_ROOT . '/vendor/autoload.php'; // set up autoloading
 
 use DI\Container;
