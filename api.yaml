@@ -1,0 +1,234 @@
+openapi: 3.0.3
+info:
+    title: Mei Image Server
+    description: Mei Image Server
+    version: 1.0.0
+servers:
+    -   url: 'https://mei.animebytes.local:7443'
+        description: Vagrant
+paths:
+    /upload/user:
+        post:
+            summary: Upload image from file using encrypted token verification method
+            requestBody:
+                content:
+                    multipart/form-data:
+                        schema:
+                            type: object
+                            properties:
+                                token:
+                                    type: string
+                                    description: Base64 URL-encoded representation of `EncryptedToken` object, encrypted with AES-256-CBC
+                                image[]:
+                                    type: array
+                                    items:
+                                        type: string
+                                        format: binary
+                            required:
+                                - token
+                                - image[]
+            responses:
+                '303':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                properties:
+                                    success:
+                                        type: boolean
+                                    warnings:
+                                        type: array
+                                        items:
+                                            type: string
+                                required:
+                                    - success
+                '403':
+                    description: Forbidden
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HttpResponse'
+                '400':
+                    description: Bad Request
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HttpResponse'
+                '415':
+                    description: No Images Processed
+                    content:
+                        application/json:
+                            schema:
+                                properties:
+                                    success:
+                                        type: boolean
+                                    error:
+                                        type: string
+                                    warnings:
+                                        type: array
+                                        items:
+                                            type: string
+                                required:
+                                    - success
+                                    - error
+    /upload/api:
+        post:
+            summary: Upload image from URL using API token key as verification method
+            security:
+                -   ApiToken: [ ]
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                urls:
+                                    type: array
+                                    items:
+                                        type: string
+                            required:
+                                - urls
+                    application/x-www-form-urlencoded:
+                        encoding:
+                            urls[]:
+                                style: form
+                                explode: true
+                        schema:
+                            type: object
+                            properties:
+                                urls[]:
+                                    type: array
+                                    items:
+                                        type: string
+                            required:
+                                - urls[]
+            responses:
+                '201':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                properties:
+                                    success:
+                                        type: boolean
+                                    warnings:
+                                        type: array
+                                        items:
+                                            type: string
+                                required:
+                                    - success
+                '403':
+                    description: Forbidden
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HttpResponse'
+                '400':
+                    description: Bad Request
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HttpResponse'
+                '415':
+                    description: No Images Processed
+                    content:
+                        application/json:
+                            schema:
+                                properties:
+                                    success:
+                                        type: boolean
+                                    error:
+                                        type: string
+                                    warnings:
+                                        type: array
+                                        items:
+                                            type: string
+                                required:
+                                    - success
+                                    - error
+    /delete:
+        post:
+            summary: Delete one or more images
+            security:
+                -   ApiToken: [ ]
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                images:
+                                    type: array
+                                    items:
+                                        type: string
+                            required:
+                                - images
+                    application/x-www-form-urlencoded:
+                        encoding:
+                            images[]:
+                                style: form
+                                explode: true
+                        schema:
+                            type: object
+                            properties:
+                                images[]:
+                                    type: array
+                                    items:
+                                        type: string
+                            required:
+                                - images[]
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                properties:
+                                    success:
+                                        type: boolean
+                                    warnings:
+                                        type: array
+                                        items:
+                                            type: string
+                                required:
+                                    - success
+                '400':
+                    description: Bad Request
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HttpResponse'
+components:
+    schemas:
+        HttpResponse:
+            title: HttpResponse
+            type: object
+            properties:
+                success:
+                    type: boolean
+                error:
+                    type: string
+            required:
+                - success
+                - error
+        EncryptedToken:
+            title: EncryptedToken
+            type: object
+            properties:
+                mime:
+                    type: string
+                    description: Specific MIME-type from allowable range to restrict newly uploaded images
+                tvalid:
+                    type: integer
+                    description: Unix time this token is valid until
+                referer:
+                    type: string
+                    description: URI for redirection after upload
+            required:
+                - tvalid
+                - referer
+    securitySchemes:
+        ApiToken:
+            name: auth
+            type: apiKey
+            in: query

@@ -11,6 +11,7 @@ desktop.ini
 .project
 .phplint-cache
 .phpcs-cache
+gen
 
 # general extensions of files we dont want
 *.sql.gz

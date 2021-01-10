@@ -39,7 +39,7 @@ final class Main extends Base
 
             // serve
             $group->get(
-                '/{img:(?:[a-zA-Z0-9]{32}|[a-zA-Z0-9]{64}|[a-zA-Z0-9]{11})(?:-\d{2,3}x\d{2,3}(?:-crop)?)?\.[a-zA-Z]{3,4}}',
+                '/{image:(?:[a-zA-Z0-9]{32}|[a-zA-Z0-9]{64}|[a-zA-Z0-9]{11})(?:-\d{2,3}x\d{2,3}(?:-crop)?)?\.[a-zA-Z]{3,4}}',
                 ServeCtrl::class . ':serve'
             )->setName('serve');
 
@@ -49,13 +49,13 @@ final class Main extends Base
                     return $response->withRedirect('/error.jpg');
                 });
                 $group->get(
-                    '/{img:[a-zA-Z0-9]{32}(?:-\d{2,3}x\d{2,3}(?:-crop)?)?\.[a-zA-Z]{3,4}}',
+                    '/{image:[a-zA-Z0-9]{32}(?:-\d{2,3}x\d{2,3}(?:-crop)?)?\.[a-zA-Z]{3,4}}',
                     function (Request $request, Response $response, array $args) {
                         /** @var Container $this */
                         return $response->withStatus(301)->withRedirect(
                             $this->get(RouteParser::class)->relativeUrlFor(
                                 'serve',
-                                ['img' => $args['img']]
+                                ['image' => $args['image']]
                             )
                         );
                     }

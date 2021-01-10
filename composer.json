@@ -1,6 +1,6 @@
 {
   "name": "animebytes/mei-image-server",
-  "description": "Tentacles Image Server",
+  "description": "Mei Image Server",
   "type": "project",
   "license": "Unlicense",
   "scripts": {

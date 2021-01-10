@@ -53,25 +53,19 @@ final class DeleteCtrl extends BaseCtrl
             throw new HttpForbiddenException($request);
         }
 
-        try {
-            $imgs = json_decode($request->getParam('imgs', ''), true, 512, JSON_THROW_ON_ERROR);
-        } catch (Exception $e) {
-            Debugger::log($e, Debugger::EXCEPTION);
-            return $response->withStatus(400)->withJson(
-                ['success' => false, 'reason' => 'Unable to parse list of images']
-            );
-        }
-
-        $success = count($imgs);
-        if (!$success) {
+        if (!$images = $request->getParam('images')) {
             return $response->withStatus(400)->withJson(['success' => false, 'error' => 'No images to delete given']);
         }
+        if (!is_array($images)) {
+            $images = [$images];
+        }
 
-        foreach ($imgs as $img) {
-            $info = pathinfo($img);
+        $warnings = [];
+        foreach ($images as $image) {
+            $info = pathinfo($image);
             $fileEntity = $this->filesMap->getByFileName("{$info['filename']}.{$info['extension']}");
             if (!$fileEntity) {
-                $success--;
+                $warnings[] = "Image $image does not exist";
                 continue;
             }
 
@@ -79,14 +73,14 @@ final class DeleteCtrl extends BaseCtrl
                 $fileEntity->Protected--;
                 $this->filesMap->save($fileEntity);
 
-                $success--;
+                $warnings[] = "Image $image is protected ($fileEntity->Protected)";
                 continue;
             }
 
             try {
                 $this->filesMap->delete($fileEntity);
             } catch (Exception $e) {
-                $success--;
+                $warnings[] = "Encountered error while processing image $image";
                 Debugger::log($e, Debugger::EXCEPTION);
                 continue;
             }
@@ -102,7 +96,7 @@ final class DeleteCtrl extends BaseCtrl
 
             if ($this->config['cloudflare.enabled']) {
                 $urls = [
-                    $this->router->fullUrlFor($request->getUri(), 'serve', ['img' => $img])
+                    $this->router->fullUrlFor($request->getUri(), 'serve', ['image' => $image])
                 ];
                 foreach (ServeCtrl::$legacySizes as $resInfo) {
                     $filename = "{$info['filename']}-{$resInfo[0]}x{$resInfo[1]}";
@@ -110,12 +104,12 @@ final class DeleteCtrl extends BaseCtrl
                     $urls[] = $this->router->fullUrlFor(
                         $request->getUri(),
                         'serve',
-                        ['img' => "$filename.{$info['extension']}"]
+                        ['image' => "$filename.{$info['extension']}"]
                     );
                     $urls[] = $this->router->fullUrlFor(
                         $request->getUri(),
                         'serve',
-                        ['img' => "$filename-crop.{$info['extension']}"]
+                        ['image' => "$filename-crop.{$info['extension']}"]
                     );
                 }
 
@@ -146,7 +140,7 @@ final class DeleteCtrl extends BaseCtrl
                 $err = $curl->error();
                 if ($err !== '') {
                     Debugger::log(new ErrorException('Failed to clear CDN cache: ' . $err), DEBUGGER::ERROR);
-                    return $response->withStatus(200)->withJson(['success' => $success]);
+                    return $response->withStatus(200)->withJson(['success' => true, 'warnings' => $warnings]);
                 }
                 unset($curl);
 
@@ -179,7 +173,7 @@ final class DeleteCtrl extends BaseCtrl
             }
         }
 
-        return $response->withStatus(200)->withJson(['success' => $success]);
+        return $response->withStatus(200)->withJson(['success' => true, 'warnings' => $warnings]);
     }
 
     /**

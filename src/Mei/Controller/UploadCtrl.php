@@ -57,7 +57,7 @@ final class UploadCtrl extends BaseCtrl
         /**
          * Token specification:
          *  mime (optional): specific mime-type from allowable range to restrict newly uploaded images
-         *  tvalue (required): valid until
+         *  tvalid (required): valid until
          *  referer (required): url for redirection after upload
          *
          * Token might additionally contain additional arbitrary keys. Site owner can use the fact that on success
@@ -163,16 +163,16 @@ final class UploadCtrl extends BaseCtrl
      */
     public function api(Request $request, Response $response, array $args): Response
     {
-        $auth = $request->getParam('auth');
+        $auth = $request->getParam('auth', '');
         if (!hash_equals($auth, $this->config['api.auth_key'])) {
             throw new HttpForbiddenException($request);
         }
 
         $images = [];
         $errors = [];
-        $urls = $request->getParam('url');
+        $urls = $request->getParam('urls');
         if (is_string($urls)) {
-            $urls = [$urls]; // handle both url[] and url
+            $urls = [$urls];
         }
         if (empty($urls)) {
             return $response
@@ -247,7 +247,7 @@ final class UploadCtrl extends BaseCtrl
                 $images[] = $this->processImage($content);
             } catch (Exception $e) {
                 Debugger::log($e, Debugger::EXCEPTION);
-                $errors[] = "Encountered error while processing image {$url}";
+                $errors[] = "Encountered error while processing image $url";
             }
         }
 
