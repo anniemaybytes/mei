@@ -1,7 +1,6 @@
 openapi: 3.0.3
 info:
     title: Mei Image Server
-    description: Mei Image Server
     version: 1.0.0
 servers:
     -   url: 'https://mei.animebytes.local:7443'
@@ -10,6 +9,8 @@ paths:
     /upload/user:
         post:
             summary: Upload image from file using encrypted token verification method
+            tags:
+                - upload
             requestBody:
                 content:
                     multipart/form-data:
@@ -21,6 +22,7 @@ paths:
                                     description: Base64 URL-encoded representation of `EncryptedToken` object, encrypted with AES-256-CBC
                                 image[]:
                                     type: array
+                                    description: Image to upload
                                     items:
                                         type: string
                                         format: binary
@@ -33,23 +35,15 @@ paths:
                     content:
                         application/json:
                             schema:
-                                properties:
-                                    success:
-                                        type: boolean
-                                    warnings:
-                                        type: array
-                                        items:
-                                            type: string
-                                required:
-                                    - success
-                '403':
-                    description: Forbidden
+                                $ref: '#/components/schemas/HttpResponse'
+                '400':
+                    description: Empty request, unacceptable MIME restriction or invalid Referer
                     content:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/HttpResponse'
-                '400':
-                    description: Bad Request
+                '403':
+                    description: Invalid or expired token
                     content:
                         application/json:
                             schema:
@@ -59,21 +53,12 @@ paths:
                     content:
                         application/json:
                             schema:
-                                properties:
-                                    success:
-                                        type: boolean
-                                    error:
-                                        type: string
-                                    warnings:
-                                        type: array
-                                        items:
-                                            type: string
-                                required:
-                                    - success
-                                    - error
+                                $ref: '#/components/schemas/HttpResponse'
     /upload/api:
         post:
             summary: Upload image from URL using API token key as verification method
+            tags:
+                - upload
             security:
                 -   ApiToken: [ ]
             requestBody:
@@ -84,6 +69,7 @@ paths:
                             properties:
                                 urls:
                                     type: array
+                                    description: List of URLs pointing to images for upload
                                     items:
                                         type: string
                             required:
@@ -98,6 +84,7 @@ paths:
                             properties:
                                 urls[]:
                                     type: array
+                                    description: List of URLs pointing to images for upload
                                     items:
                                         type: string
                             required:
@@ -111,20 +98,28 @@ paths:
                                 properties:
                                     success:
                                         type: boolean
+                                        description: Whether action was succesful
+                                    images:
+                                        type: array
+                                        description: List of uploaded images
+                                        items:
+                                            type: string
                                     warnings:
                                         type: array
+                                        description: List of warnings encountered
                                         items:
                                             type: string
                                 required:
                                     - success
-                '403':
-                    description: Forbidden
+                                    - images
+                '400':
+                    description: Empty request (no images supplied)
                     content:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/HttpResponse'
-                '400':
-                    description: Bad Request
+                '403':
+                    description: Invalid API authentication
                     content:
                         application/json:
                             schema:
@@ -134,21 +129,12 @@ paths:
                     content:
                         application/json:
                             schema:
-                                properties:
-                                    success:
-                                        type: boolean
-                                    error:
-                                        type: string
-                                    warnings:
-                                        type: array
-                                        items:
-                                            type: string
-                                required:
-                                    - success
-                                    - error
+                                $ref: '#/components/schemas/HttpResponse'
     /delete:
         post:
             summary: Delete one or more images
+            tags:
+                - delete
             security:
                 -   ApiToken: [ ]
             requestBody:
@@ -156,6 +142,7 @@ paths:
                     application/json:
                         schema:
                             type: object
+                            description: List of images to remove
                             properties:
                                 images:
                                     type: array
@@ -173,6 +160,7 @@ paths:
                             properties:
                                 images[]:
                                     type: array
+                                    description: List of images to remove
                                     items:
                                         type: string
                             required:
@@ -183,17 +171,15 @@ paths:
                     content:
                         application/json:
                             schema:
-                                properties:
-                                    success:
-                                        type: boolean
-                                    warnings:
-                                        type: array
-                                        items:
-                                            type: string
-                                required:
-                                    - success
+                                $ref: '#/components/schemas/HttpResponse'
                 '400':
-                    description: Bad Request
+                    description: No images to delete given
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HttpResponse'
+                '403':
+                    description: Invalid API authentication
                     content:
                         application/json:
                             schema:
@@ -206,11 +192,17 @@ components:
             properties:
                 success:
                     type: boolean
+                    description: Whether action was succesful
+                warnings:
+                    type: array
+                    items:
+                        type: string
+                    description: List of warnings encountered
                 error:
                     type: string
+                    description: Message describing error cause
             required:
                 - success
-                - error
         EncryptedToken:
             title: EncryptedToken
             type: object
@@ -224,6 +216,7 @@ components:
                 referer:
                     type: string
                     description: URI for redirection after upload
+            additionalProperties: true
             required:
                 - tvalid
                 - referer
