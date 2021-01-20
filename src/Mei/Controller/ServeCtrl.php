@@ -108,10 +108,16 @@ final class ServeCtrl extends BaseCtrl
 
         $response = $response->withHeader('Content-Type', $metadata['mime']);
         $response = $response->withHeader('Content-Length', (string)strlen($bindata));
-        $response = $response->withHeader('Cache-Control', 'public, max-age=' . (strtotime('+30 days') - time()));
+        $response = $response->withHeader(
+            'Cache-Control',
+            'public, max-age=' . Time::epoch(Time::now()->add(Time::interval('1 month')))
+        );
         $response = $response->withHeader('ETag', '"' . $eTag . '"');
-        $response = $response->withHeader('Expires', date('r', strtotime('+30 days')));
-        $response = $response->withHeader('Last-Modified', date('r', $ts));
+        $response = $response->withHeader(
+            'Expires',
+            Time::rfc2822(Time::now()->add(Time::interval('1 month')))
+        );
+        $response = $response->withHeader('Last-Modified', Time::rfc2822(Time::fromEpoch($ts)));
 
         // does not match etag (might be empty array)
         if (@$request->getHeader('If-None-Match')[0] !== $eTag) {

@@ -104,6 +104,32 @@ final class Time
     }
 
     /**
+     * Converts the given time to an RFC2822 time string.
+     *
+     * RFC2822 format is Thu, 21 Dec 2000 16:01:07 +0000
+     *
+     * @param DateTime $t
+     *
+     * @return string
+     */
+    public static function rfc2822(DateTime $t): string
+    {
+        return $t->format('D, d M Y H:i:s O');
+    }
+
+    /**
+     * Converts the given time to an unix epoch time string.
+     *
+     * @param DateTime $t
+     *
+     * @return string
+     */
+    public static function epoch(DateTime $t): string
+    {
+        return $t->format('U');
+    }
+
+    /**
      * Creates an interval from the given time string. For example,
      *  interval('-1 day');
      *  interval('+1 year');
