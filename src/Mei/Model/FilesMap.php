@@ -14,29 +14,16 @@ namespace Mei\Model;
  */
 final class FilesMap extends Model
 {
-    /**
-     * @return string
-     */
     public function getTableName(): string
     {
         return 'files_map';
     }
 
-    /**
-     * @param string $key
-     *
-     * @return \Mei\Entity\FilesMap
-     */
     public function getByKey(string $key): ?\Mei\Entity\FilesMap
     {
         return $this->getById(['Key' => $key]);
     }
 
-    /**
-     * @param string $key
-     *
-     * @return \Mei\Entity\FilesMap
-     */
     public function getByFileName(string $key): ?\Mei\Entity\FilesMap
     {
         return $this->getById(['FileName' => $key]);

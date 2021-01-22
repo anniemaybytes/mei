@@ -15,16 +15,8 @@ final class Encryption
 {
     private const CIPHER = 'aes-256-cbc';
 
-    /**
-     * @var string
-     */
     protected string $encryptionKey;
 
-    /**
-     * Encryption constructor.
-     *
-     * @param array $config
-     */
     public function __construct(array $config)
     {
         $this->encryptionKey = md5($config['api.auth_key']);
@@ -60,11 +52,6 @@ final class Encryption
         return base64_encode($initVector . $cryptoStr);
     }
 
-    /**
-     * @param string|null $encryptedData
-     *
-     * @return string
-     */
     public function decrypt(?string $encryptedData): string
     {
         if (!is_string($encryptedData) || $encryptedData === '') {
@@ -87,19 +74,10 @@ final class Encryption
         return trim($decryptedData === false ? '' : $decryptedData);
     }
 
-    /**
-     * @param string $encryptedData
-     *
-     * @return string
-     */
     public function decryptString(string $encryptedData): string
     {
         $result = $this->decrypt($encryptedData);
-        $isUTF8 = preg_match('//u', $result);
-        if (!$isUTF8) {
-            return '';
-        }
-        return $result;
+        return preg_match('//u', $result) ? $result : '';
     }
 
     /**
@@ -113,11 +91,6 @@ final class Encryption
         return StringUtil::base64UrlEncode($this->encrypt($plainData));
     }
 
-    /**
-     * @param string $encryptedData
-     *
-     * @return string
-     */
     public function decryptUrl(string $encryptedData): string
     {
         return $this->decrypt(StringUtil::base64UrlDecode($encryptedData));

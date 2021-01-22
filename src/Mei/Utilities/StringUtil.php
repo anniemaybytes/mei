@@ -14,11 +14,6 @@ use SecurityLib\Strength;
  */
 final class StringUtil
 {
-    /**
-     * @param int $len
-     *
-     * @return string
-     */
     public static function generateRandomString(int $len = 32): string
     {
         $factory = new Factory();
@@ -26,11 +21,6 @@ final class StringUtil
         return $generator->generateString($len, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
     }
 
-    /**
-     * @param string|null $string
-     *
-     * @return string
-     */
     public static function base64UrlEncode(?string $string): string
     {
         if ($string === null) {
@@ -39,11 +29,6 @@ final class StringUtil
         return strtr(base64_encode($string), '+/', '-_');
     }
 
-    /**
-     * @param string $string
-     *
-     * @return string
-     */
     public static function base64UrlDecode(string $string): string
     {
         return base64_decode(strtr($string, '-_', '+/'));

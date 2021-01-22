@@ -317,7 +317,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
      * @return mixed
      * @throws Exception
      */
-    public function __get(string $attribute)
+    public function __get(string $attribute): mixed
     {
         if (!$this->__isset($attribute)) {
             return null;
@@ -333,7 +333,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
      *
      * @throws Exception
      */
-    public function __set(string $attribute, $value): void
+    public function __set(string $attribute, mixed $value): void
     {
         $attributes = self::getAttributes();
         // note that we can't use isset here - might be setting an attribute that

@@ -3,7 +3,7 @@ parameters:
     paths:
         - src
         - dispatch.php
-        - public/index.php
+        - public/bootstrap.php
     bootstrapFiles:
         - phpstan.bootstrap.php
     inferPrivatePropertyTypeFromConstructor: true

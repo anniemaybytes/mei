@@ -25,9 +25,9 @@ final class EntityHelper
      * @return array
      * @throws JsonException
      */
-    public static function objectToArray($d): array
+    public static function objectToArray(object|array $d): array
     {
-        return json_decode(json_encode($d, JSON_THROW_ON_ERROR, 512), true, 512, JSON_THROW_ON_ERROR);
+        return json_decode(json_encode($d, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -43,9 +43,9 @@ final class EntityHelper
     /**
      * @param string|null $imp
      *
-     * @return null|false|mixed - false if unserialize failed, null if $imp is known to be empty, otherwise unserialized data
+     * @return mixed - false if unserialize failed, null if $imp is known to be empty, otherwise unserialized data
      */
-    public static function safelyUnserialize(?string $imp)
+    public static function safelyUnserialize(?string $imp): mixed
     {
         if ($imp === null || $imp === '') {
             return null;

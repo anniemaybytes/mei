@@ -17,12 +17,6 @@ final class EntityAttributeMapper implements IAttributeMapper
     private array $defaultValues; // stored in db string form
     private array $changedAttributes;
 
-    /**
-     * EntityAttributeMapper constructor.
-     *
-     * @param array $attributeMap
-     * @param array $defaultValues
-     */
     public function __construct(array $attributeMap, array $defaultValues = [])
     {
         $this->attributeMap = $attributeMap;
@@ -30,13 +24,7 @@ final class EntityAttributeMapper implements IAttributeMapper
         $this->changedAttributes = [];
     }
 
-    /**
-     * @param ICacheable $cache
-     * @param string $attribute
-     *
-     * @return mixed
-     */
-    private function getAttributeValue(ICacheable $cache, string $attribute)
+    private function getAttributeValue(ICacheable $cache, string $attribute): mixed
     {
         $values = $cache->getRow();
         if (array_key_exists($attribute, $values)) {
@@ -50,15 +38,8 @@ final class EntityAttributeMapper implements IAttributeMapper
         throw new InvalidArgumentException("Tried to get attribute that hasn't been set");
     }
 
-    /**
-     * @param ICacheable $cache
-     * @param string $attribute
-     * @param mixed $value
-     *
-     * @return ICacheable
-     * @noinspection TypeUnsafeComparisonInspection
-     */
-    private function setAttributeValue(ICacheable $cache, string $attribute, $value): ICacheable
+    /** @noinspection TypeUnsafeComparisonInspection */
+    private function setAttributeValue(ICacheable $cache, string $attribute, mixed $value): ICacheable
     {
         $values = $cache->getRow();
         if (!array_key_exists($attribute, $values) || $value != $values[$attribute]) {
@@ -71,8 +52,7 @@ final class EntityAttributeMapper implements IAttributeMapper
         return $cache->setRow($values);
     }
 
-    /** {@inheritDoc} */
-    public function get(ICacheable $cache, string $attribute)
+    public function get(ICacheable $cache, string $attribute): mixed
     {
         if (!array_key_exists($attribute, $this->attributeMap)) {
             throw new InvalidArgumentException(
@@ -83,8 +63,7 @@ final class EntityAttributeMapper implements IAttributeMapper
         return $this->getAttributeValue($cache, $attribute);
     }
 
-    /** {@inheritDoc} */
-    public function set(ICacheable $cache, string $attribute, $value): ICacheable
+    public function set(ICacheable $cache, string $attribute, mixed $value): ICacheable
     {
         if (!array_key_exists($attribute, $this->attributeMap)) {
             throw new InvalidArgumentException("Tried to set unknown key name '$attribute'");
@@ -93,7 +72,6 @@ final class EntityAttributeMapper implements IAttributeMapper
         return $this->setAttributeValue($cache, $attribute, $value);
     }
 
-    /** {@inheritDoc} */
     public function isAttributeSet(ICacheable $cache, string $attribute): bool
     {
         $values = $cache->getRow();
@@ -108,7 +86,6 @@ final class EntityAttributeMapper implements IAttributeMapper
         return false;
     }
 
-    /** {@inheritDoc} */
     public function unsetAttribute(ICacheable $cache, string $attribute): ICacheable
     {
         $values = $cache->getRow();
@@ -150,7 +127,6 @@ final class EntityAttributeMapper implements IAttributeMapper
         return (count($this->changedAttributes) > 0);
     }
 
-    /** {@inheritDoc} */
     public function resetChangedAttributes(): IAttributeMapper
     {
         $this->changedAttributes = [];

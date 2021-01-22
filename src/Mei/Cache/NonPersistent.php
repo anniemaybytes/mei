@@ -15,36 +15,16 @@ use Tracy\Debugger;
  */
 final class NonPersistent implements IKeyStore
 {
-    /**
-     * @var array $inner
-     */
     private array $inner = [];
 
-    /**
-     * @var string $keyPrefix
-     */
     private string $keyPrefix;
 
-    /**
-     * @var bool $clearOnGet
-     */
     private bool $clearOnGet = false;
 
-    /**
-     * @var array $cacheHits
-     */
     private array $cacheHits = [];
 
-    /**
-     * @var float $time
-     */
     private float $time = 0;
 
-    /**
-     * NonPersistent constructor.
-     *
-     * @param string $keyPrefix
-     */
     public function __construct(string $keyPrefix)
     {
         $this->keyPrefix = $keyPrefix;
@@ -65,7 +45,7 @@ final class NonPersistent implements IKeyStore
     }
 
     /** {@inheritDoc} */
-    public function doGet(string $key)
+    public function doGet(string $key): mixed
     {
         $start = $this->startCall();
         $keyOld = $key;
@@ -92,20 +72,17 @@ final class NonPersistent implements IKeyStore
         return $res;
     }
 
-    /** {@inheritDoc} */
     public function getCacheHits(): array
     {
         return $this->cacheHits;
     }
 
-    /** {@inheritDoc} */
     public function getExecutionTime(): float
     {
         return $this->time;
     }
 
-    /** {@inheritDoc} */
-    public function doSet(string $key, $value, int $expiry = 10800): bool
+    public function doSet(string $key, mixed $value, int $time = 10800): bool
     {
         $start = $this->startCall();
         $key = $this->keyPrefix . $key;
@@ -116,7 +93,6 @@ final class NonPersistent implements IKeyStore
         return true;
     }
 
-    /** {@inheritDoc} */
     public function doDelete(string $key): bool
     {
         $start = $this->startCall();
@@ -128,8 +104,7 @@ final class NonPersistent implements IKeyStore
         return true;
     }
 
-    /** {@inheritDoc} */
-    public function doIncrement(string $key, int $n = 1, int $initial = 1, int $expiry = 0)
+    public function doIncrement(string $key, int $n = 1, int $initial = 1, int $expiry = 0): bool|int
     {
         $start = $this->startCall();
         $key = $this->keyPrefix . $key;
@@ -154,29 +129,21 @@ final class NonPersistent implements IKeyStore
         return $value;
     }
 
-    /** {@inheritDoc} */
     public function doTouch(string $key, int $expiry = 10800): bool
     {
         return true;
     }
 
-    /** {@inheritDoc} */
     public function getEntityCache(string $key, array $id = [], int $duration = 0): ICacheable
     {
         return new EntityCache($this, $key, $id, $duration);
     }
 
-    /**
-     * @return float
-     */
     private function startCall(): float
     {
         return microtime(true);
     }
 
-    /**
-     * @param float $start
-     */
     private function endCall(float $start): void
     {
         $this->time += (microtime(true) - $start) * 1000;
@@ -189,21 +156,16 @@ final class NonPersistent implements IKeyStore
         }
     }
 
-    /** {@inheritDoc} */
     public function getAllKeys(): array
     {
         return array_keys($this->inner);
     }
 
-    /** {@inheritDoc} */
     public function setClearOnGet(bool $val): void
     {
         $this->clearOnGet = $val;
     }
 
-    /**
-     * @return array
-     */
     public function getStats(): array
     {
         return ['count' => count($this->inner)];

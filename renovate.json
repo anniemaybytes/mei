@@ -11,10 +11,9 @@
     ]
   },
   "stabilityDays": 1,
-  "semanticCommits": false,
+  "semanticCommits": "disabled",
   "ignoreDeps": [
     "roave/security-advisories",
-    "robmorgan/phinx",
     "thecodingmachine/php"
   ],
   "lockFileMaintenance": {

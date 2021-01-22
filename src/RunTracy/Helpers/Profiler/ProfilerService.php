@@ -25,9 +25,6 @@ final class ProfilerService implements SingletonInterface
     public const TIME_LINE_INACTIVE = 'time_line_inactive'; // int [0 - 100] percentage
     public const TIME_LINE_AFTER = 'time_line_after'; // int [0 - 100] percentage
 
-    /**
-     * @var mixed[]
-     */
     private array $metaData = [];
 
     /**
@@ -40,14 +37,9 @@ final class ProfilerService implements SingletonInterface
         Profiler::setPostProcessor([$this, 'addProfile']);
     }
 
-    /**
-     * Initializes the service
-     *
-     * @return void
-     */
     public static function init(): void
     {
-        static::getInstance();
+        self::getInstance();
     }
 
     /**
@@ -71,33 +63,27 @@ final class ProfilerService implements SingletonInterface
         return $this->profiles;
     }
 
-    /**
-     * @param callable $callback
-     */
     public function iterateProfiles(callable $callback): void
     {
         $metaData = $this->getMetaData();
         foreach ($this->profiles as $profile) {
-            $profile->meta[static::TIME_LINE_BEFORE] = floor(
+            $profile->meta[self::TIME_LINE_BEFORE] = floor(
                 ($profile->meta[Profiler::START_TIME] - $metaData[self::META_TIME_ZERO])
                 / $metaData[self::META_TIME_TOTAL] * 100
             );
-            $profile->meta[static::TIME_LINE_ACTIVE] = floor(
+            $profile->meta[self::TIME_LINE_ACTIVE] = floor(
                 $profile->duration / $metaData[self::META_TIME_TOTAL] * 100
             );
-            $profile->meta[static::TIME_LINE_INACTIVE] = floor(
+            $profile->meta[self::TIME_LINE_INACTIVE] = floor(
                 ($profile->absoluteDuration - $profile->duration) / $metaData[self::META_TIME_TOTAL] * 100
             );
-            $profile->meta[static::TIME_LINE_AFTER] = 100 - $profile->meta[static::TIME_LINE_BEFORE] -
-                $profile->meta[static::TIME_LINE_ACTIVE] - $profile->meta[static::TIME_LINE_INACTIVE];
+            $profile->meta[self::TIME_LINE_AFTER] = 100 - $profile->meta[self::TIME_LINE_BEFORE] -
+                $profile->meta[self::TIME_LINE_ACTIVE] - $profile->meta[self::TIME_LINE_INACTIVE];
 
             $callback($profile, $metaData);
         }
     }
 
-    /**
-     * @return mixed[]
-     */
     private function getMetaData(): array
     {
         if (empty($this->metaData)) {
@@ -138,9 +124,6 @@ final class ProfilerService implements SingletonInterface
         return $this->metaData;
     }
 
-    /**
-     * @param callable $callback
-     */
     public function iterateMemoryTimeLine(callable $callback): void
     {
         $metaData = $this->getMetaData();

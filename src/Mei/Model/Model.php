@@ -18,35 +18,14 @@ use PDO;
  */
 abstract class Model implements IModel
 {
-    /**
-     * @var PDO
-     */
     protected PDO $db;
 
-    /**
-     * @var IKeyStore
-     */
     protected IKeyStore $cache;
 
-    /**
-     * callable that takes an ICacheable as argument and returns an entity
-     *
-     * @var IEntity
-     */
     protected $entityBuilder;
 
-    /**
-     * @var bool $inTransaction
-     */
     protected bool $inTransaction;
 
-    /**
-     * Model constructor.
-     *
-     * @param callable $entityBuilder
-     * @param IKeyStore $cache
-     * @param PDO $db
-     */
     public function __construct(PDO $db, IKeyStore $cache, callable $entityBuilder)
     {
         $this->entityBuilder = $entityBuilder;
@@ -55,36 +34,21 @@ abstract class Model implements IModel
         $this->db = $db;
     }
 
-    /**
-     * Return an instance of the database object.
-     *
-     * @return PDO
-     */
     protected function getDatabase(): PDO
     {
         return $this->db;
     }
 
-    /**
-     * Return an instance of the cache object.
-     *
-     * @return IKeyStore
-     */
     protected function getCache(): IKeyStore
     {
         return $this->cache;
     }
 
-    /**
-     * Get the name of the table where entities are stored.
-     *
-     * @return string
-     */
     abstract public function getTableName(): string;
 
-    // needs to be run immediately after a SELECT SQL_CALC_FOUND_ROWS statement
-
     /**
+     * needs to be run immediately after a SELECT SQL_CALC_FOUND_ROWS statement
+     *
      * @return int
      * @throws Exception
      */
@@ -94,11 +58,6 @@ abstract class Model implements IModel
         return (int)$q->fetchColumn();
     }
 
-    /**
-     * @param array|null $ids
-     *
-     * @return array
-     */
     public function getEntitiesFromIds(?array $ids): array
     {
         if (!$ids) {
@@ -352,39 +311,25 @@ abstract class Model implements IModel
         return $entity;
     }
 
-    /**
-     * @param array $id
-     *
-     * @return IEntity|mixed
-     */
-    public function deleteById(array $id)
+    public function deleteById(array $id): ?IEntity
     {
         return $this->delete($this->getById($id));
     }
 
-    /**
-     * @return bool|int
-     */
-    public function beginTransaction()
+    public function beginTransaction(): bool|int
     {
         // if we indicate we want to use a transaction, stop using cache
         $this->inTransaction = true;
         return $this->getDatabase()->beginTransaction();
     }
 
-    /**
-     * @return bool
-     */
     public function commit(): bool
     {
         $this->inTransaction = false;
         return $this->getDatabase()->commit();
     }
 
-    /**
-     * @return bool|int
-     */
-    public function rollBack()
+    public function rollBack(): bool|int
     {
         $this->inTransaction = false;
         return $this->getDatabase()->rollBack();

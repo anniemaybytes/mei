@@ -35,7 +35,7 @@ query_cache_type  = 1
 
 innodb_buffer_pool_size = 128M
 innodb_flush_method = O_DIRECT_NO_FSYNC
-# innodb_log_file_size should be equal to 1/4 of buffer pool size if possible.
+# should be equal to 1/4 of buffer pool size if possible.
 innodb_log_file_size = 32M
 innodb_thread_concurrency = 0
 innodb_flush_log_at_trx_commit = 0

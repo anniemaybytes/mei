@@ -13,44 +13,18 @@ use Mei\Entity\ICacheable;
  */
 final class EntityCache implements ICacheable
 {
-    /**
-     * @var string
-     */
     private string $key;
 
-    /**
-     * @var string
-     */
     private string $id;
 
-    /**
-     * @var int
-     */
     private int $duration;
 
-    /**
-     * @var bool
-     */
     private bool $dirty;
 
-    /**
-     * @var array
-     */
     private array $dbRow;
 
-    /**
-     * @var array
-     */
     private array $loadedValues;
 
-    /**
-     * EntityCache constructor.
-     *
-     * @param IKeyStore $cache
-     * @param string $key
-     * @param array $id
-     * @param int $duration
-     */
     public function __construct(IKeyStore $cache, string $key, array $id = [], int $duration = 10800)
     {
         $this->setKey($key);
@@ -108,7 +82,7 @@ final class EntityCache implements ICacheable
     }
 
     /** {@inheritDoc} */
-    public function getLoaded(string $key)
+    public function getLoaded(string $key): mixed
     {
         return $this->loadedValues[$key] ?? null;
     }
@@ -122,16 +96,13 @@ final class EntityCache implements ICacheable
     }
 
     /** {@inheritDoc} */
-    public function setLoaded(string $key, $value): ICacheable
+    public function setLoaded(string $key, mixed $value): ICacheable
     {
         $this->dirty = true;
         $this->loadedValues[$key] = $value;
         return $this;
     }
 
-    /**
-     * @param IKeyStore $cache
-     */
     private function loadCache(IKeyStore $cache): void
     {
         $key = $this->getCacheKey();
@@ -145,9 +116,6 @@ final class EntityCache implements ICacheable
         }
     }
 
-    /**
-     * @return string
-     */
     private function getCacheKey(): string
     {
         if (!$this->id) {
@@ -166,10 +134,10 @@ final class EntityCache implements ICacheable
     }
 
     /** {@inheritDoc} */
-    public function setData(array $cached): ICacheable
+    public function setData(array $cache): ICacheable
     {
-        $this->dbRow = $cached['dbRow'];
-        $this->loadedValues = $cached['loadedValues'];
+        $this->dbRow = $cache['dbRow'];
+        $this->loadedValues = $cache['loadedValues'];
         return $this;
     }
 

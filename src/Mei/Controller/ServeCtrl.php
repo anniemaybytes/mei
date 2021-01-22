@@ -13,6 +13,7 @@ use Mei\Utilities\Time;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use RuntimeException;
+use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
 
 /**
@@ -24,26 +25,10 @@ final class ServeCtrl extends BaseCtrl
 {
     /**
      * @Inject
-     * @var FilesMap
      */
     private FilesMap $filesMap;
 
-    /**
-     * @var array
-     */
     private static array $allowedResizeRange = ['min' => 80, 'max' => 450];
-
-    /**
-     * @var array
-     */
-    public static array $legacySizes = [
-        'small' => [80, 150],
-        'front' => [200, 150],
-        'imgupl' => [120, 100],
-        'coverflow' => [120, 100],
-        'imageupl' => [450, 450],
-        'groupimg' => [200, 400],
-    ];
 
     private const CSP_RULE = "default-src 'none'; style-src 'unsafe-inline'; sandbox";
 
@@ -63,23 +48,16 @@ final class ServeCtrl extends BaseCtrl
         }
 
         $hashInfo = explode('-', $pathInfo['filename']);
-        $info['name'] = $hashInfo[0];
-
-        if (array_key_exists($info['name'], self::$legacySizes) && count($hashInfo) === 2) {
-            $info['width'] = self::$legacySizes[$hashInfo[0]][0];
-            $info['height'] = self::$legacySizes[$hashInfo[0]][1];
-            $info['crop'] = false;
-            $info['name'] = $hashInfo[1];
-        } elseif (isset($hashInfo[1])) {
+        if (isset($hashInfo[1])) {
             $dimensions = explode('x', $hashInfo[1]);
             if (count($dimensions) === 2) {
-                $info['width'] = (int)$dimensions[0];
-                $info['height'] = (int)$dimensions[1];
+                $width = (int)$dimensions[0];
+                $height = (int)$dimensions[1];
             }
-            $info['crop'] = (isset($hashInfo[2]) && $hashInfo[2] === 'crop');
+            $crop = (isset($hashInfo[2]) && $hashInfo[2] === 'crop');
         }
 
-        if (!$fileEntity = $this->filesMap->getByFileName($info['name'] . '.' . $pathInfo['extension'])) {
+        if (!$fileEntity = $this->filesMap->getByFileName($hashInfo[0] . '.' . $pathInfo['extension'])) {
             throw new HttpNotFoundException($request, 'Image Not Found');
         }
 
@@ -87,13 +65,16 @@ final class ServeCtrl extends BaseCtrl
         $metadata = ImageUtilities::getImageInfo($bindata);
 
         // resize if necessary
-        if (
-            isset($info['width']) &&
-            min([$info['width'], $info['height']]) >= self::$allowedResizeRange['min'] &&
-            max([$info['width'], $info['height']]) <= self::$allowedResizeRange['max']
-        ) {
+        if (isset($width, $height)) {
+            if (
+                min([$width, $height]) < self::$allowedResizeRange['min'] &&
+                max([$width, $height]) > self::$allowedResizeRange['max']
+            ) {
+                throw new HttpBadRequestException($request);
+            }
+
             $image = new ImagickUtility($bindata);
-            $bindata = $image->resize($info['width'], $info['height'], $info['crop'])->getImagesBlob();
+            $bindata = $image->resize($width, $height, $crop ?? false)->getImagesBlob();
             /*
              * To avoid \Imagick object taking unnecessary memory while streaming, we destroy it here after we
              * fetch blob of image that we need.
@@ -121,7 +102,7 @@ final class ServeCtrl extends BaseCtrl
 
         // does not match etag (might be empty array)
         if (@$request->getHeader('If-None-Match')[0] !== $eTag) {
-            if (!isset($info['width'])) {
+            if (!isset($width)) {
                 // if no resize is taking place we can just ask nginx to stream file for us
                 $response = $response->withHeader(
                     'Content-Security-Policy',
@@ -143,11 +124,6 @@ final class ServeCtrl extends BaseCtrl
         );
     }
 
-    /**
-     * @param string $filename
-     *
-     * @return string
-     */
     private static function getImageFromPath(string $filename): string
     {
         $file = ImageUtilities::getSavePath($filename);

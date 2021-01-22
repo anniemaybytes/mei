@@ -29,19 +29,14 @@ final class UploadCtrl extends BaseCtrl
 {
     /**
      * @Inject
-     * @var FilesMap
      */
     private FilesMap $filesMap;
 
     /**
      * @Inject
-     * @var Encryption
      */
     private Encryption $encryption;
 
-    /**
-     * @var array
-     */
     private static array $allowedUrlScheme = ['http', 'https'];
 
     /**
@@ -164,7 +159,7 @@ final class UploadCtrl extends BaseCtrl
     public function api(Request $request, Response $response, array $args): Response
     {
         $auth = $request->getParam('auth', '');
-        if (!hash_equals($auth, $this->config['api.auth_key'])) {
+        if (!hash_equals($auth, $this->config['api.auth_key'] ?? '')) {
             throw new HttpForbiddenException($request);
         }
 
@@ -288,7 +283,7 @@ final class UploadCtrl extends BaseCtrl
             new ImagickUtility($bindata);
 
             // strip EXIF is requested
-            if ($this->config['app.strip_exif']) {
+            if ($this->config['app.strip_exif'] ?? false) {
                 $image = new ImagickUtility($bindata);
                 $bindata = $image->stripExif()->getImagesBlob();
             }
@@ -298,18 +293,18 @@ final class UploadCtrl extends BaseCtrl
         }
 
         // generate new image entry in database and associate it with file on disk
-        $filename = StringUtil::generateRandomString($this->config['images.name_len']) . ".{$metadata['extension']}";
+        $name = StringUtil::generateRandomString($this->config['images.name_len'] ?? 11);
         $newImage = $this->filesMap->createEntity(
             [
                 'Key' => $key,
-                'FileName' => $filename,
+                'FileName' => "$name.{$metadata['extension']}",
                 'Protected' => $protected,
                 'UploadTime' => Time::now()
             ]
         );
         $this->filesMap->save($newImage);
 
-        return $filename;
+        return "$name.{$metadata['extension']}";
     }
 
     /**

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Mei\PDO;
 
-use BadFunctionCallException;
 use PDO;
 use PDOException;
+use PDOStatement;
 use Tracy\Debugger;
 
 /**
@@ -119,46 +119,27 @@ final class PDOWrapper extends PDO
         return $res;
     }
 
-    /** {@inheritDoc} */
-    public function query($statement, $type = null, $type_arg = null, $ctorarg = [])
+    /**
+     * @inheritDoc
+     * @noinspection PhpHierarchyChecksInspection
+     * @noinspection PhpParameterNameChangedDuringInheritanceInspection
+     */
+    public function query(string $query, ?int $fetchMode = null, mixed ...$fetchModeArgs): bool|PDOStatement
     {
         $start = microtime(true);
 
-        $set = [$type, $type_arg, $ctorarg];
-        $n = 0;
-        foreach ($set as $elem) {
-            if ($elem === null) {
-                break;
-            }
-            $n++;
-        }
+        $res = parent::query(...func_get_args());
 
-        switch ($n) {
-            case 0:
-                $res = parent::query($statement);
-                break;
-            case 1:
-                $res = parent::query($statement, $type);
-                break;
-            case 2:
-                $res = parent::query($statement, $type, $type_arg);
-                break;
-            case 3:
-                $res = parent::query($statement, $type, $type_arg, $ctorarg);
-                break;
-            default:
-                throw new BadFunctionCallException(
-                    "PDOInstrumentationWrapper can't handle query with " . $n . ' additional arguments'
-                );
-        }
-
-        $this->addLog($statement, microtime(true) - $start);
+        $this->addLog($query, microtime(true) - $start);
 
         return $res;
     }
 
-    /** {@inheritDoc} */
-    public function exec($statement, int $retries = 3)
+    /**
+     * @inheritDoc
+     * @noinspection PhpHierarchyChecksInspection
+     */
+    public function exec(string $statement, int $retries = 3): bool|int
     {
         $start = microtime(true);
 

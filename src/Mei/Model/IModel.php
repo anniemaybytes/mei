@@ -70,10 +70,5 @@ interface IModel
      */
     public function delete(?IEntity $entity): ?IEntity;
 
-    /**
-     * @param array $id
-     *
-     * @return mixed
-     */
-    public function deleteById(array $id);
+    public function deleteById(array $id): mixed;
 }

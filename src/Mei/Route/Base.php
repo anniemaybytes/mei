@@ -13,16 +13,8 @@ use Slim\App;
  */
 abstract class Base
 {
-    /**
-     * @var App
-     */
     protected App $app;
 
-    /**
-     * Base constructor.
-     *
-     * @param App $app
-     */
     public function __construct(App $app)
     {
         $this->app = $app;

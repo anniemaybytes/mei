@@ -7,6 +7,7 @@ namespace Mei\Controller;
 use DI\Container;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Exception\HttpInternalServerErrorException;
 use Throwable;
 use Tracy\Debugger;
 
@@ -17,16 +18,8 @@ use Tracy\Debugger;
  */
 final class FatalErrorCtrl
 {
-    /**
-     * @var int
-     */
     private int $obLevel;
 
-    /**
-     * FatalErrorCtrl constructor.
-     *
-     * @param Container $di
-     */
     public function __construct(Container $di)
     {
         $this->obLevel = $di->get('obLevel');
@@ -66,6 +59,8 @@ final class FatalErrorCtrl
 
         return $response
             ->withStatus(500)
-            ->withJson(['success' => false, 'error' => 'Interval Server Error']);
+            ->withJson(
+                ['success' => false, 'error' => (new HttpInternalServerErrorException($request))->getDescription()]
+            );
     }
 }

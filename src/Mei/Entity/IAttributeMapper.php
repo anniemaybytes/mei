@@ -9,37 +9,12 @@ namespace Mei\Entity;
  */
 interface IAttributeMapper
 {
-    /**
-     * @param ICacheable $cache
-     * @param string $attribute
-     *
-     * @return mixed
-     */
-    public function get(ICacheable $cache, string $attribute);
+    public function get(ICacheable $cache, string $attribute): mixed;
 
-    /**
-     * @param ICacheable $cache
-     * @param string $attribute
-     * @param mixed $value
-     *
-     * @return ICacheable
-     */
-    public function set(ICacheable $cache, string $attribute, $value): ICacheable;
+    public function set(ICacheable $cache, string $attribute, mixed $value): ICacheable;
 
-    /**
-     * @param ICacheable $cache
-     * @param string $attribute
-     *
-     * @return bool
-     */
     public function isAttributeSet(ICacheable $cache, string $attribute): bool;
 
-    /**
-     * @param ICacheable $cache
-     * @param string $attribute
-     *
-     * @return ICacheable
-     */
     public function unsetAttribute(ICacheable $cache, string $attribute): ICacheable;
 
     /**
@@ -69,8 +44,5 @@ interface IAttributeMapper
      */
     public function hasChanged(ICacheable $cache): bool;
 
-    /**
-     * @return self
-     */
     public function resetChangedAttributes(): IAttributeMapper;
 }

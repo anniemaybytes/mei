@@ -18,9 +18,9 @@ use Slim\Routing\RouteParser;
  *
  * @package Mei\Route
  */
-final class Main extends Base
+final class Main extends Base /** @formatter:off */
 {
-    protected function addRoutes(): void  /** @formatter:off */
+    protected function addRoutes(): void
     {
         $app = $this->app;
 
@@ -63,5 +63,4 @@ final class Main extends Base
             });
         });
     }
-    /** @formatter:on */
 }

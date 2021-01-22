@@ -11,9 +11,6 @@ namespace RunTracy\Helpers\Profiler;
  */
 final class Profiler extends AdvancedProfiler
 {
-    /**
-     * @inheritdoc
-     */
     public static function enable(bool $realUsage = false): void
     {
         ProfilerService::init();

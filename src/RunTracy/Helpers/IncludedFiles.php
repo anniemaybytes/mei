@@ -13,14 +13,8 @@ use Tracy\IBarPanel;
  */
 final class IncludedFiles implements IBarPanel
 {
-    /**
-     * @var string
-     */
     private string $icon = '';
 
-    /**
-     * @return string
-     */
     public function getTab(): string
     {
         $this->icon = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" width="16px" ' .
@@ -46,9 +40,6 @@ final class IncludedFiles implements IBarPanel
         </span>';
     }
 
-    /**
-     * @return string
-     */
     public function getPanel(): string
     {
         $files = get_included_files();
@@ -70,17 +61,11 @@ final class IncludedFiles implements IBarPanel
         </div>';
     }
 
-    /**
-     * @return string
-     */
     protected function getHeader(): string
     {
         return '<thead><tr><th><b>Count</b></th><th>File</th></tr></thead>';
     }
 
-    /**
-     * @return string
-     */
     protected function getBaseRow(): string
     {
         return '<tr><td>%s</td><td>%s</td></tr>';

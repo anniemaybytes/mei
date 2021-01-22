@@ -25,13 +25,11 @@ final class DeleteCtrl extends BaseCtrl
 {
     /**
      * @Inject
-     * @var RouteParser
      */
     private RouteParser $router;
 
     /**
      * @Inject
-     * @var FilesMap
      */
     private FilesMap $filesMap;
 
@@ -49,7 +47,7 @@ final class DeleteCtrl extends BaseCtrl
         ignore_user_abort(true);
 
         $auth = $request->getParam('auth', '');
-        if (!hash_equals($auth, $this->config['api.auth_key'])) {
+        if (!hash_equals($auth, $this->config['api.auth_key'] ?? '')) {
             throw new HttpForbiddenException($request);
         }
 
@@ -61,9 +59,13 @@ final class DeleteCtrl extends BaseCtrl
         }
 
         $warnings = [];
+        $urls = [];
         foreach ($images as $image) {
-            $info = pathinfo($image);
-            $fileEntity = $this->filesMap->getByFileName("{$info['filename']}.{$info['extension']}");
+            if (!is_string($image) || $image === '') {
+                continue;
+            }
+
+            $fileEntity = $this->filesMap->getByFileName($image);
             if (!$fileEntity) {
                 $warnings[] = "Image $image does not exist";
                 continue;
@@ -94,93 +96,71 @@ final class DeleteCtrl extends BaseCtrl
                 Debugger::log($e, Debugger::EXCEPTION);
             }
 
-            if ($this->config['cloudflare.enabled']) {
-                $urls = [
-                    $this->router->fullUrlFor($request->getUri(), 'serve', ['image' => $image])
-                ];
-                foreach (ServeCtrl::$legacySizes as $resInfo) {
-                    $filename = "{$info['filename']}-{$resInfo[0]}x{$resInfo[1]}";
+            $urls[] = $this->router->fullUrlFor($request->getUri(), 'serve', ['image' => $image]);
+        }
 
-                    $urls[] = $this->router->fullUrlFor(
-                        $request->getUri(),
-                        'serve',
-                        ['image' => "$filename.{$info['extension']}"]
-                    );
-                    $urls[] = $this->router->fullUrlFor(
-                        $request->getUri(),
-                        'serve',
-                        ['image' => "$filename-crop.{$info['extension']}"]
-                    );
-                }
+        if ($this->config['cloudflare.enabled'] ?? false) {
+            $curl = new Curl(
+                "https://api.cloudflare.com/client/v4/zones/{$this->config['cloudflare.zone']}/purge_cache"
+            );
+            $curl->setoptArray(
+                [
+                    CURLOPT_ENCODING => 'UTF-8',
+                    CURLOPT_USERAGENT => ImageUtilities::USER_AGENT,
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_POST => true,
+                    CURLOPT_FOLLOWLOCATION => false,
+                    CURLOPT_HEADER => false,
+                    CURLOPT_VERBOSE => false,
+                    CURLOPT_SSL_VERIFYPEER => true,
+                    CURLOPT_SSL_VERIFYHOST => 2,
+                    CURLOPT_HTTPHEADER => [
+                        'Host: api.cloudflare.com',
+                        "Authorization: Bearer {$this->config['cloudflare.api']}",
+                        'Content-Type: application/json'
+                    ],
+                    CURLOPT_CUSTOMREQUEST => 'DELETE',
+                    CURLOPT_POSTFIELDS => json_encode(['files' => $urls], JSON_THROW_ON_ERROR)
+                ]
+            );
+            $result = $curl->exec();
+            if ($curl->error() !== '') {
+                Debugger::log(new ErrorException('Failed to clear CDN cache: ' . $curl->error()), DEBUGGER::ERROR);
+                return $response->withStatus(200)->withJson(['success' => true, 'warnings' => $warnings]);
+            }
+            unset($curl);
 
-                $curl = new Curl(
-                    "https://api.cloudflare.com/client/v4/zones/{$this->config['cloudflare.zone']}/purge_cache"
+            try {
+                // will most likely fail if api is down as it would return html error page instead
+                $result = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
+            } catch (JsonException $e) {
+                Debugger::log(
+                    new ErrorException(
+                        'Failed to clear CDN cache',
+                        0,
+                        1,
+                        __FILE__,
+                        __LINE__,
+                        $e
+                    ),
+                    DEBUGGER::ERROR
                 );
-                $curl->setoptArray(
-                    [
-                        CURLOPT_ENCODING => 'UTF-8',
-                        CURLOPT_USERAGENT => ImageUtilities::USER_AGENT,
-                        CURLOPT_RETURNTRANSFER => true,
-                        CURLOPT_POST => true,
-                        CURLOPT_FOLLOWLOCATION => false,
-                        CURLOPT_HEADER => false,
-                        CURLOPT_VERBOSE => false,
-                        CURLOPT_SSL_VERIFYPEER => true,
-                        CURLOPT_SSL_VERIFYHOST => 2,
-                        CURLOPT_HTTPHEADER => [
-                            'Host: api.cloudflare.com',
-                            "Authorization: Bearer {$this->config['cloudflare.api']}",
-                            'Content-Type: application/json'
-                        ],
-                        CURLOPT_CUSTOMREQUEST => 'DELETE',
-                        CURLOPT_POSTFIELDS => json_encode(['files' => $urls], JSON_THROW_ON_ERROR)
-                    ]
-                );
-                $result = $curl->exec();
-                $err = $curl->error();
-                if ($err !== '') {
-                    Debugger::log(new ErrorException('Failed to clear CDN cache: ' . $err), DEBUGGER::ERROR);
-                    return $response->withStatus(200)->withJson(['success' => true, 'warnings' => $warnings]);
-                }
-                unset($curl);
+            }
 
+            if (!@$result['success']) {
                 try {
-                    // will most likely fail if api is down as it would return html error page instead
-                    $result = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
+                    $err = json_encode($result['errors'], JSON_THROW_ON_ERROR);
                 } catch (JsonException $e) {
-                    Debugger::log(
-                        new ErrorException(
-                            'Failed to clear CDN cache',
-                            0,
-                            1,
-                            __FILE__,
-                            __LINE__,
-                            $e
-                        ),
-                        DEBUGGER::ERROR
-                    );
+                    Debugger::log($e, DEBUGGER::WARNING);
+                    $err = '(unparsable error)';
                 }
-
-                if (!@$result['success']) {
-                    try {
-                        $err = json_encode($result['errors'], JSON_THROW_ON_ERROR);
-                    } catch (JsonException $e) {
-                        Debugger::log($e, DEBUGGER::WARNING);
-                        $err = '(unparsable error)';
-                    }
-                    Debugger::log(new ErrorException('Failed to clear CDN cache: ' . $err), DEBUGGER::ERROR);
-                }
+                Debugger::log(new ErrorException("Failed to clear CDN cache: $err"), DEBUGGER::ERROR);
             }
         }
 
         return $response->withStatus(200)->withJson(['success' => true, 'warnings' => $warnings]);
     }
 
-    /**
-     * @param string $filename
-     *
-     * @return bool
-     */
     private static function deleteImage(string $filename): bool
     {
         return unlink(ImageUtilities::getSavePath($filename));

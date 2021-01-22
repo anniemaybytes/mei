@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mei\Utilities;
 
+use CurlHandle;
 use Mei\Dispatcher;
 
 use function curl_close;
@@ -21,21 +22,10 @@ use function curl_setopt_array;
  */
 final class Curl
 {
-    /**
-     * @var array
-     */
     private array $config;
 
-    /**
-     * @var null|resource $curl
-     */
-    private $curl;
+    private ?CurlHandle $curl;
 
-    /**
-     * Curl constructor.
-     *
-     * @param string|null $url
-     */
     public function __construct(?string $url = null)
     {
         $this->config = Dispatcher::config();
@@ -45,6 +35,7 @@ final class Curl
         } else {
             $this->curl = curl_init($url);
         }
+        curl_setopt_array($this->curl, [CURLOPT_RETURNTRANSFER => true]);
     }
 
     public function __destruct()
@@ -52,43 +43,22 @@ final class Curl
         curl_close($this->curl);
     }
 
-    /**
-     * @param int $option
-     * @param mixed $value
-     *
-     * @return bool
-     */
-    public function setopt(int $option, $value): bool
+    public function setopt(int $option, mixed $value): bool
     {
         return curl_setopt($this->curl, $option, $value);
     }
 
-    /**
-     * @param int $option
-     *
-     * @return mixed
-     */
-    public function getInfo(int $option)
+    public function getInfo(int $option): mixed
     {
         return curl_getinfo($this->curl, $option);
     }
 
-    /**
-     * @param array $options
-     *
-     * @return bool
-     */
     public function setoptArray(array $options): bool
     {
         return curl_setopt_array($this->curl, $options);
     }
 
-    /**
-     * @param bool $proxyOverride
-     *
-     * @return bool|string
-     */
-    public function exec(bool $proxyOverride = false)
+    public function exec(bool $proxyOverride = false): bool|string
     {
         if (!$proxyOverride) { // override proxy
             $this->setopt(
@@ -96,14 +66,10 @@ final class Curl
                 ($this->config['proxy'] ?? null)
             );
         }
-        $this->setopt(CURLOPT_TIMEOUT, $this->config['timeout']);
 
         return curl_exec($this->curl);
     }
 
-    /**
-     * @return string
-     */
     public function error(): string
     {
         return curl_error($this->curl);

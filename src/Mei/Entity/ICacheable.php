@@ -7,9 +7,9 @@ namespace Mei\Entity;
 use Mei\Cache\IKeyStore;
 
 /**
+ * Interface ICacheable
  *
- * A cacheable is used to store an entity's data and related data
- *
+ * @package Mei\Entity
  */
 interface ICacheable
 {
@@ -36,7 +36,7 @@ interface ICacheable
      *
      * @return mixed
      */
-    public function getLoaded(string $key);
+    public function getLoaded(string $key): mixed;
 
     /**
      * Set the value stored against $key to $value
@@ -46,7 +46,7 @@ interface ICacheable
      *
      * @return self
      */
-    public function setLoaded(string $key, $value): ICacheable;
+    public function setLoaded(string $key, mixed $value): ICacheable;
 
     /**
      * Set the key under which similar entries are stored

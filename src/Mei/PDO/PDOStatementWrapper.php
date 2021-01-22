@@ -15,55 +15,48 @@ use PDOStatement;
  */
 final class PDOStatementWrapper extends PDOStatement
 {
-    /**
-     * @var PDOWrapper
-     */
-    private PDOWrapper $pdo;
-
-    /**
-     * @var array
-     */
+    private PDOWrapper $PDO;
     private array $bindings;
 
-    /**
-     * PDOStatementWrapper constructor.
-     *
-     * @param PDOWrapper $pdo
-     */
-    protected function __construct(PDOWrapper $pdo)
+    protected function __construct(PDOWrapper $PDO)
     {
-        $this->pdo = $pdo;
+        $this->PDO = $PDO;
         $this->bindings = [];
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @inheritDoc
+     * @noinspection ReferencingObjectsInspection
+     * @noinspection PhpHierarchyChecksInspection
+     * @noinspection PhpParameterNameChangedDuringInheritanceInspection
+     * @noinspection PhpParameterByRefIsNotUsedAsReferenceInspection
+     */
     public function bindParam(
-        $parameter,
-        &$variable,
-        $data_type = PDO::PARAM_STR,
-        $length = null,
-        $driver_options = null
+        mixed $param,
+        mixed &$var,
+        int $type = PDO::PARAM_STR,
+        int $length = null,
+        mixed $options = null
     ): bool {
-        $this->bindings[$parameter] = $variable;
+        $this->bindings[$param] = $var;
 
-        if ($length && $driver_options) {
-            return parent::bindParam($parameter, $variable, $data_type, $length, $driver_options);
-        }
-        if ($length && !$driver_options) {
-            return parent::bindParam($parameter, $variable, $data_type, $length);
-        }
-        return parent::bindParam($parameter, $variable, $data_type);
+        return parent::bindParam(...func_get_args());
     }
 
-    /** {@inheritDoc} */
-    public function bindValue($parameter, $value, $data_type = PDO::PARAM_STR): bool
+    /**
+     * @inheritDoc
+     * @noinspection PhpHierarchyChecksInspection
+     */
+    public function bindValue(mixed $param, mixed $value, int $type = PDO::PARAM_STR): bool
     {
-        $this->bindings[$parameter] = $value;
-        return parent::bindValue($parameter, $value, $data_type);
+        $this->bindings[$param] = $value;
+        return parent::bindValue(...func_get_args());
     }
 
-    /** {@inheritDoc} */
-    public function execute($params = null, int $retries = 3): bool
+    /**
+     * @inheritDoc
+     */
+    public function execute(array $params = null, int $retries = 3): bool
     {
         if (is_array($params)) {
             $this->bindings = $params;
@@ -89,22 +82,16 @@ final class PDOStatementWrapper extends PDOStatement
             return $this->execute($params, $retries - 1);
         }
 
-        $this->pdo->addLog($statement, microtime(true) - $start);
+        $this->PDO->addLog($statement, microtime(true) - $start);
 
         return $out;
     }
 
-    /**
-     * @param array $bindings
-     * @param string $query
-     *
-     * @return mixed
-     */
-    private function addValuesToQuery(array $bindings, string $query)
+    private function addValuesToQuery(array $bindings, string $query): ?string
     {
         $indexed = ($bindings === array_values($bindings));
         foreach ($bindings as $param => $value) {
-            $value = (is_numeric($value) || $value === null) ? $value : $this->pdo->quote($value);
+            $value = (is_numeric($value) || $value === null) ? $value : $this->PDO->quote($value);
             $value = $value ?? 'null';
             if ($indexed) {
                 $query = preg_replace('/\?/', $value, $query, 1);

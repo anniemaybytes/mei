@@ -20,42 +20,14 @@ final class Profile implements JsonSerializable
     private const ABSOLUTE_MEMORY_USAGE_CHANGE = 'absolute_memory_usage_change';
     private const MEMORY_USAGE_CHANGE = 'memory_usage_change';
 
-    /**
-     * @var array
-     */
     public array $meta = [];
 
-    /**
-     * Absolute duration in seconds
-     *
-     * @var float
-     */
     public float $absoluteDuration;
-
-    /**
-     * Duration in seconds
-     *
-     * @var float
-     */
     public float $duration;
 
-    /**
-     * Absolute memory usage change in bytes
-     *
-     * @var int
-     */
     public int $absoluteMemoryUsageChange;
-
-    /**
-     * Memory usage change in bytes
-     *
-     * @var int
-     */
     public int $memoryUsageChange;
 
-    /**
-     * @inheritdoc
-     */
     public function jsonSerialize(): array
     {
         return array_merge(

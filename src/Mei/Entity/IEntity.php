@@ -107,11 +107,11 @@ interface IEntity
     /**
      * Reset the entity state, for example after the entity is saved
      *
-     * @param ICacheable $cacheable
+     * @param ICacheable $cache
      *
      * @return self
      */
-    public function reset(ICacheable $cacheable): IEntity;
+    public function reset(ICacheable $cache): IEntity;
 
     /**
      * Get the value for the given key, generating it if needed

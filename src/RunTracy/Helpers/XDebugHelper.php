@@ -13,32 +13,23 @@ use Tracy\IBarPanel;
  */
 final class XDebugHelper implements IBarPanel
 {
-    /**
-     * @var string
-     */
-    protected string $ideKey;
+    protected string $triggerValue;
 
     /**
      * XDebugHelper constructor.
      *
-     * @param string $ideKey
+     * @param string $triggerValue value of xdebug.trigger_value
      */
-    public function __construct(string $ideKey)
+    public function __construct(string $triggerValue)
     {
-        $this->ideKey = $ideKey;
+        $this->triggerValue = $triggerValue;
     }
 
-    /**
-     * @return string
-     */
     public function getPanel(): string
     {
         return '';
     }
 
-    /**
-     * @return string
-     */
     public function getTab(): string
     {
         ob_start();

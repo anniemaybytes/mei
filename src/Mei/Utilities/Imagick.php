@@ -13,9 +13,6 @@ use ImagickException;
  */
 final class Imagick
 {
-    /**
-     * @var \Imagick
-     */
     private \Imagick $image;
 
     /**
@@ -51,9 +48,6 @@ final class Imagick
         return $this->image->getImagesBlob();
     }
 
-    /**
-     * @return self
-     */
     public function stripExif(): self
     {
         $profiles = $this->image->getImageProfiles('icc', true);

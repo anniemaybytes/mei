@@ -24,9 +24,6 @@ class SimpleProfiler
     public const TIME_OFFSET = 'time_offset'; // float time offset in seconds
     public const MEMORY_USAGE_OFFSET = 'memory_usage_offset'; // int amount of memory usage offset in bytes
 
-    /**
-     * @var bool
-     */
     protected static bool $enabled = false;
 
     /**
@@ -34,57 +31,30 @@ class SimpleProfiler
      */
     protected static array $stack = [];
 
-    /**
-     * memory_get_usage
-     *
-     * @var bool
-     */
     protected static bool $realUsage = false;
 
-    /**
-     * Enable profiler
-     *
-     * @param bool $realUsage
-     */
     public static function enable(bool $realUsage = false): void
     {
         static::$enabled = true;
         static::$realUsage = $realUsage ? true : false;
     }
 
-    /**
-     * Disable profiler
-     */
     public static function disable(): void
     {
         static::$enabled = false;
     }
 
-    /**
-     * @return bool true if profiler is enabled, otherwise false
-     */
     public static function isEnabled(): bool
     {
         return static::$enabled;
     }
 
-    /**
-     * @return bool true if use realUsage memory, , otherwise false
-     */
     public static function isMemRealUsage(): bool
     {
         return static::$realUsage;
     }
 
-    /**
-     * Start profiling
-     *
-     * @param string|null $labelOrFormat
-     * @param mixed $args [optional]
-     *
-     * @return bool true on success or false on failure
-     */
-    public static function start(?string $labelOrFormat = null, $args = null): bool
+    public static function start(?string $labelOrFormat = null, mixed $args = null): bool
     {
         if (static::$enabled) {
             if ($args === null) {
@@ -114,15 +84,7 @@ class SimpleProfiler
         return false;
     }
 
-    /**
-     * Finish profiling and get result
-     *
-     * @param string|null $labelOrFormat
-     * @param mixed $args [optional]
-     *
-     * @return bool|Profile profile on success or false on failure
-     */
-    public static function finish(?string $labelOrFormat = null, $args = null)
+    public static function finish(?string $labelOrFormat = null, mixed $args = null): Profile|bool
     {
         if (static::$enabled) {
             $now = microtime(true);
@@ -139,7 +101,6 @@ class SimpleProfiler
                 $label = sprintf(...func_get_args());
             }
 
-            /** @var Profile $profile */
             $profile = array_pop(static::$stack);
             $profile->meta[self::FINISH_LABEL] = $label;
             $profile->meta[self::FINISH_TIME] = $now;

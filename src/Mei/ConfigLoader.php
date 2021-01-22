@@ -13,13 +13,6 @@ use RuntimeException;
  */
 final class ConfigLoader
 {
-    /**
-     * @param array $array
-     * @param string $prefix
-     * @param bool $deep
-     *
-     * @return array
-     */
     private static function parseArray(array $array, string $prefix, bool $deep = false): array
     {
         $output = [];
@@ -40,11 +33,6 @@ final class ConfigLoader
         return array_merge($output, ...$subOutput);
     }
 
-    /**
-     * @param string $path
-     *
-     * @return array
-     */
     private static function loadFile(string $path): array
     {
         // load it as an ini
@@ -56,14 +44,9 @@ final class ConfigLoader
         return self::parseArray($parsedFile, '');
     }
 
-    /**
-     * @param string $configPath
-     *
-     * @return array
-     */
     public static function load(string $configPath = 'config/'): array
     {
-        if ($configPath[0] !== '/' && strpos($configPath, '://') === false) {
+        if ($configPath[0] !== '/' && !str_contains($configPath, '://')) {
             $configPath = BASE_ROOT . '/' . $configPath;
         }
         return self::loadFile($configPath . 'private.ini');

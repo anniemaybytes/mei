@@ -15,9 +15,6 @@ namespace RunTracy\Helpers\Profiler;
  */
 class AdvancedProfiler extends SimpleProfiler
 {
-    /**
-     * @var bool
-     */
     protected static bool $enabled = false;
 
     /**
@@ -40,21 +37,14 @@ class AdvancedProfiler extends SimpleProfiler
      */
     public static function setPostProcessor(callable $postProcessor): void
     {
-        static::$postProcessor = $postProcessor;
+        self::$postProcessor = $postProcessor;
     }
 
-    /**
-     * @param string|null $labelOrFormat
-     * @param mixed $args
-     * @param mixed $opt
-     *
-     * @return bool
-     */
-    public static function start(?string $labelOrFormat = null, $args = null, $opt = null): bool
+    public static function start(?string $labelOrFormat = null, mixed $args = null, mixed $opt = null): bool
     {
-        if (static::$enabled) {
+        if (self::$enabled) {
             if ($labelOrFormat === null) {
-                $labelOrFormat = static::getCurrentFileHashLine(1);
+                $labelOrFormat = self::getCurrentFileHashLine(1);
                 $args = null;
                 $opt = null;
             }
@@ -70,7 +60,7 @@ class AdvancedProfiler extends SimpleProfiler
      *
      * @return string|bool current "{file}#{line}" on success or false on failure
      */
-    public static function getCurrentFileHashLine()
+    public static function getCurrentFileHashLine(): bool|string
     {
         $args = func_get_args();
 
@@ -97,22 +87,22 @@ class AdvancedProfiler extends SimpleProfiler
      *
      * @return bool|Profile
      */
-    public static function finish(?string $labelOrFormat = null, $args = null, $opt = null)
+    public static function finish(?string $labelOrFormat = null, mixed $args = null, $opt = null): Profile|bool
     {
-        if (static::$enabled) {
+        if (self::$enabled) {
             if ($labelOrFormat === null) {
-                $labelOrFormat = static::getCurrentFileHashLine(1);
+                $labelOrFormat = self::getCurrentFileHashLine(1);
                 $args = null;
                 $opt = null;
             }
 
             $profile = parent::finish($labelOrFormat, $args, $opt);
 
-            if (static::$postProcessor === null) {
+            if (self::$postProcessor === null) {
                 return $profile;
             }
 
-            return call_user_func(static::$postProcessor, $profile);
+            return call_user_func(self::$postProcessor, $profile);
         }
 
         return false;

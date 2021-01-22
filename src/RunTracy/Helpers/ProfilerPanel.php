@@ -16,22 +16,13 @@ use Tracy\IBarPanel;
  */
 final class ProfilerPanel implements IBarPanel
 {
-    /**
-     * @var ProfilerService
-     */
     private ProfilerService $profilerService;
 
-    /**
-     * ProfilerPanel constructor.
-     */
     public function __construct()
     {
         $this->profilerService = ProfilerService::getInstance();
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getTab(): string
     {
         $countOfProfiles = count($this->profilerService->getProfiles());
@@ -45,9 +36,6 @@ final class ProfilerPanel implements IBarPanel
         );
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getPanel(): string
     {
         $table = '<style>.tracy-addons-profiler-hidden{display:none}
@@ -109,9 +97,6 @@ final class ProfilerPanel implements IBarPanel
         );
     }
 
-    /**
-     * @return string
-     */
     private function getMemoryChart(): string
     {
         $colors = [

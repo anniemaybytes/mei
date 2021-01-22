@@ -25,37 +25,16 @@ final class Dispatcher implements SingletonInterface
 {
     use SingletonTrait;
 
-    /**
-     * @var App $app
-     */
     private App $app;
-
-    /**
-     * @var array $config
-     */
     private array $config;
-
-    /**
-     * @var Container $di
-     */
     private Container $di;
 
-    /**
-     * Returns the slim application object
-     *
-     * @return App
-     */
     public static function app(): App
     {
         return self::getInstance()->app;
     }
 
-    /**
-     * @param string|null $key
-     *
-     * @return mixed
-     */
-    public static function config(?string $key = null)
+    public static function config(?string $key = null): mixed
     {
         if ($key) {
             return self::getInstance()->config[$key];
@@ -64,11 +43,6 @@ final class Dispatcher implements SingletonInterface
         return self::getInstance()->config;
     }
 
-    /**
-     * Returns the container object
-     *
-     * @return Container
-     */
     public static function di(): Container
     {
         return self::getInstance()->di;
@@ -84,16 +58,16 @@ final class Dispatcher implements SingletonInterface
         Profiler::finish('initConfig');
 
         $allowedModes = ['production', 'staging', 'development'];
-        if (!in_array($config['mode'], $allowedModes, true)) {
+        if (!in_array(@$config['mode'], $allowedModes, true)) {
             throw new RuntimeException(
                 'Can not start application with non-recognized mode: ' .
-                $config['mode'] .
+                ($config['mode'] ?? '(null)') .
                 '. Must be one of: ' . implode(', ', $allowedModes)
             );
         }
 
-        $config['images.directory'] = BASE_ROOT . '/' . $config['images.directory'];
-        $config['logs_dir'] = BASE_ROOT . '/' . $config['logs_dir'];
+        $config['app.max_filesize'] = $config['app.max_filesize'] ?? PHP_INT_MAX;
+        $config['images.directory'] = BASE_ROOT . '/' . ($config['images.directory'] ?? 'images');
         $this->config = $config;
     }
 
@@ -133,8 +107,6 @@ final class Dispatcher implements SingletonInterface
     }
 
     /**
-     * Dispatcher constructor.
-     *
      * @throws Exception
      */
     protected function __construct()
