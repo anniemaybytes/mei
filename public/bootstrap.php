@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 set_error_handler(
-    static function (int $errno, string $errstr, string $errfile, int $errline) {
+    static function (int $errno, string $errstr, string $errfile, int $errline): void {
         error_log("$errstr ($errno) - $errfile:$errline");
         die('Sorry, something went horribly wrong / PR Environment Error: ' . $errno);
     },
