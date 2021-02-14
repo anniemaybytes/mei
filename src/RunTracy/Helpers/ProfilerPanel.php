@@ -12,6 +12,7 @@ use Tracy\IBarPanel;
 /**
  * Class ProfilerPanel
  *
+ * @author 1f7.wizard@gmail.com
  * @package RunTracy\Helpers
  */
 final class ProfilerPanel implements IBarPanel

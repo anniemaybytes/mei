@@ -9,6 +9,7 @@ use Tracy\IBarPanel;
 /**
  * Class XDebugHelper
  *
+ * @author 1f7.wizard@gmail.com
  * @package RunTracy\Helpers
  */
 final class XDebugHelper implements IBarPanel

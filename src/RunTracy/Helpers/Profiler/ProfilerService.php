@@ -8,7 +8,11 @@ use PetrKnap\Php\Singleton\SingletonInterface;
 use PetrKnap\Php\Singleton\SingletonTrait;
 
 /**
+ * Class ProfilerService
+ *
  * @internal
+ * @author Petr Knap <dev@petrknap.cz>
+ * @package RunTracy\Helpers\Profiler
  */
 final class ProfilerService implements SingletonInterface
 {

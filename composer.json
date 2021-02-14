@@ -61,7 +61,7 @@
   },
   "require-dev": {
     "roave/security-advisories": "dev-master",
-    "phpstan/phpstan": "0.12.71",
+    "phpstan/phpstan": "0.12.75",
     "phpstan/phpstan-deprecation-rules": "0.12.6",
     "overtrue/phplint": "2.3.5",
     "squizlabs/php_codesniffer": "dev-master#285de0d0e77f76363ee2fda1b6ba1335f5015530",

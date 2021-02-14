@@ -9,6 +9,7 @@ use Tracy\IBarPanel;
 /**
  * Class IncludedFiles
  *
+ * @author 1f7.wizard@gmail.com
  * @package RunTracy\Helpers
  */
 final class IncludedFiles implements IBarPanel
@@ -47,11 +48,7 @@ final class IncludedFiles implements IBarPanel
 
         $num = 0;
         foreach ($files as $num => $file) {
-            $ret .= sprintf(
-                $this->getBaseRow(),
-                ++$num,
-                $file
-            );
+            $ret .= sprintf($this->getBaseRow(), ++$num, $file);
         }
 
         return '

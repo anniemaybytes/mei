@@ -9,9 +9,8 @@ use RuntimeException;
 /**
  * Simple PHP class for profiling
  *
- * @author   Petr Knap <dev@petrknap.cz>
- * @since    2015-12-13
- * @license  https://github.com/petrknap/php-profiler/blob/master/LICENSE MIT
+ * @author Petr Knap <dev@petrknap.cz>
+ * @package RunTracy\Helpers\Profiler
  */
 class SimpleProfiler
 {

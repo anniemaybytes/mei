@@ -7,11 +7,10 @@ namespace RunTracy\Helpers\Profiler;
 use JsonSerializable;
 
 /**
- * Profile
+ * Class Profile
  *
- * @author   Petr Knap <dev@petrknap.cz>
- * @since    2015-12-19
- * @license  https://github.com/petrknap/php-profiler/blob/master/LICENSE MIT
+ * @author Petr Knap <dev@petrknap.cz>
+ * @package RunTracy\Helpers\Profiler
  */
 final class Profile implements JsonSerializable
 {

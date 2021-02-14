@@ -7,6 +7,7 @@ namespace RunTracy\Helpers\Profiler;
 /**
  * Class Profiler
  *
+ * @author 1f7.wizard@gmail.com
  * @package RunTracy\Helpers\Profiler
  */
 final class Profiler extends AdvancedProfiler

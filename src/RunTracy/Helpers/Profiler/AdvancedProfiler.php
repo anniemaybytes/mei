@@ -9,9 +9,8 @@ namespace RunTracy\Helpers\Profiler;
 /**
  * Advanced PHP class for profiling
  *
- * @author   Petr Knap <dev@petrknap.cz>
- * @since    2015-12-19
- * @license  https://github.com/petrknap/php-profiler/blob/master/LICENSE MIT
+ * @author Petr Knap <dev@petrknap.cz>
+ * @package RunTracy\Helpers\Profiler
  */
 class AdvancedProfiler extends SimpleProfiler
 {
