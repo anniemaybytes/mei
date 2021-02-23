@@ -230,11 +230,13 @@ final class UploadCtrl extends BaseCtrl
             if ($respcode !== 200) {
                 $message = "Received non-success response $respcode from $url";
                 $errors[] = $message;
+                continue;
             }
             if (!$content) {
                 $message = "No data received from $url" . ($cl > 0 ? "(expected $cl bytes)" : "") . " with response $respcode";
-                Debugger::log($message, DEBUGGER::WARNING);
                 $errors[] = $message;
+                Debugger::log($message, DEBUGGER::WARNING);
+                continue;
             }
 
             try {
