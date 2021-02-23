@@ -177,14 +177,14 @@ final class UploadCtrl extends BaseCtrl
 
         foreach ($urls as $url) {
             if (!$url || !filter_var($url, FILTER_VALIDATE_URL)) {
-                $errors[] = "Invalid URL ($url) provided (FILTER_VALIDATE_URL)";
+                $errors[] = "Invalid URL $url provided (FILTER_VALIDATE_URL)";
                 continue;
             }
 
             $scheme = parse_url($url, PHP_URL_SCHEME);
             $host = parse_url($url, PHP_URL_HOST);
             if (!in_array($scheme, self::$allowedUrlScheme, true)) {
-                $errors[] = "Scheme ($scheme) of URL ($url) is not allowed to be fetched from";
+                $errors[] = "Scheme $scheme of URL $url is not allowed to be fetched from";
                 continue;
             }
 
@@ -217,7 +217,7 @@ final class UploadCtrl extends BaseCtrl
             $content = $curl->exec();
             $err = $curl->error();
             if ($err !== '') {
-                $message = "URL ({$url} encountered cURL error: {$err}";
+                $message = "URL $url encountered cURL error: $err";
                 Debugger::log($message, DEBUGGER::WARNING);
                 $errors[] = $message;
                 continue;
@@ -227,8 +227,12 @@ final class UploadCtrl extends BaseCtrl
             $respcode = (int)$curl->getInfo(CURLINFO_HTTP_CODE);
             unset($curl);
 
+            if ($respcode !== 200) {
+                $message = "Received non-success response $respcode from $url";
+                $errors[] = $message;
+            }
             if (!$content) {
-                $message = "No data received from $url with Content-Length $cl and response $respcode";
+                $message = "No data received from $url" . ($cl > 0 ? "(expected $cl bytes)" : "") . " with response $respcode";
                 Debugger::log($message, DEBUGGER::WARNING);
                 $errors[] = $message;
             }
@@ -236,7 +240,7 @@ final class UploadCtrl extends BaseCtrl
             try {
                 $metadata = ImageUtilities::getImageInfo($content);
                 if (!array_key_exists($metadata['mime'], ImageUtilities::$allowedTypes)) {
-                    $errors[] = "File {$url} has MIME type ({$metadata['mime']} which is not allowable";
+                    $errors[] = "File $url has MIME type ({$metadata['mime']} which is not allowable";
                     continue;
                 }
                 $images[] = $this->processImage($content);

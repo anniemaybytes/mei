@@ -39,7 +39,7 @@
     "slim/psr7": "1.3.0",
     "slim/http": "1.2.0",
     "davedevelopment/phpmig": "1.7.0",
-    "doctrine/annotations": "1.11.1",
+    "doctrine/annotations": "1.12.0",
     "petrknap/php-singleton": "1.0.0",
     "jdorn/sql-formatter": "dev-master#7ef9b85961956aa572413693e1194b60f50ab9ab",
     "ext-xml": "*",
@@ -61,7 +61,7 @@
   },
   "require-dev": {
     "roave/security-advisories": "dev-master",
-    "phpstan/phpstan": "0.12.75",
+    "phpstan/phpstan": "0.12.78",
     "phpstan/phpstan-deprecation-rules": "0.12.6",
     "overtrue/phplint": "2.3.5",
     "squizlabs/php_codesniffer": "dev-master#285de0d0e77f76363ee2fda1b6ba1335f5015530",

@@ -11,6 +11,7 @@ export DEBIAN_FRONTEND=noninteractive
 echo Configuring system...
 DPKG_MAINTSCRIPT_NAME=postinst DPKG_MAINTSCRIPT_PACKAGE=grub-pc upgrade-from-grub-legacy # bug: system assumes /dev/vda but that is not necessarily valid anymore
 apt-mark hold linux-image-amd64 # bug: vboxsf component are not updated
+apt-mark hold grub-pc # bug: attempt to run grub-pc updater in noninteractive mode will fail
 
 echo
 echo Installing required base components...
@@ -69,14 +70,20 @@ systemctl stop mariadb
 systemctl stop cron
 
 echo
+echo Resetting MariaDB storage...
+rm -rf /var/lib/mysql
+mysql_install_db
+
+echo
 echo Starting MariaDB...
 systemctl start mariadb
 
 echo
 echo Configuring MySQL...
-echo "CREATE DATABASE mei; GRANT ALL ON mei.* TO mei@localhost IDENTIFIED BY 'mei';GRANT ALL ON mei.* TO mei@127.0.0.1 IDENTIFIED BY 'mei';GRANT ALL ON mei.* TO 'mei'@'10.0.%.%' IDENTIFIED BY 'mei';" | mysql -uroot
-mysqladmin -uroot password w3llkn0wn
-echo "DELETE FROM user WHERE (User = 'root' AND Host != 'localhost') OR (User = '');FLUSH PRIVILEGES;\q" | mysql -uroot -pw3llkn0wn mysql
+echo "DELETE FROM mysql.user WHERE user =''" | mysql -uroot
+echo "CREATE DATABASE mei" | mysql -uroot
+echo "GRANT ALL ON mei.* TO mei@localhost IDENTIFIED BY 'mei'" | mysql -uroot
+echo "GRANT ALL ON mei.* TO 'mei'@'10.0.%.%' IDENTIFIED BY 'mei'" | mysql -uroot
 
 echo
 echo Importing database...
