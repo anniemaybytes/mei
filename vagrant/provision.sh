@@ -16,7 +16,7 @@ apt-mark hold grub-pc # bug: attempt to run grub-pc updater in noninteractive mo
 echo
 echo Installing required base components...
 apt-get update
-apt-get -y install apt-transport-https dirmngr curl
+apt-get -qq -y install apt-transport-https dirmngr curl
 
 echo
 echo Adding repositories...
@@ -31,11 +31,15 @@ apt-get update
 
 echo
 echo Updating currently installed packages...
-apt-get -y -o Dpkg::Options::="--force-confnew" upgrade
+apt-get -qq -y -o Dpkg::Options::="--force-confnew" upgrade
+
+echo
+echo Cleaning up stale packages and files...
+apt-get -y autoremove && apt-get -y autoclean
 
 echo
 echo Installing packages...
-apt-get -y -o Dpkg::Options::="--force-confold" install php8.0 php8.0-xdebug php8.0-imagick php8.0-xml php8.0-fpm \
+apt-get -qq -y -o Dpkg::Options::="--force-confold" install php8.0 php8.0-xdebug php8.0-imagick php8.0-xml php8.0-fpm \
     php8.0-cli php8.0-gd php8.0-curl php8.0-mysqlnd php8.0-bcmath php8.0-imagick php8.0-mbstring pv git unzip zip \
     htop iotop nginx libmysqlclient18 libmariadb3 mariadb-server imagemagick
 

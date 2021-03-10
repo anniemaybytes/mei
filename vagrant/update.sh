@@ -9,6 +9,12 @@ fi
 export DEBIAN_FRONTEND=noninteractive
 
 echo
+echo Updating packages...
+apt-get update
+apt-get -qq -y -o Dpkg::Options::="--force-confold" --only-upgrade install php8.0* mariadb-server
+apt-get -y autoremove && apt-get -y autoclean
+
+echo
 echo Copying over configs...
 cd /vagrantroot/configs
 cp -avu * /

@@ -58,13 +58,10 @@ final class NonPersistent implements IKeyStore
         }
 
         if (array_key_exists($key, $this->inner)) {
-            $res = $this->inner['key'];
+            $res = $this->inner[$key];
+            $this->cacheHits[$key] = $res;
         } else {
             $res = false;
-        }
-
-        if ($res) {
-            $this->cacheHits[$key] = $res;
         }
 
         $this->endCall($start);
@@ -114,11 +111,11 @@ final class NonPersistent implements IKeyStore
             return $initial;
         }
 
-        if (array_key_exists($key, $this->inner)) { // key does not exists yet, create it with $initial.
+        if (!array_key_exists($key, $this->inner)) { // key does not exists yet, create it with $initial.
             $value = $initial;
-        } elseif (is_int($this->inner['key'])) { // exists and value is numeric, increment by $n
-            $value = $this->inner['key'] + $n;
-        } else { // unhandled case. value exists but is not numeric, can not increment.
+        } elseif (is_int($this->inner[$key])) { // exists and value is numeric, increment by $n
+            $value = $this->inner[$key] + $n;
+        } else { // unhandled case - value exists but is not numeric, can not increment.
             $this->endCall($start);
             return false;
         }
