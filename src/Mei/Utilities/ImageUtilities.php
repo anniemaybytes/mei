@@ -33,6 +33,7 @@ final class ImageUtilities
 
         $dir = $base ? Dispatcher::config('images.directory') : '';
         for ($i = 0; $i < $depth; ++$i) {
+            /** @noinspection PhpUnnecessaryCurlyVarSyntaxInspection */
             $dir .= "/{$name[$i]}";
         }
         return "$dir/$name";
@@ -46,7 +47,7 @@ final class ImageUtilities
         }
 
         return [
-            'extension' => self::$allowedTypes[$data['mime']],
+            'extension' => self::$allowedTypes[$data['mime']] ?? '',
             'mime' => $data['mime'],
             'hash' => hash('sha256', $bindata . (Dispatcher::config('app.salt') ?? '')),
             'md5' => md5($bindata),

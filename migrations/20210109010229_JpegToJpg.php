@@ -18,7 +18,7 @@ class JpegToJpg extends Migration
         while ($key = $sth->fetch(PDO::FETCH_COLUMN)) {
             $p = pathinfo($key);
             $this->get(PDO::class)->execute(
-                "UPDATE `files_map` SET `Key` = '{$p['filename']}.jpg' WHERE `Key` = '{$key}'"
+                "UPDATE `files_map` SET `Key` = '{$p['filename']}.jpg' WHERE `Key` = '$key'"
             );
         }
     }

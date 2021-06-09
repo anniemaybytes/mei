@@ -140,7 +140,7 @@ final class ProfilerPanel implements IBarPanel
         }
 
         $firstIteration = true;
-        $prevX = 0;
+        $prevX = 0.0;
         $prevY = $maxHeight;
         $lines = '';
         $points = '';

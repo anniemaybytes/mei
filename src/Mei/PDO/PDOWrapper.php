@@ -83,7 +83,7 @@ final class PDOWrapper extends PDO
             return $res;
         }
 
-        return $this->exec('SAVEPOINT tq_' . $tid) ? true : false; // creating new child transaction via savepoint
+        return (bool)$this->exec('SAVEPOINT tq_' . $tid); // creating new child transaction via savepoint
     }
 
     /** {@inheritDoc} */
@@ -111,9 +111,7 @@ final class PDOWrapper extends PDO
             $res = parent::rollBack();
             $this->addLog('ROLLBACK', microtime(true) - $start);
         } else {
-            $res = parent::exec(
-                'ROLLBACK TO tq_' . $tid
-            ) ? true : false; // this is child transaction, rollback to savepoint
+            $res = (bool)parent::exec('ROLLBACK TO tq_' . $tid); // this is child transaction, rollback to savepoint
         }
 
         return $res;

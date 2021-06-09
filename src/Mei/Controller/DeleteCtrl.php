@@ -161,6 +161,7 @@ final class DeleteCtrl extends BaseCtrl
         return $response->withStatus(200)->withJson(['success' => true, 'warnings' => $warnings]);
     }
 
+    /** @noinspection PhpReturnValueOfMethodIsNeverUsedInspection */
     private static function deleteImage(string $filename): bool
     {
         return unlink(ImageUtilities::getSavePath($filename));

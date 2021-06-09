@@ -111,7 +111,6 @@ final class EntityAttributeType
             default:
                 throw new InvalidArgumentException("I don't know how to deflate a $type!");
         }
-        $val = (string)$val;
-        return $val;
+        return (string)$val;
     }
 }

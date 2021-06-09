@@ -20,13 +20,10 @@ final class PDOParamMapper
      */
     public static function map(string $entityAttrType): int
     {
-        switch ($entityAttrType) {
-            case 'int':
-                return PDO::PARAM_INT;
-            case 'bool':
-                return PDO::PARAM_BOOL;
-            default:
-                return PDO::PARAM_STR;
-        }
+        return match ($entityAttrType) {
+            'int' => PDO::PARAM_INT,
+            'bool' => PDO::PARAM_BOOL,
+            default => PDO::PARAM_STR,
+        };
     }
 }

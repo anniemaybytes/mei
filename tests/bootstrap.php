@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-define('BASE_ROOT', __DIR__ . '/..');
-define('PUBLIC_ROOT', BASE_ROOT);
+const BASE_ROOT = __DIR__ . '/..';
+const PUBLIC_ROOT = BASE_ROOT;
 chdir(BASE_ROOT);
 
 require_once BASE_ROOT . '/vendor/autoload.php'; // set up autoloading

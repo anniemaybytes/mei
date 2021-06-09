@@ -57,7 +57,7 @@ final class ServeCtrl extends BaseCtrl
             $crop = (isset($hashInfo[2]) && $hashInfo[2] === 'crop');
         }
 
-        if (!$fileEntity = $this->filesMap->getByFileName($hashInfo[0] . '.' . $pathInfo['extension'])) {
+        if (!$fileEntity = $this->filesMap->getByFileName("$hashInfo[0].{$pathInfo['extension']}")) {
             throw new HttpNotFoundException($request, 'Image Not Found');
         }
 
@@ -73,7 +73,7 @@ final class ServeCtrl extends BaseCtrl
                 throw new HttpBadRequestException($request);
             }
 
-            $image = new ImagickUtility($bindata);
+            $image = new ImagickUtility($bindata, $metadata);
             $bindata = $image->resize($width, $height, $crop ?? false)->getImagesBlob();
             /*
              * To avoid \Imagick object taking unnecessary memory while streaming, we destroy it here after we

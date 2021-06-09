@@ -79,7 +79,7 @@ interface IEntity
      * If an attribute is not set, it should not be part of the array.
      * The value should be a php value.
      *
-     * @return mixed[]
+     * @return array
      */
     public function getMappedValues(): array;
 

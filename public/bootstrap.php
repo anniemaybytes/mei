@@ -19,6 +19,6 @@ set_exception_handler(
     }
 );
 
-define('PUBLIC_ROOT', __DIR__);
+const PUBLIC_ROOT = __DIR__;
 
 require_once '../dispatch.php';

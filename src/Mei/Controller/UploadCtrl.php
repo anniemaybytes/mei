@@ -124,7 +124,7 @@ final class UploadCtrl extends BaseCtrl
                         $errors[] = "File {$file->getClientFilename()} has MIME type ({$metadata['mime']}) which is not allowable";
                         continue;
                     }
-                    $images[] = $this->processImage($bindata);
+                    $images[] = $this->processImage($bindata, $metadata);
                 } catch (Exception $e) {
                     Debugger::log($e, Debugger::EXCEPTION);
                     $errors[] = "Encountered error while processing image {$file->getClientFilename()}";
@@ -245,7 +245,7 @@ final class UploadCtrl extends BaseCtrl
                     $errors[] = "File $url has MIME type ({$metadata['mime']} which is not allowable";
                     continue;
                 }
-                $images[] = $this->processImage($content);
+                $images[] = $this->processImage($content, $metadata);
             } catch (Exception $e) {
                 Debugger::log($e, Debugger::EXCEPTION);
                 $errors[] = "Encountered error while processing image $url";
@@ -265,15 +265,16 @@ final class UploadCtrl extends BaseCtrl
 
     /**
      * @param string $bindata
+     * @param array $metadata
      * @param int $protected
      *
      * @return string
-     * @throws ImagickException|Exception
+     * @throws ImagickException
+     * @throws Exception
+     * @noinspection PhpSameParameterValueInspection
      */
-    private function processImage(string $bindata, int $protected = 0): string
+    private function processImage(string $bindata, array $metadata, int $protected = 0): string
     {
-        $metadata = ImageUtilities::getImageInfo($bindata);
-
         $found = $isLegacy = false;
         if ($this->filesMap->getByKey("{$metadata['hash']}.{$metadata['extension']}")) {
             $found = true;
@@ -286,11 +287,10 @@ final class UploadCtrl extends BaseCtrl
         $key = ($isLegacy ? $metadata['md5'] : $metadata['hash']) . ".{$metadata['extension']}";
         if (!$found) {
             // verify image is valid by trying to open it using ImageMagick, will throw if necessary
-            new ImagickUtility($bindata);
+            $image = new ImagickUtility($bindata, $metadata);
 
             // strip EXIF is requested
             if ($this->config['app.strip_exif'] ?? false) {
-                $image = new ImagickUtility($bindata);
                 $bindata = $image->stripExif()->getImagesBlob();
             }
 

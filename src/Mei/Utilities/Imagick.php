@@ -17,13 +17,12 @@ final class Imagick
 
     /**
      * @param string $bindata
+     * @param array $metadata
      *
      * @throws ImagickException
      */
-    public function __construct(string $bindata)
+    public function __construct(string $bindata, array $metadata)
     {
-        $metadata = ImageUtilities::getImageInfo($bindata);
-
         $image = new \Imagick();
         $image->readImageBlob($bindata);
         $image->setImageFormat($metadata['extension']);
@@ -48,6 +47,9 @@ final class Imagick
         return $this->image->getImagesBlob();
     }
 
+    /**
+     * @throws ImagickException
+     */
     public function stripExif(): self
     {
         $profiles = $this->image->getImageProfiles('icc', true);

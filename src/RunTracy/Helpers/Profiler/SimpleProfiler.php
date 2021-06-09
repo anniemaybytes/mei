@@ -35,7 +35,7 @@ class SimpleProfiler
     public static function enable(bool $realUsage = false): void
     {
         static::$enabled = true;
-        static::$realUsage = $realUsage ? true : false;
+        static::$realUsage = $realUsage;
     }
 
     public static function disable(): void

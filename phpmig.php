@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-define('BASE_ROOT', __DIR__);
+const BASE_ROOT = __DIR__;
 require_once BASE_ROOT . '/vendor/autoload.php'; // set up autoloading
 
 use Mei\ConfigLoader;

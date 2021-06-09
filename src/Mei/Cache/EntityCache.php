@@ -54,6 +54,7 @@ final class EntityCache implements ICacheable
             if ($str) {
                 $str .= '_';
             }
+            /** @noinspection PhpUnnecessaryCurlyVarSyntaxInspection */
             $str .= "{$key}_{$value}";
         }
         $id = $str;

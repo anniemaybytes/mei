@@ -60,16 +60,6 @@ curl -s https://getcomposer.org/installer | php
 mv composer.phar /usr/local/bin/composer
 
 echo
-echo Hijacking unzip binary for slow access on VirtualBox shared volume...
-cat << EOF > /usr/local/bin/unzip
-#!/bin/sh
-
-/usr/bin/unzip "\$@"
-sleep 0.2
-EOF
-chmod +x /usr/local/bin/unzip
-
-echo
 echo Configuring daemons...
 systemctl daemon-reload
 systemctl disable nginx

@@ -6,14 +6,15 @@ ENV["LC_ALL"] = "en_US.UTF-8"
 Vagrant.configure(2) do |config|
   # box
   config.vm.box = "debian/contrib-buster64"
-  config.vm.box_version = ">= 10.7.0"
+  config.vm.box_version = "10.7.0"
   
   # custom
   config.vm.graceful_halt_timeout = 30
 
   # network
-  config.vm.network "forwarded_port", guest: 443, host_ip: "127.0.0.1", host: 7443 # nginx
-  config.vm.network "forwarded_port", guest: 3306, host_ip: "127.0.0.1", host: 7306 # mariadb
+  config.vm.network "forwarded_port", id: "ssh", guest: 22, host_ip: "127.0.0.1", host: 7022
+  config.vm.network "forwarded_port", id: "nginx", guest: 443, host_ip: "127.0.0.1", host: 7443
+  config.vm.network "forwarded_port", id: "mariadb", guest: 3306, host_ip: "127.0.0.1", host: 7306
 
   # synced folders
   config.vm.synced_folder "./", "/code",

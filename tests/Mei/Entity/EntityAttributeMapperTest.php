@@ -66,13 +66,11 @@ class EntityAttributeMapperTest extends PHPUnit\Framework\TestCase
 
         $m = new EntityAttributeMapper($attr, ['A' => 'A']);
 
-        /** @var ICacheable $c */
         self::assertTrue($m->isAttributeSet($c, 'A'));
         self::assertFalse($m->isAttributeSet($c, 'B'));
 
         $m = new EntityAttributeMapper($attr, ['A' => 'A', 'B' => 'B']);
 
-        /** @var ICacheable $c */
         self::assertTrue($m->isAttributeSet($c, 'A'));
         self::assertTrue($m->isAttributeSet($c, 'B'));
 
