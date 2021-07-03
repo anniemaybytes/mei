@@ -31,8 +31,6 @@ class AdvancedProfiler extends SimpleProfiler
      *
      * Post processor is callable with one input argument (return from finish method)
      * and is called at the end of finish method.
-     *
-     * @param callable $postProcessor
      */
     public static function setPostProcessor(callable $postProcessor): void
     {
@@ -56,8 +54,6 @@ class AdvancedProfiler extends SimpleProfiler
 
     /**
      * Get current "{file}#{line}"
-     *
-     * @return string|bool current "{file}#{line}" on success or false on failure
      */
     public static function getCurrentFileHashLine(): bool|string
     {
@@ -79,13 +75,6 @@ class AdvancedProfiler extends SimpleProfiler
         return false;
     }
 
-    /**
-     * @param string|null $labelOrFormat
-     * @param mixed $args
-     * @param mixed $opt
-     *
-     * @return bool|Profile
-     */
     public static function finish(?string $labelOrFormat = null, mixed $args = null, mixed $opt = null): Profile|bool
     {
         if (self::$enabled) {

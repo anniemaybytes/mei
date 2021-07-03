@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Mei\Model;
 
-use Exception;
 use InvalidArgumentException;
 use Mei\Cache\IKeyStore;
 use Mei\Entity\IEntity;
@@ -46,11 +45,8 @@ abstract class Model implements IModel
 
     abstract public function getTableName(): string;
 
-    /**
-     * needs to be run immediately after a SELECT SQL_CALC_FOUND_ROWS statement
-     *
-     * @return int
-     * @throws Exception
+    /*
+     * Needs to be run immediately after a SELECT SQL_CALC_FOUND_ROWS statement
      */
     public function getFoundRows(): int
     {
@@ -176,11 +172,7 @@ abstract class Model implements IModel
             $sql = "INSERT INTO `$table` ($cols) VALUES ($vals)";
             $q = $this->getDatabase()->prepare($sql);
             foreach ($values as $param => $value) {
-                $q->bindValue(
-                    ':' . $param,
-                    $value,
-                    PDOParamMapper::map($attrs[$param])
-                ); // null values must be of special type
+                $q->bindValue(":{$param}", $value, PDOParamMapper::map($attrs[$param]));
             }
             $q->execute();
 

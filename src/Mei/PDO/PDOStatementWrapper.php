@@ -53,9 +53,7 @@ final class PDOStatementWrapper extends PDOStatement
         return parent::bindValue(...func_get_args());
     }
 
-    /**
-     * @inheritDoc
-     */
+    /** {@inheritDoc} */
     public function execute(array $params = null, int $retries = 3): bool
     {
         if (is_array($params)) {

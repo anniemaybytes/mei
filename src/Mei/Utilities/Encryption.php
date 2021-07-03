@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Mei\Utilities;
 
-use Exception;
-
 /**
  * Class Encryption
  *
@@ -22,12 +20,6 @@ final class Encryption
         $this->encryptionKey = md5($config['api.auth_key']);
     }
 
-    /**
-     * @param string|null $plainData
-     *
-     * @return string
-     * @throws Exception
-     */
     public function encrypt(?string $plainData): string
     {
         // we need to manually pad data for compatibility with mcrypt
@@ -40,6 +32,7 @@ final class Encryption
             );
         }
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         $initVector = random_bytes(16);
         $cryptoStr = openssl_encrypt(
             $paddedData,
@@ -80,12 +73,6 @@ final class Encryption
         return preg_match('//u', $result) ? $result : '';
     }
 
-    /**
-     * @param string $plainData
-     *
-     * @return string
-     * @throws Exception
-     */
     public function encryptUrl(string $plainData): string
     {
         return StringUtil::base64UrlEncode($this->encrypt($plainData));

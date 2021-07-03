@@ -23,22 +23,13 @@ use Tracy\Debugger;
  */
 final class DeleteCtrl extends BaseCtrl
 {
-    /**
-     * @Inject
-     */
+    /** @Inject */
     private RouteParser $router;
 
-    /**
-     * @Inject
-     */
+    /** @Inject */
     private FilesMap $filesMap;
 
     /**
-     * @param Request $request
-     * @param Response $response
-     * @param array $args
-     *
-     * @return Response
      * @throws JsonException|HttpForbiddenException
      */
     public function delete(Request $request, Response $response, array $args): Response

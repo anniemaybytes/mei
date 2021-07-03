@@ -31,10 +31,6 @@ interface IModel
      * The key of id must be the id attribute, and the value the value to search by
      *
      * Return null if no entity is found, or if the id is invalid
-     *
-     * @param array $id
-     *
-     * @return IEntity|null
      */
     public function getById(array $id): ?IEntity;
 
@@ -43,8 +39,6 @@ interface IModel
      * The entity must return true to isNew and false to hasChanged
      *
      * @param array $arr array of entity attribute-value pairs
-     *
-     * @return IEntity
      */
     public function createEntity(array $arr): IEntity;
 
@@ -52,10 +46,6 @@ interface IModel
      * Save the entity handled by the model.
      * This method must not mutate the entity passed as a parameter.
      * This method must return the resulting entity.
-     *
-     * @param IEntity $entity
-     *
-     * @return IEntity|null
      */
     public function save(IEntity $entity): ?IEntity;
 
@@ -63,10 +53,6 @@ interface IModel
      * Delete the entity handled by the model.
      * This method must not mutate the entity passed as a parameter.
      * This method must return back entity given as parameter.
-     *
-     * @param IEntity|null $entity
-     *
-     * @return IEntity|null
      */
     public function delete(?IEntity $entity): ?IEntity;
 

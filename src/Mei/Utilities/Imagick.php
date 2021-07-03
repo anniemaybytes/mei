@@ -16,9 +16,6 @@ final class Imagick
     private \Imagick $image;
 
     /**
-     * @param string $bindata
-     * @param array $metadata
-     *
      * @throws ImagickException
      */
     public function __construct(string $bindata, array $metadata)
@@ -39,7 +36,6 @@ final class Imagick
     }
 
     /**
-     * @return string
      * @throws ImagickException
      */
     public function getImagesBlob(): string
@@ -67,11 +63,6 @@ final class Imagick
      * working on each frame separately, which is rather expensive operation for GIFs that can be few MiB in size
      * and contain hundreds or thousands of frames.
      *
-     * @param int $maxWidth
-     * @param int $maxHeight
-     * @param bool $crop
-     *
-     * @return self
      * @throws ImagickException
      */
     public function resize(int $maxWidth, int $maxHeight, bool $crop = false): self

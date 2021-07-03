@@ -15,10 +15,6 @@ interface IKeyStore
 {
     /**
      * Return value stored for key, or false if not existent
-     *
-     * @param string $key
-     *
-     * @return mixed
      */
     public function doGet(string $key): mixed;
 

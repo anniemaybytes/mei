@@ -13,11 +13,6 @@ use PDO;
  */
 final class PDOParamMapper
 {
-    /**
-     * @param string $entityAttrType
-     *
-     * @return int
-     */
     public static function map(string $entityAttrType): int
     {
         return match ($entityAttrType) {

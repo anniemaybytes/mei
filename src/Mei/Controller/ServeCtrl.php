@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Mei\Controller;
 
-use Exception;
 use ImagickException;
 use Mei\Model\FilesMap;
 use Mei\Utilities\ImageUtilities;
@@ -23,9 +22,7 @@ use Slim\Exception\HttpNotFoundException;
  */
 final class ServeCtrl extends BaseCtrl
 {
-    /**
-     * @Inject
-     */
+    /** @Inject */
     private FilesMap $filesMap;
 
     private static array $allowedResizeRange = ['min' => 80, 'max' => 450];
@@ -33,12 +30,7 @@ final class ServeCtrl extends BaseCtrl
     private const CSP_RULE = "default-src 'none'; style-src 'unsafe-inline'; sandbox";
 
     /**
-     * @param Request $request
-     * @param Response $response
-     * @param array $args
-     *
-     * @return Response
-     * @throws HttpNotFoundException|ImagickException|Exception
+     * @throws HttpNotFoundException|ImagickException|HttpBadRequestException
      */
     public function serve(Request $request, Response $response, array $args): Response
     {

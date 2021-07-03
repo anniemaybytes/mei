@@ -18,7 +18,7 @@ use DateTime;
 final class FilesMap extends Entity
 {
     protected static array $columns = [
-        ['Key', 'string', null], // key is unique multi to single mapper
+        ['Key', 'string', null],
         ['FileName', 'string', null, true],
         ['UploadTime', 'datetime', '0000-00-00 00:00:00'],
         ['Protected', 'int', 0],

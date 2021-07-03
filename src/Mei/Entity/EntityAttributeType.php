@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Mei\Entity;
 
 use DateTime;
-use Exception;
 use InvalidArgumentException;
 use Mei\Utilities\Time;
 use RuntimeException;
@@ -17,15 +16,6 @@ use RuntimeException;
  */
 final class EntityAttributeType
 {
-    /**
-     * Converts a value to a given type.
-     *
-     * @param string $type The type to convert to.
-     * @param mixed $val The value to convert.
-     *
-     * @return mixed
-     * @throws Exception
-     */
     public static function fromTo(string $type, mixed $val): mixed
     {
         switch ($type) {
@@ -67,15 +57,6 @@ final class EntityAttributeType
         return $val;
     }
 
-    /**
-     * Converts a value from a given type to a string.
-     *
-     * @param string $type The type to convert from.
-     * @param mixed $val The value to convert.
-     *
-     * @return string
-     * @throws Exception
-     */
     public static function toString(string $type, mixed $val): string
     {
         switch ($type) {

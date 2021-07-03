@@ -60,11 +60,8 @@ final class Curl
 
     public function exec(bool $proxyOverride = false): bool|string
     {
-        if (!$proxyOverride) { // override proxy
-            $this->setopt(
-                CURLOPT_PROXY,
-                ($this->config['proxy'] ?? null)
-            );
+        if (!$proxyOverride) {
+            $this->setopt(CURLOPT_PROXY, ($this->config['proxy'] ?? null));
         }
 
         return curl_exec($this->curl);

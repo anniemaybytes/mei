@@ -6,6 +6,7 @@ namespace Mei\Controller;
 
 use Exception;
 use ImagickException;
+use JsonException;
 use Mei\Model\FilesMap;
 use Mei\Utilities\Curl;
 use Mei\Utilities\Encryption;
@@ -27,25 +28,16 @@ use Tracy\Debugger;
  */
 final class UploadCtrl extends BaseCtrl
 {
-    /**
-     * @Inject
-     */
+    /** @Inject */
     private FilesMap $filesMap;
 
-    /**
-     * @Inject
-     */
+    /** @Inject */
     private Encryption $encryption;
 
     private static array $allowedUrlScheme = ['http', 'https'];
 
     /**
-     * @param Request $request
-     * @param Response $response
-     * @param array $args
-     *
-     * @return Response
-     * @throws HttpForbiddenException|Exception
+     * @throws HttpForbiddenException|JsonException
      */
     public function user(Request $request, Response $response, array $args): Response
     {
@@ -149,11 +141,6 @@ final class UploadCtrl extends BaseCtrl
     }
 
     /**
-     * @param Request $request
-     * @param Response $response
-     * @param array $args
-     *
-     * @return Response
      * @throws HttpForbiddenException
      */
     public function api(Request $request, Response $response, array $args): Response
@@ -204,13 +191,9 @@ final class UploadCtrl extends BaseCtrl
                     CURLOPT_HTTPHEADER => ["Host: $host"],
                     CURLOPT_MAXFILESIZE => $this->config['app.max_filesize'],
                     CURLOPT_NOPROGRESS => false,
-                    CURLOPT_PROGRESSFUNCTION => fn(
-                        $ch,
-                        $dt,
-                        $d,
-                        $ut,
-                        $u
-                    ) => (int)($d > $this->config['app.max_filesize']),
+                    CURLOPT_PROGRESSFUNCTION => (
+                    fn($ch, $dt, $d, $ut, $u) => (int)($d > $this->config['app.max_filesize'])
+                    ),
                 ]
             );
 
@@ -264,13 +247,7 @@ final class UploadCtrl extends BaseCtrl
     }
 
     /**
-     * @param string $bindata
-     * @param array $metadata
-     * @param int $protected
-     *
-     * @return string
      * @throws ImagickException
-     * @throws Exception
      * @noinspection PhpSameParameterValueInspection
      */
     private function processImage(string $bindata, array $metadata, int $protected = 0): string
@@ -314,9 +291,6 @@ final class UploadCtrl extends BaseCtrl
     }
 
     /**
-     * @param string $bindata
-     * @param string $path
-     *
      * @throws RuntimeException
      */
     private static function saveImage(string $bindata, string $path): void

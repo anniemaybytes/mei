@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Mei;
 
 use DI;
-use Exception;
 use Mei\Cache\IKeyStore;
 use Mei\Entity\ICacheable;
 use Mei\Model\FilesMap;
@@ -25,12 +24,6 @@ use Tracy\Debugger;
  */
 final class DependencyInjection
 {
-    /**
-     * @param array $config
-     *
-     * @return Container
-     * @throws Exception
-     */
     public static function setup(array $config): Container
     {
         $builder = new DI\ContainerBuilder();
@@ -98,6 +91,7 @@ final class DependencyInjection
                     ),
             ]
         );
+        /** @noinspection PhpUnhandledExceptionInspection */
         $di = $builder->build();
 
         // dynamic definitions

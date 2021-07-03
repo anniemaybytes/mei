@@ -26,8 +26,6 @@ performance_schema      = ON
 bind-address    = 0.0.0.0
 max_allowed_packet  = 32M
 max_heap_table_size     = 64M
-# emulate MariaDB 10.1 behavior (no strict)
-sql_mode = "NO_ENGINE_SUBSTITUTION,NO_AUTO_CREATE_USER"
 
 query_cache_limit = 128K
 query_cache_size = 50M

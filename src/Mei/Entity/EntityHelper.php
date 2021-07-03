@@ -20,9 +20,6 @@ use UnexpectedValueException;
 final class EntityHelper
 {
     /**
-     * @param object|object[] $d
-     *
-     * @return array
      * @throws JsonException
      */
     public static function objectToArray(object|array $d): array
@@ -30,19 +27,12 @@ final class EntityHelper
         return json_decode(json_encode($d, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR);
     }
 
-    /**
-     * @param array $array
-     *
-     * @return array
-     */
     public static function flattenArray(array $array): array
     {
         return iterator_to_array(new RecursiveIteratorIterator(new RecursiveArrayIterator($array)), false);
     }
 
     /**
-     * @param string|null $imp
-     *
      * @return mixed - false if unserialize failed, null if $imp is known to be empty, otherwise unserialized data
      */
     public static function safelyUnserialize(?string $imp): mixed

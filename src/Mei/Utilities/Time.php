@@ -6,7 +6,6 @@ namespace Mei\Utilities;
 
 use DateInterval;
 use DateTime;
-use Exception;
 
 /**
  * Class Time
@@ -19,11 +18,6 @@ final class Time
 
     /**
      * Checks if a given DateTime object is non-zero
-     *
-     * @param DateTime $datetime
-     *
-     * @return bool true if time not 0000-00-00 00:00:00
-     * @throws Exception
      */
     public static function timeIsNonZero(DateTime $datetime): bool
     {
@@ -35,17 +29,13 @@ final class Time
      * Constructs a DateTime object from an SQL time string.
      *
      * Time string format is 'Y-m-d H:i:s'
-     *
-     * @param string|null $str
-     *
-     * @return DateTime
-     * @throws Exception
      */
     public static function fromSql(?string $str): DateTime
     {
         if (!$str) {
             return self::fromSql(self::ZERO_SQLTIME);
         }
+        /** @noinspection PhpUnhandledExceptionInspection */
         return new DateTime($str);
     }
 
@@ -53,10 +43,6 @@ final class Time
      * Constructs a DateTime object from a UNIX timestamp.
      *
      * Unix timestamp format is 'U'
-     *
-     * @param mixed $str
-     *
-     * @return DateTime
      */
     public static function fromEpoch(mixed $str): DateTime
     {
@@ -70,9 +56,6 @@ final class Time
 
     /**
      * Returns the current time.
-     *
-     * @return DateTime
-     * @throws Exception
      */
     public static function now(): DateTime
     {
@@ -81,12 +64,6 @@ final class Time
 
     /**
      * Converts the given time to an SQL time string.
-     *
-     * @param DateTime $t
-     * @param bool $fuzzy if true returns date only, time set to 0
-     *
-     * @return string
-     * @throws Exception
      */
     public static function sql(DateTime $t, bool $fuzzy = false): string
     {
@@ -104,10 +81,6 @@ final class Time
      * Converts the given time to an RFC2822 time string.
      *
      * RFC2822 format is Thu, 21 Dec 2000 16:01:07 +0000
-     *
-     * @param DateTime $t
-     *
-     * @return string
      */
     public static function rfc2822(DateTime $t): string
     {
@@ -116,10 +89,6 @@ final class Time
 
     /**
      * Converts the given time to an unix epoch time string.
-     *
-     * @param DateTime $t
-     *
-     * @return string
      */
     public static function epoch(DateTime $t): string
     {
@@ -130,10 +99,6 @@ final class Time
      * Creates an interval from the given time string. For example,
      *  interval('-1 day');
      *  interval('+1 year');
-     *
-     * @param string $s
-     *
-     * @return DateInterval
      */
     public static function interval(string $s): DateInterval
     {
