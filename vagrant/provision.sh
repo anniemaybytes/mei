@@ -51,7 +51,12 @@ rm -rf /etc/nginx/{sites,mods}-available
 rm -rf /etc/nginx/conf.d
 cd /vagrantroot/configs
 cp -av * /
+rm -rf /etc/mysql/mariadb.conf.d && ln -s /etc/mysql/conf.d /etc/mysql/mariadb.conf.d
+chown -R root:root /etc/mysql/conf.d /etc/cron.d/*
+chmod 644 /etc/mysql/conf.d/* /etc/cron.d/*
 chmod 755 /etc/mysql/mariadb.cnf
+echo never >/sys/kernel/mm/transparent_hugepage/defrag
+echo never >/sys/kernel/mm/transparent_hugepage/enabled
 
 echo
 echo Installing composer as /usr/local/bin/composer...

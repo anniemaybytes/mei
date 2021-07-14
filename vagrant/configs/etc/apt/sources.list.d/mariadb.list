@@ -1,2 +1,2 @@
-deb [arch=amd64] http://mirror.klaus-uwe.me/mariadb/repo/10.5/debian buster main
-# deb-src [arch=amd64] http://mirror.klaus-uwe.me/mariadb/repo/10.5/debian buster main
+deb [arch=amd64] http://mirror.klaus-uwe.me/mariadb/repo/10.6/debian buster main
+# deb-src [arch=amd64] http://mirror.klaus-uwe.me/mariadb/repo/10.6/debian buster main

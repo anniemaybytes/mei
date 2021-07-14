@@ -94,15 +94,6 @@ final class ServeCtrl extends BaseCtrl
 
         // does not match etag (might be empty array)
         if (@$request->getHeader('If-None-Match')[0] !== $eTag) {
-            if (!isset($width)) {
-                // if no resize is taking place we can just ask nginx to stream file for us
-                $response = $response->withHeader(
-                    'Content-Security-Policy',
-                    self::CSP_RULE
-                );
-                return $response->withHeader('X-Accel-Redirect', "/x-accel$path");
-            }
-            // otherwise we have to stream file ourselves
             return $response->withHeader(
                 'Content-Security-Policy',
                 self::CSP_RULE

@@ -9,16 +9,20 @@ fi
 export DEBIAN_FRONTEND=noninteractive
 
 echo
+echo Copying over configs...
+cd /vagrantroot/configs
+cp -avu * /
+chown -R root:root /etc/mysql/conf.d /etc/cron.d/*
+chmod 644 /etc/mysql/conf.d/* /etc/cron.d/*
+chmod 755 /etc/mysql/mariadb.cnf
+echo never >/sys/kernel/mm/transparent_hugepage/defrag
+echo never >/sys/kernel/mm/transparent_hugepage/enabled
+
+echo
 echo Updating packages...
 apt-get update
 apt-get -qq -y -o Dpkg::Options::="--force-confold" --only-upgrade install php8.0* mariadb-server
 apt-get -y autoremove && apt-get -y autoclean
-
-echo
-echo Copying over configs...
-cd /vagrantroot/configs
-cp -avu * /
-chmod 755 /etc/mysql/mariadb.cnf
 
 echo
 echo Configuring daemons...
