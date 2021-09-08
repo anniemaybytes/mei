@@ -15,7 +15,7 @@ apt-mark hold grub-pc # bug: attempt to run grub-pc updater in noninteractive mo
 
 echo
 echo Installing required base components...
-apt-get update
+apt-get update --allow-releaseinfo-change
 apt-get -qq -y install apt-transport-https dirmngr curl
 
 echo
@@ -27,7 +27,7 @@ curl -sSL https://packages.sury.org/php/apt.gpg | apt-key add -
 
 echo
 echo Updating apt cache...
-apt-get update
+apt-get update --allow-releaseinfo-change
 
 echo
 echo Updating currently installed packages...

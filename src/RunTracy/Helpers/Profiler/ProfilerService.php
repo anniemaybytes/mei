@@ -10,7 +10,6 @@ use PetrKnap\Php\Singleton\SingletonTrait;
 /**
  * Class ProfilerService
  *
- * @internal
  * @author Petr Knap <dev@petrknap.cz>
  * @package RunTracy\Helpers\Profiler
  */
@@ -31,9 +30,7 @@ final class ProfilerService implements SingletonInterface
 
     private array $metaData = [];
 
-    /**
-     * @var Profile[]
-     */
+    /** @var Profile[] */
     private array $profiles = [];
 
     private function __construct()

@@ -20,7 +20,7 @@ echo never >/sys/kernel/mm/transparent_hugepage/enabled
 
 echo
 echo Updating packages...
-apt-get update
+apt-get update --allow-releaseinfo-change
 apt-get -qq -y -o Dpkg::Options::="--force-confold" --only-upgrade install php8.0* mariadb-server
 apt-get -y autoremove && apt-get -y autoclean
 
