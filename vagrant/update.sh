@@ -12,9 +12,9 @@ echo
 echo Copying over configs...
 cd /vagrantroot/configs
 cp -avu * /
-chown -R root:root /etc/mysql/conf.d /etc/cron.d/*
-chmod 644 /etc/mysql/conf.d/* /etc/cron.d/*
-chmod 755 /etc/mysql/mariadb.cnf
+chown -R root:root /etc/mysql/conf.d /etc/cron.d
+find /etc/mysql -name "*.cnf" -type f -exec chmod 644 '{}' \;
+find /etc/cron.d/ -type f -exec chmod 644 '{}' \;
 echo never >/sys/kernel/mm/transparent_hugepage/defrag
 echo never >/sys/kernel/mm/transparent_hugepage/enabled
 
@@ -41,12 +41,8 @@ systemctl stop cron
 echo
 echo Updating composer from lock file...
 cd /code
-if composer --version -n | grep "1\."; then
-    composer self-update -n --2 # update to composer v2
-else
-    composer self-update -n
-fi
-su -s /bin/bash vagrant -c 'composer install'
+COMPOSER_ALLOW_SUPERUSER=1 composer self-update -n
+su vagrant -s /bin/bash -c 'composer install'
 
 echo
 echo Starting MariaDB...
@@ -55,7 +51,7 @@ systemctl start mariadb
 echo
 echo Migrating...
 cd /code
-su -s /bin/bash vagrant -c 'composer phpmig migrate'
+su vagrant -s /bin/bash -c 'composer phpmig migrate'
 
 echo
 echo Starting daemons...

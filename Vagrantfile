@@ -5,8 +5,8 @@ ENV["LC_ALL"] = "en_US.UTF-8"
 
 Vagrant.configure(2) do |config|
   # box
-  config.vm.box = "debian/contrib-buster64"
-  config.vm.box_version = "10.7.0"
+  config.vm.box = "debian/bullseye64"
+  config.vm.box_version = ">= 11.20210829.1"
   
   # custom
   config.vm.graceful_halt_timeout = 30
@@ -24,14 +24,19 @@ Vagrant.configure(2) do |config|
   config.vm.synced_folder "./vagrant", "/vagrantroot"
   config.vm.synced_folder ".", "/vagrant", type: "rsync", disabled: true
   
-  # virtualbox-specific overrides
-  config.vm.provider :virtualbox do |v, override|
-    v.check_guest_additions = true
-    v.functional_vboxsf     = true
+  # virtualbox specific overrides
+  config.vm.provider "virtualbox" do |v|
     v.memory = 1024
     v.cpus = 2
-    v.customize ["modifyvm", :id, "--vram", "16"]
-    v.customize ["modifyvm", :id, "--paravirtprovider", "default"]
+
+    v.check_guest_additions = false # guest additions are mainlined now, version is meaningless
+    v.functional_vboxsf     = true
+  end
+
+  # libvirt specific overrides
+  config.vm.provider "libvirt" do |v|
+    v.memory = 1024
+    v.cpus = 2
   end
   
   # provision scripts
