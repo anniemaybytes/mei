@@ -26,7 +26,7 @@ final class ImageUtilities
 
     public static function getSavePath(string $name, bool $base = true): string
     {
-        $depth = Dispatcher::config('images.depth') ?? 3;
+        $depth = Dispatcher::config('images.depth');
         if ($depth >= 32) {
             throw new InvalidArgumentException('Can not fetch path that is >= 32 levels deep');
         }
@@ -49,7 +49,7 @@ final class ImageUtilities
         return [
             'extension' => self::$allowedTypes[$data['mime']] ?? '',
             'mime' => $data['mime'],
-            'hash' => hash('sha256', $bindata . (Dispatcher::config('app.salt') ?? '')),
+            'hash' => hash('sha256', $bindata . Dispatcher::config('app.salt')),
             'md5' => md5($bindata),
             'width' => $data[0],
             'height' => $data[1],

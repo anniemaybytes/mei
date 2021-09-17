@@ -70,7 +70,7 @@ abstract class Model implements IModel
     /** {@inheritDoc} */
     public function getById(?array $id): ?IEntity
     {
-        if ($id === null || $id === [] || !(is_array($id))) {
+        if ($id === [] || !(is_array($id))) {
             return null;
         }
 
@@ -172,7 +172,7 @@ abstract class Model implements IModel
             $sql = "INSERT INTO `$table` ($cols) VALUES ($vals)";
             $q = $this->getDatabase()->prepare($sql);
             foreach ($values as $param => $value) {
-                $q->bindValue(":{$param}", $value, PDOParamMapper::map($attrs[$param]));
+                $q->bindValue(":$param", $value, PDOParamMapper::map($attrs[$param]));
             }
             $q->execute();
 

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Mei;
 
+use ArrayAccess;
+use Mei\Config\Config;
 use Mei\Route as R;
 use PetrKnap\Php\Singleton\SingletonInterface;
 use PetrKnap\Php\Singleton\SingletonTrait;
@@ -25,7 +27,7 @@ final class Dispatcher implements SingletonInterface
     use SingletonTrait;
 
     private App $app;
-    private array $config;
+    private ArrayAccess $config;
     private Container $di;
 
     public static function app(): App
@@ -50,20 +52,17 @@ final class Dispatcher implements SingletonInterface
     private function initConfig(): void
     {
         Profiler::start('initConfig');
-        $config = ConfigLoader::load();
+        $config = new Config();
         Profiler::finish('initConfig');
 
         $allowedModes = ['production', 'staging', 'development'];
         if (!in_array(@$config['mode'], $allowedModes, true)) {
             throw new RuntimeException(
                 'Can not start application with non-recognized mode: ' .
-                ($config['mode'] ?? '(null)') .
-                '. Must be one of: ' . implode(', ', $allowedModes)
+                $config['mode'] . '. Must be one of: ' . implode(', ', $allowedModes)
             );
         }
 
-        $config['app.max_filesize'] = $config['app.max_filesize'] ?? PHP_INT_MAX;
-        $config['images.directory'] = BASE_ROOT . '/' . ($config['images.directory'] ?? 'images');
         $this->config = $config;
     }
 

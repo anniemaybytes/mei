@@ -38,7 +38,7 @@ final class DeleteCtrl extends BaseCtrl
         ignore_user_abort(true);
 
         $auth = $request->getParam('auth', '');
-        if (!hash_equals($auth, $this->config['api.auth_key'] ?? '')) {
+        if (!hash_equals($auth, $this->config['api.secret'])) {
             throw new HttpForbiddenException($request);
         }
 
@@ -90,7 +90,7 @@ final class DeleteCtrl extends BaseCtrl
             $urls[] = $this->router->fullUrlFor($request->getUri(), 'serve', ['image' => $image]);
         }
 
-        if ($this->config['cloudflare.enabled'] ?? false) {
+        if ($this->config['cloudflare.enabled']) {
             $curl = new Curl(
                 "https://api.cloudflare.com/client/v4/zones/{$this->config['cloudflare.zone']}/purge_cache"
             );

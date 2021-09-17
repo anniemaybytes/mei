@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mei\Utilities;
 
+use ArrayAccess;
 use CurlHandle;
 use Mei\Dispatcher;
 
@@ -22,7 +23,7 @@ use function curl_setopt_array;
  */
 final class Curl
 {
-    private array $config;
+    private ArrayAccess $config;
 
     private ?CurlHandle $curl;
 
@@ -61,7 +62,7 @@ final class Curl
     public function exec(bool $proxyOverride = false): bool|string
     {
         if (!$proxyOverride) {
-            $this->setopt(CURLOPT_PROXY, ($this->config['proxy'] ?? null));
+            $this->setopt(CURLOPT_PROXY, $this->config['proxy']);
         }
 
         return curl_exec($this->curl);

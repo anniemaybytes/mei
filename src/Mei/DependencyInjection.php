@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mei;
 
+use ArrayAccess;
 use DI;
 use Mei\Cache\IKeyStore;
 use Mei\Entity\ICacheable;
@@ -24,7 +25,7 @@ use Tracy\Debugger;
  */
 final class DependencyInjection
 {
-    public static function setup(array $config): Container
+    public static function setup(ArrayAccess $config): Container
     {
         $builder = new DI\ContainerBuilder();
         $builder->useAnnotations(true);
@@ -43,18 +44,17 @@ final class DependencyInjection
                 PDO::class => function (Container $di) {
                     $config = $di->get('config');
 
-                    $dsn = 'mysql:dbname=' . ($config['db.database'] ?? 'mei') . ';charset=utf8;';
-
+                    $dsn = "mysql:dbname={$config['db.database']};charset=utf8;";
                     if (isset($config['db.socket'])) {
                         $dsn .= "unix_socket={$config['db.socket']};";
                     } else {
-                        $dsn .= 'host=' . ($config['db.hostname'] ?? 'localhost') . ';port=' . ($config['db.port'] ?? 3306) . ';';
+                        $dsn .= "host={$config['db.hostname']};port={$config['db.port']};";
                     }
 
                     $w = new PDOWrapper(
                         $dsn,
-                        $config['db.username'] ?? 'mei',
-                        $config['db.password'] ?? '',
+                        $config['db.username'],
+                        $config['db.password'],
                         [
                             PDO::ATTR_PERSISTENT => false,
                             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

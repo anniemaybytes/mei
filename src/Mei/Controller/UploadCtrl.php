@@ -146,7 +146,7 @@ final class UploadCtrl extends BaseCtrl
     public function api(Request $request, Response $response, array $args): Response
     {
         $auth = $request->getParam('auth', '');
-        if (!hash_equals($auth, $this->config['api.auth_key'] ?? '')) {
+        if (!hash_equals($auth, $this->config['api.secret'])) {
             throw new HttpForbiddenException($request);
         }
 
@@ -267,7 +267,7 @@ final class UploadCtrl extends BaseCtrl
             $image = new ImagickUtility($bindata, $metadata);
 
             // strip EXIF is requested
-            if ($this->config['app.strip_exif'] ?? false) {
+            if ($this->config['app.strip_exif']) {
                 $bindata = $image->stripExif()->getImagesBlob();
             }
 
@@ -276,7 +276,7 @@ final class UploadCtrl extends BaseCtrl
         }
 
         // generate new image entry in database and associate it with file on disk
-        $name = StringUtil::generateRandomString($this->config['images.name_len'] ?? 11);
+        $name = StringUtil::generateRandomString($this->config['images.name_len']);
         $newImage = $this->filesMap->createEntity(
             [
                 'Key' => $key,

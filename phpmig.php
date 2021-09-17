@@ -5,7 +5,7 @@ declare(strict_types=1);
 const BASE_ROOT = __DIR__;
 require_once BASE_ROOT . '/vendor/autoload.php'; // set up autoloading
 
-use Mei\ConfigLoader;
+use Mei\Config\Config;
 use Phpmig\Adapter;
 use Pimple\Container;
 
@@ -36,7 +36,7 @@ return new Container(
         'phpmig.adapter' => static function (Container $di) {
             return new Adapter\PDO\Sql($di[PDO::class], 'migrations');
         },
-        'config' => ConfigLoader::load(),
+        'config' => new Config(),
         'phpmig.migrations_path' => BASE_ROOT . '/migrations',
     ]
 );
