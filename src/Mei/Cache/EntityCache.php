@@ -38,14 +38,14 @@ final class EntityCache implements ICacheable
         $this->loadCache($cache);
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function setKey(string $key): ICacheable
     {
         $this->key = $key;
         return $this;
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function setId(array $id): ICacheable
     {
         $str = '';
@@ -63,32 +63,32 @@ final class EntityCache implements ICacheable
         return $this;
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function getId(): string
     {
         return $this->id;
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function setCacheDuration(int $duration): ICacheable
     {
         $this->duration = $duration;
         return $this;
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function getRow(): array
     {
         return $this->dbRow;
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function getLoaded(string $key): mixed
     {
         return $this->loadedValues[$key] ?? null;
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function setRow(array $row): ICacheable
     {
         $this->dirty = true;
@@ -96,7 +96,7 @@ final class EntityCache implements ICacheable
         return $this;
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function setLoaded(string $key, mixed $value): ICacheable
     {
         $this->dirty = true;
@@ -125,7 +125,7 @@ final class EntityCache implements ICacheable
         return sprintf('orm-%s_%s', $this->key, $this->id);
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function getData(): array
     {
         return [
@@ -134,7 +134,7 @@ final class EntityCache implements ICacheable
         ];
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function setData(array $cache): ICacheable
     {
         $this->dbRow = $cache['dbRow'];
@@ -142,7 +142,7 @@ final class EntityCache implements ICacheable
         return $this;
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function save(IKeyStore $cache): array
     {
         $r = $this->getData();
@@ -156,7 +156,7 @@ final class EntityCache implements ICacheable
         return $r;
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function delete(IKeyStore $cache): void
     {
         $key = $this->getCacheKey();

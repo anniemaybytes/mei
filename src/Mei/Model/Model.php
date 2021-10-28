@@ -67,7 +67,7 @@ abstract class Model implements IModel
         );
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function getById(?array $id): ?IEntity
     {
         if ($id === [] || !(is_array($id))) {
@@ -120,7 +120,7 @@ abstract class Model implements IModel
         return $builder($entityCache);
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function createEntity(array $arr): IEntity
     {
         if (!is_array($arr)) {
@@ -140,7 +140,7 @@ abstract class Model implements IModel
         return $entity;
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function save(IEntity $entity): ?IEntity
     {
         $table = $this->getTableName();
@@ -269,7 +269,7 @@ abstract class Model implements IModel
         return $this->getById($id);
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function delete(?IEntity $entity): ?IEntity
     {
         if ($entity === null) {

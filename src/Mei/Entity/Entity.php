@@ -46,7 +46,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
 
     /// IEntity Implementation
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public static function getAttributes(): array
     {
         return static::getAttributesFromColumns(static::$columns);
@@ -67,7 +67,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
         return $attributes;
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public static function getDefaults(): array
     {
         return static::getDefaultsFromColumns(static::$columns);
@@ -90,7 +90,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
         return $defaults;
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public static function getIdAttributes(): array
     {
         return static::getIdAttributesFromColumns(static::$columns);
@@ -112,7 +112,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
         return $ids;
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function getId(): ?array
     {
         $ids = self::getIdAttributes();
@@ -127,32 +127,32 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
         return $id;
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function setCacheable(ICacheable $cacheable): IEntity
     {
         $this->cache = $cacheable;
         return $this;
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function getCacheable(): ICacheable
     {
         return $this->cache;
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function getChangedValues(): array
     {
         return $this->mapper->getChangedValues($this->getCacheable());
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function getValues(): array
     {
         return $this->mapper->getValues($this->getCacheable());
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function getMappedValues(): array
     {
         $values = $this->getValues();
@@ -166,26 +166,26 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
         return $mappedValues;
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function setNew(bool $new): IEntity
     {
         $this->new = $new;
         return $this;
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function isNew(): bool
     {
         return $this->new;
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function hasChanged(): bool
     {
         return $this->mapper->hasChanged($this->getCacheable());
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function reset(ICacheable $cache): IEntity
     {
         $this->new = false;
@@ -199,7 +199,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
         return $this;
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function getCachedValue(string $key): array
     {
         $value = $this->getCacheable()->getLoaded($key);
@@ -218,25 +218,25 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
 
     /// \ArrayAccess implementation
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function offsetExists($offset): bool
     {
         return $this->__isset($offset);
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function offsetUnset($offset): void
     {
         $this->__unset($offset);
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function offsetGet($offset)
     {
         return $this->__get($offset);
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function offsetSet($offset, $value): void
     {
         $this->__set($offset, $value);
@@ -283,7 +283,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
 
     /// \JsonSerializable implementation
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function jsonSerialize(): array
     {
         return $this->getValues();
@@ -291,7 +291,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
 
     /// \IteratorAggregate implementation
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->getMappedValues());

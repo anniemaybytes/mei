@@ -17,6 +17,7 @@ find /etc/mysql -name "*.cnf" -type f -exec chmod 644 '{}' \;
 find /etc/cron.d/ -type f -exec chmod 644 '{}' \;
 echo never >/sys/kernel/mm/transparent_hugepage/defrag
 echo never >/sys/kernel/mm/transparent_hugepage/enabled
+update-grub
 
 echo
 echo Updating packages...

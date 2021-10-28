@@ -68,7 +68,7 @@ final class PDOWrapper extends PDO
      * however if code or query would to fail, a parent transaction will be rollbacked fully along with all child transactions regardless of where the issue was
      * even if child transaction was already commited (commiting child transaction just removes it from queue stack)
      *
-     * {@inheritDoc}
+     * @inheritDoc
      * @noinspection MissUsingParentKeywordInspection
      */
     public function beginTransaction(): bool
@@ -86,7 +86,7 @@ final class PDOWrapper extends PDO
         return (bool)$this->exec('SAVEPOINT tq_' . $tid); // creating new child transaction via savepoint
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function commit(): bool
     {
         array_pop($this->transactionQueue);
@@ -101,7 +101,7 @@ final class PDOWrapper extends PDO
         return $res;
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function rollBack(): bool
     {
         $tid = array_pop($this->transactionQueue); // pop transactionId

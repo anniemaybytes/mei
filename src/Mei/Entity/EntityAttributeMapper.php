@@ -95,7 +95,7 @@ final class EntityAttributeMapper implements IAttributeMapper
         return $cache->setRow($values);
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function getChangedValues(ICacheable $cache): array
     {
         $values = [];
@@ -109,7 +109,7 @@ final class EntityAttributeMapper implements IAttributeMapper
         return $values;
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function getValues(ICacheable $cache): array
     {
         $values = [];
@@ -121,7 +121,7 @@ final class EntityAttributeMapper implements IAttributeMapper
         return $values;
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function hasChanged(ICacheable $cache): bool
     {
         return (count($this->changedAttributes) > 0);

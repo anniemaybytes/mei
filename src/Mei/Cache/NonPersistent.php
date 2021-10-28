@@ -44,7 +44,7 @@ final class NonPersistent implements IKeyStore
         );
     }
 
-    /** {@inheritDoc} */
+    /** @inheritDoc */
     public function doGet(string $key): mixed
     {
         $start = $this->startCall();
