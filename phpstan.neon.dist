@@ -14,5 +14,8 @@ parameters:
         - '#Call to an undefined method Psr\\Http\\Message\\ResponseInterface::write#'
         - '#Call to an undefined method Psr\\Http\\Message\\ResponseInterface::withRedirect#'
         - '#Call to an undefined method Psr\\Http\\Message\\ResponseInterface::withJson#'
-includes:
-    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+services:
+	-
+		class: Mei\PHPStan\PropertiesExtension
+		tags:
+			- phpstan.properties.readWriteExtension

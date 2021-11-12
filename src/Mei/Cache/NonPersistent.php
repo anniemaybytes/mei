@@ -15,15 +15,14 @@ use Tracy\Debugger;
  */
 final class NonPersistent implements IKeyStore
 {
-    private array $inner = [];
-
     private string $keyPrefix;
 
     private bool $clearOnGet = false;
 
     private array $cacheHits = [];
-
     private float $time = 0;
+
+    private array $inner = [];
 
     public function __construct(string $keyPrefix)
     {
@@ -44,15 +43,17 @@ final class NonPersistent implements IKeyStore
         );
     }
 
+    // === CACHE ===
+
     /** @inheritDoc */
-    public function doGet(string $key): mixed
+    public function get(string $key): mixed
     {
         $start = $this->startCall();
         $keyOld = $key;
         $key = $this->keyPrefix . $key;
 
         if ($this->clearOnGet) {
-            $this->doDelete($keyOld);
+            $this->delete($keyOld);
             $this->endCall($start);
             return false;
         }
@@ -69,17 +70,7 @@ final class NonPersistent implements IKeyStore
         return $res;
     }
 
-    public function getCacheHits(): array
-    {
-        return $this->cacheHits;
-    }
-
-    public function getExecutionTime(): float
-    {
-        return $this->time;
-    }
-
-    public function doSet(string $key, mixed $value, int $time = 10800): bool
+    public function set(string $key, mixed $value, int $time = 10800): bool
     {
         $start = $this->startCall();
         $key = $this->keyPrefix . $key;
@@ -90,7 +81,7 @@ final class NonPersistent implements IKeyStore
         return true;
     }
 
-    public function doDelete(string $key): bool
+    public function delete(string $key): bool
     {
         $start = $this->startCall();
         $key = $this->keyPrefix . $key;
@@ -101,7 +92,7 @@ final class NonPersistent implements IKeyStore
         return true;
     }
 
-    public function doIncrement(string $key, int $n = 1, int $initial = 1, int $expiry = 0): bool|int
+    public function increment(string $key, int $n = 1, int $initial = 1, int $expiry = 0): bool|int
     {
         $start = $this->startCall();
         $key = $this->keyPrefix . $key;
@@ -126,15 +117,53 @@ final class NonPersistent implements IKeyStore
         return $value;
     }
 
-    public function doTouch(string $key, int $expiry = 10800): bool
+    public function touch(string $key, int $expiry = 10800): bool
     {
         return true;
     }
+
+    public function flush(): void
+    {
+        foreach ($this->inner as $key => $value) {
+            unset($this->inner[$key]);
+        }
+    }
+
+    public function setClearOnGet(bool $val): void
+    {
+        $this->clearOnGet = $val;
+    }
+
+    // === ENTITY ===
 
     public function getEntityCache(string $key, array $id = [], int $duration = 0): ICacheable
     {
         return new EntityCache($this, $key, $id, $duration);
     }
+
+    // === STATISTICS ===
+
+    public function getAllKeys(): array
+    {
+        return array_keys($this->inner);
+    }
+
+    public function getStats(): array
+    {
+        return ['count' => count($this->inner)];
+    }
+
+    public function getCacheHits(): array
+    {
+        return $this->cacheHits;
+    }
+
+    public function getExecutionTime(): float
+    {
+        return $this->time;
+    }
+
+    // === HELPER ===
 
     private function startCall(): float
     {
@@ -144,27 +173,5 @@ final class NonPersistent implements IKeyStore
     private function endCall(float $start): void
     {
         $this->time += (microtime(true) - $start) * 1000;
-    }
-
-    public function doFlush(): void
-    {
-        foreach ($this->inner as $key => $value) {
-            unset($this->inner[$key]);
-        }
-    }
-
-    public function getAllKeys(): array
-    {
-        return array_keys($this->inner);
-    }
-
-    public function setClearOnGet(bool $val): void
-    {
-        $this->clearOnGet = $val;
-    }
-
-    public function getStats(): array
-    {
-        return ['count' => count($this->inner)];
     }
 }

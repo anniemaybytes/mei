@@ -49,7 +49,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     /** @inheritDoc */
     public static function getAttributes(): array
     {
-        return static::getAttributesFromColumns(static::$columns);
+        return self::getAttributesFromColumns(static::$columns);
     }
 
     private static function getAttributesFromColumns(array $columns): array
@@ -70,7 +70,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     /** @inheritDoc */
     public static function getDefaults(): array
     {
-        return static::getDefaultsFromColumns(static::$columns);
+        return self::getDefaultsFromColumns(static::$columns);
     }
 
     private static function getDefaultsFromColumns(array $columns): array
@@ -93,7 +93,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     /** @inheritDoc */
     public static function getIdAttributes(): array
     {
-        return static::getIdAttributesFromColumns(static::$columns);
+        return self::getIdAttributesFromColumns(static::$columns);
     }
 
     private static function getIdAttributesFromColumns(array $columns): array

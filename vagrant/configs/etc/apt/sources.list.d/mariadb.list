@@ -1,1 +1,1 @@
-deb [arch=amd64] http://mirror.klaus-uwe.me/mariadb/repo/10.6/debian bullseye main
+deb [arch=amd64] https://mirror.mva-n.net/mariadb/repo/10.6/debian bullseye main

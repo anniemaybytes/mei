@@ -14,15 +14,11 @@ use Mei\Entity\ICacheable;
 final class EntityCache implements ICacheable
 {
     private string $key;
-
     private string $id;
 
     private int $duration;
 
-    private bool $dirty;
-
     private array $dbRow;
-
     private array $loadedValues;
 
     public function __construct(IKeyStore $cache, string $key, array $id = [], int $duration = 10800)
@@ -33,7 +29,6 @@ final class EntityCache implements ICacheable
 
         $this->dbRow = [];
         $this->loadedValues = [];
-        $this->dirty = false;
 
         $this->loadCache($cache);
     }
@@ -91,7 +86,6 @@ final class EntityCache implements ICacheable
     /** @inheritDoc */
     public function setRow(array $row): ICacheable
     {
-        $this->dirty = true;
         $this->dbRow = $row;
         return $this;
     }
@@ -99,7 +93,6 @@ final class EntityCache implements ICacheable
     /** @inheritDoc */
     public function setLoaded(string $key, mixed $value): ICacheable
     {
-        $this->dirty = true;
         $this->loadedValues[$key] = $value;
         return $this;
     }
@@ -110,9 +103,8 @@ final class EntityCache implements ICacheable
         if (!$key) {
             return;
         }
-        $cached = $cache->doGet($key);
+        $cached = $cache->get($key);
         if ($cached) {
-            $this->dirty = false;
             $this->setData($cached);
         }
     }
@@ -149,8 +141,7 @@ final class EntityCache implements ICacheable
 
         $key = $this->getCacheKey();
         if ($key) {
-            $this->dirty = false;
-            $cache->doSet($key, $r, $this->duration);
+            $cache->set($key, $r, $this->duration);
         }
 
         return $r;
@@ -161,8 +152,7 @@ final class EntityCache implements ICacheable
     {
         $key = $this->getCacheKey();
         if ($key) {
-            $this->dirty = false;
-            $cache->doDelete($key);
+            $cache->delete($key);
         }
     }
 }

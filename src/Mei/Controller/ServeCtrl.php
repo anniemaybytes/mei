@@ -35,7 +35,7 @@ final class ServeCtrl extends BaseCtrl
     public function serve(Request $request, Response $response, array $args): Response
     {
         $pathInfo = pathinfo($args['image']);
-        if (!isset($pathInfo['extension'], $pathInfo['filename'])) {
+        if (!isset($pathInfo['extension'])) {
             throw new HttpNotFoundException($request, 'Image Not Found');
         }
 

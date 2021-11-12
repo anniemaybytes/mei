@@ -31,6 +31,12 @@
       "extends": [
         "schedule:weekends"
       ]
+    },
+    {
+      "matchPackagePrefixes": [
+        "phpstan/"
+      ],
+      "groupName": "phpstan monorepo"
     }
   ]
 }
