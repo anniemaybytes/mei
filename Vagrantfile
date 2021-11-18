@@ -6,15 +6,9 @@ ENV["LC_ALL"] = "en_US.UTF-8"
 Vagrant.require_version ">= 2.2.12"
 
 Vagrant.configure(2) do |config|
-  # required plugins
-  config.vagrant.plugins = {"vagrant-vbguest" => {"version" => "0.30.0"}}
-
   # box
-  config.vm.box = "debian/bullseye64"
-  config.vm.box_version = ">= 11.20210829.1"
-  
-  # custom
-  config.vm.graceful_halt_timeout = 30
+  config.vm.box = "generic/debian11"
+  config.vm.box_version = ">= 3.5.0"
 
   # network
   config.vm.network "forwarded_port", id: "ssh", guest: 22, host_ip: "127.0.0.1", host: 7022
@@ -23,25 +17,24 @@ Vagrant.configure(2) do |config|
 
   # synced folders
   config.vm.synced_folder "./", "/code",
-    owner: "vagrant",
     group: "www-data",
-    mount_options: ["dmode=775,fmode=775"]
+    mount_options: ["umask=002"]
   config.vm.synced_folder "./vagrant", "/vagrantroot"
-  config.vm.synced_folder ".", "/vagrant", type: "rsync", disabled: true
-
-  # https://github.com/dotless-de/vagrant-vbguest
-  config.vbguest.auto_update = true
-  config.vbguest.allow_downgrade = true
-  config.vbguest.auto_reboot = true
-  config.vbguest.installer_hooks[:before_install] = ["rmmod vboxsf vboxguest || true"]
 
   # virtualbox specific overrides
   config.vm.provider "virtualbox" do |v|
     v.memory = 1024
     v.cpus = 2
+    v.linked_clone = true
+  end
 
-    v.check_guest_additions = false # guest additions are mainlined now, version is meaningless
-    v.functional_vboxsf     = true
+  # vmware specific overrides
+  config.vm.provider "vmware_desktop" do |v|
+    v.memory = 1024
+    v.cpus = 2
+    v.vmx["cpuid.corespersocket"] = 2
+    v.vmx["mainMem.useNamedFile"] = false
+    v.vmx["ulm.disableMitigations"] = true
   end
 
   # libvirt specific overrides
@@ -49,9 +42,8 @@ Vagrant.configure(2) do |config|
     v.memory = 1024
     v.cpus = 2
   end
-  
+
   # provision scripts
   config.vm.provision "shell", path: "./vagrant/provision.sh"
   config.vm.provision "shell", run: "always", path: "./vagrant/update.sh"
-  
 end

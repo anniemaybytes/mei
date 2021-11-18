@@ -99,11 +99,11 @@ final class UploadCtrl extends BaseCtrl
                 continue;
             }
             foreach ($leaf as $file) {
+                /** @var UploadedFileInterface $file */
                 if ($file->getError() === 4) {
                     continue;
                 }
 
-                /** @var UploadedFileInterface $file */
                 if (!$file->getSize() || $file->getSize() > $this->config['app.max_filesize']) {
                     $errors[] = "File {$file->getClientFilename()} exceeds maximum filesize ({$this->config['app.max_filesize']})";
                     continue;

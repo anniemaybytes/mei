@@ -98,6 +98,7 @@ if ($di->get('config')['mode'] !== 'development') {
     $errorHandler->setErrorHandler( // handling for built-in errors when route not found or method not allowed
         HttpException::class,
         function (Request $request, Throwable $exception) use ($di) {
+            /** @var Container $di */
             return (new ErrorCtrl($di))->handleException(
                 $request,
                 $di->get(ResponseFactoryInterface::class)->createResponse(),
@@ -107,6 +108,7 @@ if ($di->get('config')['mode'] !== 'development') {
     );
     $errorHandler->setDefaultErrorHandler( // default error handler
         function (Request $request, Throwable $exception) use ($di) {
+            /** @var Container $di */
             return (new ErrorCtrl($di))->handleException(
                 $request,
                 $di->get(ResponseFactoryInterface::class)->createResponse(),

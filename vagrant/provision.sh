@@ -13,12 +13,6 @@ apt-mark hold linux-image-amd64 grub-pc # do not bloat image with new kernel
 rm -rf /var/log/journal && systemctl restart systemd-journald
 
 echo
-echo Updating base system...
-apt-get update --allow-releaseinfo-change
-apt-get -qq -y -o Dpkg::Options::="--force-confnew" dist-upgrade
-apt-get -y autoremove && apt-get -y autoclean
-
-echo
 echo Adding repositories...
 cd /vagrantroot/configs/etc/apt
 cp -avu * /etc/apt/
@@ -79,8 +73,8 @@ echo
 echo Configuring MySQL...
 echo "DELETE FROM mysql.user WHERE user =''" | mysql -uroot
 echo "CREATE DATABASE mei" | mysql -uroot
-echo "GRANT ALL ON mei.* TO mei@localhost IDENTIFIED BY 'mei'" | mysql -uroot
-echo "GRANT ALL ON mei.* TO 'mei'@'10.0.%.%' IDENTIFIED BY 'mei'" | mysql -uroot
+echo "GRANT ALL ON mei.* TO 'mei'@localhost IDENTIFIED BY 'mei'" | mysql -uroot
+echo "GRANT ALL ON mei.* TO 'mei'@'%' IDENTIFIED BY 'mei'" | mysql -uroot
 
 echo
 echo Importing database...
