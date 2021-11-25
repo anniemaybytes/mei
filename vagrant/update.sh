@@ -22,6 +22,13 @@ update-grub
 echo
 echo Updating packages...
 apt-get update --allow-releaseinfo-change
+find /etc/apt/sources.list.d -name "*.list" -type f -exec \
+    apt-get -qq -y \
+    -o Dpkg::Options::="--force-confold" \
+    -o Dir::Etc::sourcelist="{}" \
+    -o Dir::Etc::sourceparts="-" \
+    -o APT::Get::List-Cleanup="0" \
+    dist-upgrade \; # https://github.com/oerdnj/deb.sury.org/issues/1682
 apt-get -qq -y -o Dpkg::Options::="--force-confold" --only-upgrade install php8.0* mariadb-server
 apt-get -y autoremove && apt-get -y autoclean
 

@@ -51,9 +51,9 @@ final class Dispatcher implements SingletonInterface
 
     private function initConfig(): void
     {
-        Profiler::start('initConfig');
+        Profiler::start(__CLASS__ . '::' . __METHOD__);
         $config = new Config();
-        Profiler::finish('initConfig');
+        Profiler::finish(__CLASS__ . '::' . __METHOD__);
 
         $allowedModes = ['production', 'staging', 'development'];
         if (!in_array(@$config['mode'], $allowedModes, true)) {
@@ -68,9 +68,9 @@ final class Dispatcher implements SingletonInterface
 
     private function initDependencyInjection(): void
     {
-        Profiler::start('initDependencyInjection');
+        Profiler::start(__CLASS__ . '::' . __METHOD__);
         $this->di = DependencyInjection::setup($this->config);
-        Profiler::finish('initDependencyInjection');
+        Profiler::finish(__CLASS__ . '::' . __METHOD__);
     }
 
     private function initApplication(): void
@@ -78,7 +78,7 @@ final class Dispatcher implements SingletonInterface
         AppFactory::setContainer($this->di);
         $app = AppFactory::create();
 
-        Profiler::start('initRoutes');
+        Profiler::start(__CLASS__ . '::' . __METHOD__);
 
         $routeCollector = $app->getRouteCollector();
         $this->di->set(ResponseFactoryInterface::class, $app->getResponseFactory());
@@ -93,7 +93,7 @@ final class Dispatcher implements SingletonInterface
             $routeCollector->setCacheFile(BASE_ROOT . '/routes.cache.php');
         }
 
-        Profiler::finish('initRoutes');
+        Profiler::finish(__CLASS__ . '::' . __METHOD__);
 
         $this->app = $app;
     }

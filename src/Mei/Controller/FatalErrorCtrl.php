@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Mei\Controller;
 
-use DI\Container;
+use Psr\Container\ContainerInterface as Container;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Exception\HttpInternalServerErrorException;

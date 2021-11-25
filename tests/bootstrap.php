@@ -6,7 +6,7 @@ const BASE_ROOT = __DIR__ . '/..';
 const PUBLIC_ROOT = BASE_ROOT;
 chdir(BASE_ROOT);
 
-require_once BASE_ROOT . '/vendor/autoload.php'; // set up autoloading
+require_once BASE_ROOT . '/vendor/autoload.php';
 
 $_SERVER['REQUEST_METHOD'] = 'GET';
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';

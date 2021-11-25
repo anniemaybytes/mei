@@ -20,7 +20,14 @@ cp -avu * /etc/apt/
 echo
 echo Installing packages...
 apt-get update
-apt-get -qq -y -o Dpkg::Options::="--force-confold" install php8.0 php8.0-xdebug php8.0-imagick php8.0-xml php8.0-fpm \
+find /etc/apt/sources.list.d -name "*.list" -type f -exec \
+    apt-get -qq -y \
+    -o Dpkg::Options::="--force-confnew" \
+    -o Dir::Etc::sourcelist="{}" \
+    -o Dir::Etc::sourceparts="-" \
+    -o APT::Get::List-Cleanup="0" \
+    dist-upgrade \; # https://github.com/oerdnj/deb.sury.org/issues/1682
+apt-get -qq -y -o Dpkg::Options::="--force-confnew" install php8.0 php8.0-xdebug php8.0-imagick php8.0-xml php8.0-fpm \
     php8.0-cli php8.0-gd php8.0-curl php8.0-mysqlnd php8.0-bcmath php8.0-imagick php8.0-mbstring pv curl git unzip zip \
     htop iotop nginx libmysqlclient18 libmariadb3 mariadb-server imagemagick
 
