@@ -39,7 +39,7 @@ final class FatalErrorCtrl
     public function handleError(Request $request, Response $response, Throwable $error): Response
     {
         // have tracy log the error
-        Debugger::log($error, Debugger::ERROR);
+        Debugger::log($error, Debugger::CRITICAL);
 
         // clear the body first
         $body = $response->getBody();

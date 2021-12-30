@@ -43,18 +43,8 @@ final class EntityCache implements ICacheable
     /** @inheritDoc */
     public function setId(array $id): ICacheable
     {
-        $str = '';
-        foreach ($id as $key => $value) {
-            $row[$key] = $value;
-            if ($str) {
-                $str .= '_';
-            }
-            /** @noinspection PhpUnnecessaryCurlyVarSyntaxInspection */
-            $str .= "{$key}_{$value}";
-        }
-        $id = $str;
-        $this->id = $id;
-
+        ksort($id);
+        $this->id = http_build_query($id);
         return $this;
     }
 

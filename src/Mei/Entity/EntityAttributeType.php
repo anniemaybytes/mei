@@ -16,7 +16,7 @@ use RuntimeException;
  */
 final class EntityAttributeType
 {
-    public static function fromTo(string $type, mixed $val): mixed
+    public static function inflate(string $type, mixed $val): mixed
     {
         switch ($type) {
             case 'bool':
@@ -57,7 +57,7 @@ final class EntityAttributeType
         return $val;
     }
 
-    public static function toString(string $type, mixed $val): string
+    public static function deflate(string $type, mixed $val): string
     {
         switch ($type) {
             case 'int':

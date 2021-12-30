@@ -83,7 +83,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
             $column = $val[0];
             if (isset($val[2])) {
                 $type = self::getAttributes()[$column];
-                $defaults[$column] = Type::toString($type, $val[2]);
+                $defaults[$column] = Type::deflate($type, $val[2]);
             }
         }
 
@@ -160,7 +160,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
 
         foreach ($values as $attribute => $value) {
             $type = self::getAttributes()[$attribute];
-            $mappedValues[$attribute] = Type::fromTo($type, $value);
+            $mappedValues[$attribute] = Type::inflate($type, $value);
         }
 
         return $mappedValues;
@@ -263,20 +263,21 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
         }
         $value = $this->mapper->get($this->getCacheable(), $attribute);
         $type = self::getAttributes()[$attribute];
-        return Type::fromTo($type, $value);
+        return Type::inflate($type, $value);
     }
 
     public function __set(string $attribute, mixed $value): void
     {
         $attributes = self::getAttributes();
-        // note that we can't use isset here - might be setting an attribute that
-        // was never previously set; however, we still don't want to do anything if
-        // the attribute does not exist
+        /*
+         * Note that we can't use isset here - might be setting an attribute that was never previously set;
+         * however, we still don't want to do anything if the attribute does not exist
+         */
         if (!array_key_exists($attribute, $attributes)) {
             return;
         }
         $type = $attributes[$attribute];
-        $mappedValue = Type::toString($type, $value);
+        $mappedValue = Type::deflate($type, $value);
         $cache = $this->mapper->set($this->getCacheable(), $attribute, $mappedValue);
         $this->setCacheable($cache);
     }

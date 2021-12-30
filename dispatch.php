@@ -18,7 +18,6 @@ use Slim\Middleware\ContentLengthMiddleware;
 use Tracy\Debugger;
 
 date_default_timezone_set('UTC');
-error_reporting(ERROR_REPORTING);
 putenv('RES_OPTIONS=retrans:1 retry:1 timeout:1 attempts:1');
 
 $app = Dispatcher::app();
@@ -33,11 +32,8 @@ Debugger::$showFireLogger = false;
 Debugger::$maxLength = 520;
 Debugger::$logSeverity = ERROR_REPORTING;
 Debugger::$reservedMemorySize = 5000000; // 5 megabytes because we increase depth for bluescreen
-Debugger::enable($isDev ? Debugger::DEVELOPMENT : Debugger::PRODUCTION, $di->get('config')['logs_dir']);
 
 if ($isDev) {
-    error_reporting(ERROR_REPORTING);
-
     Debugger::getBar()->addPanel(new ProfilerPanel());
     Debugger::getBar()->addPanel(new IncludedFiles());
     Debugger::getBar()->addPanel(new XDebugHelper('yes'));
@@ -52,6 +48,9 @@ array_push(
     'SERVER_ADDR',
     'PHP_AUTH_PW'
 );
+
+Debugger::enable($isDev ? Debugger::DEVELOPMENT : Debugger::PRODUCTION, $di->get('config')['logs_dir']);
+error_reporting($isDev ? E_ALL : ERROR_REPORTING);
 
 /*
  * Note that the order is important; middleware gets executed as an onion, so

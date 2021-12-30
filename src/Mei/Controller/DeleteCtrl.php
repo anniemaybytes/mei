@@ -116,7 +116,7 @@ final class DeleteCtrl extends BaseCtrl
             );
             $result = $curl->exec();
             if ($curl->error() !== '') {
-                Debugger::log(new ErrorException('Failed to clear CDN cache: ' . $curl->error()), DEBUGGER::ERROR);
+                Debugger::log(new ErrorException('Failed to clear CDN cache: ' . $curl->error()), DEBUGGER::WARNING);
                 return $response->withStatus(200)->withJson(['success' => true, 'warnings' => $warnings]);
             }
             unset($curl);
@@ -134,7 +134,7 @@ final class DeleteCtrl extends BaseCtrl
                         __LINE__,
                         $e
                     ),
-                    DEBUGGER::ERROR
+                    DEBUGGER::WARNING
                 );
             }
 
@@ -145,7 +145,7 @@ final class DeleteCtrl extends BaseCtrl
                     Debugger::log($e, DEBUGGER::WARNING);
                     $err = '(unparsable error)';
                 }
-                Debugger::log(new ErrorException("Failed to clear CDN cache: $err"), DEBUGGER::ERROR);
+                Debugger::log(new ErrorException("Failed to clear CDN cache: $err"), DEBUGGER::WARNING);
             }
         }
 

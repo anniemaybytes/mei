@@ -20,7 +20,7 @@
   "require": {
     "php": "~8.0",
     "slim/slim": "4.9.0",
-    "tracy/tracy": "2.8.8",
+    "tracy/tracy": "2.9.0",
     "paragonie/random-lib": "2.0.1",
     "pimple/pimple": "3.5.0",
     "php-di/php-di": "6.3.5",
@@ -53,11 +53,11 @@
     "phpstan/phpstan": "1.2.0",
     "phpstan/phpstan-deprecation-rules": "1.0.0",
     "phpstan/phpstan-phpunit": "1.0.0",
-    "overtrue/phplint": "3.0.3",
-    "squizlabs/php_codesniffer": "3.6.1",
+    "overtrue/phplint": "4.0.0",
+    "squizlabs/php_codesniffer": "3.6.2",
     "mikey179/vfsstream": "1.6.10",
     "dg/bypass-finals": "1.3.1",
-    "phpunit/phpunit": "9.5.10"
+    "phpunit/phpunit": "9.5.11"
   },
   "autoload-dev": {
     "psr-0": {
@@ -68,6 +68,9 @@
     "platform-check": true,
     "platform": {
       "php": "8.0.0"
+    },
+    "allow-plugins": {
+      "phpstan/extension-installer": true
     }
   }
 }

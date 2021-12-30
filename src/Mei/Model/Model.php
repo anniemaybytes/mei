@@ -45,7 +45,7 @@ abstract class Model implements IModel
 
     abstract public function getTableName(): string;
 
-    /*
+    /**
      * Needs to be run immediately after a SELECT SQL_CALC_FOUND_ROWS statement
      */
     public function getFoundRows(): int
@@ -59,12 +59,7 @@ abstract class Model implements IModel
         if (!$ids) {
             return [];
         }
-        return array_map(
-            function ($id) {
-                return $this->getById($id);
-            },
-            $ids
-        );
+        return array_map(fn($id) => ($this->getById($id)), $ids);
     }
 
     /** @inheritDoc */
@@ -75,33 +70,26 @@ abstract class Model implements IModel
         }
 
         $builder = $this->entityBuilder;
-
         $table = $this->getTableName();
-
         $entityCache = $this->getCache()->getEntityCache($table, $id);
 
-        // ignore cache if in the middle of a transaction
         if ($this->inTransaction) {
-            $row = null;
+            $row = null; // ignore cache if in the middle of a transaction
         } else {
             $row = $entityCache->getRow();
         }
         if (!$row) {
             $whereStr = implode(
                 ' AND ',
-                array_map(
-                    static function ($col) {
-                        return "`$col` = :$col";
-                    },
-                    array_keys($id)
-                )
+                array_map(static fn($col) => "`$col` = :$col", array_keys($id))
             );
 
             $attrs = $builder($entityCache)->getAttributes(); // we need to create mockup of entity first
 
-            // note that when searching for strings, mysql is case-insensitive by
-            // default; you can force a search to be case sensitive by for example using
-            // select * from table where column like 'value' COLLATE utf8_bin
+            /*
+             * Note that when searching for strings, mysql is case-insensitive by default.
+             * You can force a search to be case sensitive by using COLLATE utf8_bin
+             */
             $query = "SELECT * FROM `$table` WHERE $whereStr";
             $q = $this->getDatabase()->prepare($query);
             foreach ($id as $param => $value) {
@@ -123,9 +111,6 @@ abstract class Model implements IModel
     /** @inheritDoc */
     public function createEntity(array $arr): IEntity
     {
-        if (!is_array($arr)) {
-            throw new InvalidArgumentException('createEntity expects array as argument');
-        }
         $builder = $this->entityBuilder;
         $entityCache = $this->getCache()->getEntityCache($this->getTableName());
         /** @var IEntity $entity */
@@ -150,16 +135,19 @@ abstract class Model implements IModel
             $idAttr = $entity->getIdAttributes();
             $id = $entity->getId();
 
-            // if there are multiple primary keys, require that both are set before
-            // saving; otherwise, there is no way to identify the entity after insert
+            /*
+             * If there are multiple primary keys, require that both are set before saving; otherwise, there is no way
+             * to identify the entity after insert
+             */
             if (count($idAttr) > 1) {
                 if ($id === null || count($id) !== count($idAttr)) {
                     throw new InvalidArgumentException('Unable to save entity - primary key not set');
                 }
             }
 
-            // note that getValues only returns values that are set
-            // e.g. if ID is not set, no entry will exist for that key
+            /*
+             * Note that getValues only returns values that are set (if ID is not set, no entry will exist for that key)
+             */
             $values = $entity->getValues();
             $attrs = $entity->getAttributes();
             $cols = $vals = '';
@@ -195,8 +183,10 @@ abstract class Model implements IModel
             // delete anything that might have been in cache and retrieve what we just saved
             $cache->delete($this->getCache());
 
-            // note that it is possible the entity has no IDs, thus it is impossible
-            // to retrieve the entity that just got inserted
+            /*
+             * Note that it is possible the entity has no IDs, thus it is impossible to retrieve the entity
+             * that just got inserted
+             */
             return $this->getById($id) ?? $entity;
         }
 
@@ -220,9 +210,10 @@ abstract class Model implements IModel
             );
         }
 
-        // prevent changing primary key, since this could result in overwriting
-        // other entities (rather than saving the current one)
-        // also check that each of the ID columns is set
+        /*
+         * Prevent changing primary key, since this could result in overwriting other entities
+         * Also checks that each of the ID columns is set
+         */
         foreach ($idAttr as $idAttribute) {
             if (array_key_exists($idAttribute, $values)) {
                 throw new InvalidArgumentException('Unable to save entity - primary key was changed');
@@ -236,25 +227,15 @@ abstract class Model implements IModel
 
         // there must be changed values if we reached here
         $cols = array_keys($values);
-        $cols = array_map(
-            static function ($col) {
-                return "`$col` = :$col";
-            },
-            $cols
-        );
+        $cols = array_map(static fn($col) => ("`$col` = :$col"), $cols);
         $sql .= implode(', ', $cols);
 
-        $where = array_map(
-            static function ($col) {
-                return "`$col` = :$col";
-            },
-            $idAttr
-        );
+        $where = array_map(static fn($col) => ("`$col` = :$col"), $idAttr);
         $where = implode(' AND ', $where);
 
         $sql .= " WHERE $where LIMIT 1";
 
-        // add id columns for the query execution
+        // add ID columns for the query execution
         $values = array_merge($values, $id);
 
         $q = $this->getDatabase()->prepare($sql);

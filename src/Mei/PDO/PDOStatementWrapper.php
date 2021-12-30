@@ -27,14 +27,13 @@ final class PDOStatementWrapper extends PDOStatement
     /**
      * @inheritDoc
      * @noinspection ReferencingObjectsInspection
-     * @noinspection PhpHierarchyChecksInspection
      * @noinspection PhpParameterNameChangedDuringInheritanceInspection
      * @noinspection PhpParameterByRefIsNotUsedAsReferenceInspection
      */
     public function bindParam(
         mixed $param,
         mixed &$var,
-        int $type = PDO::PARAM_STR,
+        int $type = PDO::PARAM_INT,
         int $length = null,
         mixed $options = null
     ): bool {
@@ -43,11 +42,8 @@ final class PDOStatementWrapper extends PDOStatement
         return parent::bindParam(...func_get_args());
     }
 
-    /**
-     * @inheritDoc
-     * @noinspection PhpHierarchyChecksInspection
-     */
-    public function bindValue(mixed $param, mixed $value, int $type = PDO::PARAM_STR): bool
+    /** @inheritDoc */
+    public function bindValue(mixed $param, mixed $value, int $type = PDO::PARAM_INT): bool
     {
         $this->bindings[$param] = $value;
         return parent::bindValue(...func_get_args());

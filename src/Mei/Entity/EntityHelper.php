@@ -70,12 +70,9 @@ final class EntityHelper
 
         try {
             $meta = unserialize($imp, ['allowed_classes' => false]);
-        } catch (Error $e) {
-            Debugger::log($e, Debugger::ERROR);
+        } catch (Error | Exception $e) {
             // do nothing
-        } catch (Exception $e) {
-            Debugger::log($e, DEBUGGER::EXCEPTION);
-            // do nothing
+            Debugger::log($e, Debugger::WARNING);
         }
 
         restore_error_handler();

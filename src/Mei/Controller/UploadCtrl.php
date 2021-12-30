@@ -255,7 +255,6 @@ final class UploadCtrl extends BaseCtrl
         $found = $isLegacy = false;
         if ($this->filesMap->getByKey("{$metadata['hash']}.{$metadata['extension']}")) {
             $found = true;
-            $isLegacy = false;
         } elseif ($this->filesMap->getByKey("{$metadata['md5']}.{$metadata['extension']}")) {
             $found = true;
             $isLegacy = true;

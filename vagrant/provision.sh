@@ -45,6 +45,16 @@ find /etc/mysql -name "*.cnf" -type f -exec chmod 644 '{}' \;
 find /etc/cron.d/ -type f -exec chmod 644 '{}' \;
 echo never >/sys/kernel/mm/transparent_hugepage/defrag
 echo never >/sys/kernel/mm/transparent_hugepage/enabled
+
+echo
+echo Reconfiguring microarchitecture mitigations...
+cat << EOF > /etc/default/grub
+GRUB_DEFAULT=0
+GRUB_TIMEOUT=5
+GRUB_DISTRIBUTOR=`lsb_release -i -s 2> /dev/null || echo Debian`
+GRUB_CMDLINE_LINUX_DEFAULT="net.ifnames=0 biosdevname=0 mitigations=off"
+GRUB_CMDLINE_LINUX="consoleblank=0"
+EOF
 update-grub
 
 echo

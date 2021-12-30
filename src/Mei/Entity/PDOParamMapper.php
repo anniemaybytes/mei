@@ -13,9 +13,9 @@ use PDO;
  */
 final class PDOParamMapper
 {
-    public static function map(string $entityAttrType): int
+    public static function map(string $type): int
     {
-        return match ($entityAttrType) {
+        return match ($type) {
             'int' => PDO::PARAM_INT,
             'bool' => PDO::PARAM_BOOL,
             default => PDO::PARAM_STR,
