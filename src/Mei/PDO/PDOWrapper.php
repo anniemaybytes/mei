@@ -137,7 +137,7 @@ final class PDOWrapper extends PDO
      * @inheritDoc
      * @noinspection PhpHierarchyChecksInspection
      */
-    public function exec(string $statement, int $retries = 3): bool|int
+    public function exec(string $statement, int $retries = 3): int|false
     {
         $start = microtime(true);
 

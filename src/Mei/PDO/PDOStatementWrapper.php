@@ -26,7 +26,6 @@ final class PDOStatementWrapper extends PDOStatement
 
     /**
      * @inheritDoc
-     * @noinspection ReferencingObjectsInspection
      * @noinspection PhpParameterNameChangedDuringInheritanceInspection
      * @noinspection PhpParameterByRefIsNotUsedAsReferenceInspection
      */
@@ -83,7 +82,7 @@ final class PDOStatementWrapper extends PDOStatement
 
     private function addValuesToQuery(array $bindings, string $query): ?string
     {
-        $indexed = ($bindings === array_values($bindings));
+        $indexed = array_is_list($bindings);
         foreach ($bindings as $param => $value) {
             $value = (is_numeric($value) || $value === null) ? $value : $this->PDO->quote($value);
             $value = $value ?? 'null';

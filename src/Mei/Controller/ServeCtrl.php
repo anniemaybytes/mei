@@ -22,12 +22,12 @@ use Slim\Exception\HttpNotFoundException;
  */
 final class ServeCtrl extends BaseCtrl
 {
+    private const CSP_RULE = "default-src 'none'; style-src 'unsafe-inline'; sandbox";
+
     /** @Inject */
     private FilesMap $filesMap;
 
     private static array $allowedResizeRange = ['min' => 80, 'max' => 450];
-
-    private const CSP_RULE = "default-src 'none'; style-src 'unsafe-inline'; sandbox";
 
     /**
      * @throws HttpNotFoundException|ImagickException|HttpBadRequestException
@@ -75,9 +75,8 @@ final class ServeCtrl extends BaseCtrl
         }
 
         $eTag = md5($bindata);
-        $path = ImageUtilities::getSavePath($fileEntity->Key, false);
-        $ts = Time::timeIsNonZero($fileEntity->UploadTime)
-            ? $fileEntity->UploadTime->getTimestamp() : filemtime("{$this->config['images.directory']}$path");
+        $ts = Time::timeIsNonZero($fileEntity->UploadTime) ?
+            $fileEntity->UploadTime->getTimestamp() : filemtime(ImageUtilities::getSavePath($fileEntity->Key));
 
         $response = $response->withHeader('Content-Type', $metadata['mime']);
         $response = $response->withHeader('Content-Length', (string)strlen($bindata));
@@ -86,25 +85,16 @@ final class ServeCtrl extends BaseCtrl
             'public, max-age=' . Time::epoch(Time::now()->add(Time::interval('1 month')))
         );
         $response = $response->withHeader('ETag', '"' . $eTag . '"');
-        $response = $response->withHeader(
-            'Expires',
-            Time::rfc2822(Time::now()->add(Time::interval('1 month')))
-        );
+        $response = $response->withHeader('Expires', Time::rfc2822(Time::now()->add(Time::interval('1 month'))));
         $response = $response->withHeader('Last-Modified', Time::rfc2822(Time::fromEpoch($ts)));
 
         // does not match etag (might be empty array)
         if (@$request->getHeader('If-None-Match')[0] !== $eTag) {
-            return $response->withHeader(
-                'Content-Security-Policy',
-                self::CSP_RULE
-            )->write($bindata);
+            return $response->withHeader('Content-Security-Policy', self::CSP_RULE)->write($bindata);
         }
 
         // matches etag, return 304
-        return $response->withStatus(304)->withHeader(
-            'Content-Security-Policy',
-            self::CSP_RULE
-        );
+        return $response->withStatus(304)->withHeader('Content-Security-Policy', self::CSP_RULE);
     }
 
     private static function getImageFromPath(string $filename): string
@@ -114,8 +104,7 @@ final class ServeCtrl extends BaseCtrl
             throw new RuntimeException("Image missing from filesystem - $filename");
         }
 
-        $contents = file_get_contents($file, false);
-        if (!$contents) {
+        if (!$contents = file_get_contents($file, false)) {
             throw new RuntimeException("Can't fetch contents of file - $filename");
         }
 

@@ -17,8 +17,8 @@ final class StringUtil
     public static function generateRandomString(int $len = 32): string
     {
         $factory = new Factory();
-        $generator = $factory->getGenerator(new Strength(Strength::MEDIUM));
-        return $generator->generateString($len, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+        return $factory->getGenerator(new Strength(Strength::MEDIUM))
+            ->generateString($len, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
     }
 
     public static function base64UrlEncode(?string $string): string

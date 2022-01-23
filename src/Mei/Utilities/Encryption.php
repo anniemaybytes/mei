@@ -24,25 +24,15 @@ final class Encryption
 
     public function encrypt(?string $input): string
     {
-        // we need to manually pad data for compatibility with mcrypt
         $data = $input;
         if (strlen($data) % 32) {
-            $data = str_pad(
-                $data,
-                strlen($data) + 32 - strlen($data) % 32,
-                "\0"
-            );
+            // we need to manually pad data for compatibility with mcrypt
+            $data = str_pad($data, strlen($data) + 32 - strlen($data) % 32, "\0");
         }
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $iv = random_bytes(16);
-        $crypt = openssl_encrypt(
-            $data,
-            self::CIPHER,
-            $this->secret,
-            OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING,
-            $iv
-        );
+        $crypt = openssl_encrypt($data, self::CIPHER, $this->secret, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
 
         return base64_encode($iv . $crypt);
     }
@@ -59,13 +49,7 @@ final class Encryption
         }
         $iv = substr($data, 0, 16);
         $crypt = substr($data, 16);
-        $str = openssl_decrypt(
-            $crypt,
-            self::CIPHER,
-            $this->secret,
-            OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING,
-            $iv
-        );
+        $str = openssl_decrypt($crypt, self::CIPHER, $this->secret, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
         return trim($str === false ? '' : $str);
     }
 

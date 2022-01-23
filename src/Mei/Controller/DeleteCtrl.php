@@ -126,14 +126,7 @@ final class DeleteCtrl extends BaseCtrl
                 $result = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
             } catch (JsonException $e) {
                 Debugger::log(
-                    new ErrorException(
-                        'Failed to clear CDN cache',
-                        0,
-                        1,
-                        __FILE__,
-                        __LINE__,
-                        $e
-                    ),
+                    new ErrorException('Failed to clear CDN cache', 0, 1, __FILE__, __LINE__, $e),
                     DEBUGGER::WARNING
                 );
             }

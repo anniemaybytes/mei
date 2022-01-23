@@ -231,7 +231,7 @@ abstract class Entity implements IEntity, ArrayAccess, JsonSerializable, Iterato
     }
 
     /** @inheritDoc */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return $this->__get($offset);
     }

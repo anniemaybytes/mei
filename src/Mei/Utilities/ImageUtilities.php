@@ -24,14 +24,14 @@ final class ImageUtilities
 
     public const USER_AGENT = 'mei-image-server/1.0';
 
-    public static function getSavePath(string $name, bool $base = true): string
+    public static function getSavePath(string $name): string
     {
         $depth = Dispatcher::config('images.depth');
         if ($depth >= 32) {
             throw new InvalidArgumentException('Can not fetch path that is >= 32 levels deep');
         }
 
-        $dir = $base ? Dispatcher::config('images.directory') : '';
+        $dir = Dispatcher::config('images.directory');
         for ($i = 0; $i < $depth; ++$i) {
             /** @noinspection PhpUnnecessaryCurlyVarSyntaxInspection */
             $dir .= "/{$name[$i]}";

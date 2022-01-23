@@ -24,8 +24,8 @@ final class Main extends Base /** @formatter:off */
     {
         $app = $this->app;
 
-        // upload
         $app->group('', function (RouteCollectorProxy $group) {
+            // upload
             $group->group('/upload', function (RouteCollectorProxy $group) {
                 $group->post('/user', UploadCtrl::class . ':user')
                     ->setName('upload:user');
