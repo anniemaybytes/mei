@@ -168,7 +168,7 @@ abstract class Model implements IModel
 
             // if using autoincrement id
             $idCol = reset($idAttr);
-            if (count($idAttr) === 1 && !(bool)$id[$idCol]) {
+            if (count($idAttr) === 1 && !$id[$idCol]) {
                 $insertId = $this->getDatabase()->lastInsertId();
                 if ($insertId === '0') {
                     throw new InvalidArgumentException(

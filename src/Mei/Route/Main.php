@@ -20,6 +20,8 @@ use Slim\Routing\RouteParser;
  */
 final class Main extends Base /** @formatter:off */
 {
+    private const ERROR_IMAGE_PATH = '/error.jpg';
+
     protected function addRoutes(): void
     {
         $app = $this->app;
@@ -45,19 +47,17 @@ final class Main extends Base /** @formatter:off */
 
             // legacy redirects
             $group->group('/images', function (RouteCollectorProxy $group) {
-                $group->get('/error.jpg', function (Request $request, Response $response, array $args) {
-                    return $response->withRedirect('/error.jpg');
+                $group->get(self::ERROR_IMAGE_PATH, function (Request $request, Response $response, array $args) {
+                    return $response->withRedirect(self::ERROR_IMAGE_PATH);
                 });
                 $group->get(
                     '/{image:[a-zA-Z0-9]{32}(?:-\d{2,3}x\d{2,3}(?:-crop)?)?\.[a-zA-Z]{3,4}}',
                     function (Request $request, Response $response, array $args) {
                         /** @var Container $this */
-                        return $response->withStatus(301)->withRedirect(
-                            $this->get(RouteParser::class)->relativeUrlFor(
-                                'serve',
-                                ['image' => $args['image']]
-                            )
-                        );
+                        return $response->withStatus(301)
+                            ->withRedirect(
+                                $this->get(RouteParser::class)->relativeUrlFor('serve', ['image' => $args['image']])
+                            );
                     }
                 );
             });

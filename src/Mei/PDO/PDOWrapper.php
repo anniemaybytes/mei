@@ -122,7 +122,7 @@ final class PDOWrapper extends PDO
      * @noinspection PhpHierarchyChecksInspection
      * @noinspection PhpParameterNameChangedDuringInheritanceInspection
      */
-    public function query(string $query, ?int $fetchMode = null, mixed ...$fetchModeArgs): bool|PDOStatement
+    public function query(string $query, ?int $fetchMode = null, mixed ...$fetchModeArgs): PDOStatement|false
     {
         $start = microtime(true);
 

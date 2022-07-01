@@ -21,6 +21,7 @@ date_default_timezone_set('UTC');
 putenv('RES_OPTIONS=retrans:1 retry:1 timeout:1 attempts:1');
 
 $app = Dispatcher::app();
+/** @var Psr\Container\ContainerInterface $di */
 $di = $app->getContainer();
 
 $isDev = $di->get('config')['mode'] === 'development';
