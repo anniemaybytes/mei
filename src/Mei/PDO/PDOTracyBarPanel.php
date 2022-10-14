@@ -80,7 +80,7 @@ final class PDOTracyBarPanel implements IBarPanel
             }
             $html .= '</table>';
         } else {
-            $html .= '<p style="font-size:1.2em;font-weigt:bold;padding:10px">No queries were executed</p>';
+            $html .= '<p style="font-size:1.2em;font-weight:bold;padding:10px">No queries were executed</p>';
         }
 
         return $html . '</div>';

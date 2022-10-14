@@ -48,7 +48,7 @@ final class Imagick
      */
     public function stripExif(): self
     {
-        $profiles = $this->image->getImageProfiles('icc', true);
+        $profiles = $this->image->getImageProfiles('icc');
         $this->image->stripImage();
         if (!empty($profiles)) {
             $this->image->profileImage('icc', $profiles['icc']);

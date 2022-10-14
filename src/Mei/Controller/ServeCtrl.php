@@ -104,7 +104,7 @@ final class ServeCtrl extends BaseCtrl
             throw new RuntimeException("Image missing from filesystem - $filename");
         }
 
-        if (!$contents = file_get_contents($file, false)) {
+        if (!$contents = file_get_contents($file)) {
             throw new RuntimeException("Can't fetch contents of file - $filename");
         }
 
