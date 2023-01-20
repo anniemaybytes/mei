@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mei\Controller;
 
 use ArrayAccess;
+use DI\Attribute\Inject;
 
 /**
  * Class BaseCtrl
@@ -13,10 +14,6 @@ use ArrayAccess;
  */
 abstract class BaseCtrl
 {
-    /**
-     * The configuration array
-     *
-     * @Inject("config")
-     */
+    #[Inject("config")]
     protected ArrayAccess $config;
 }

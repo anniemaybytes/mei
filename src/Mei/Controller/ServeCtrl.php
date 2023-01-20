@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mei\Controller;
 
+use DI\Attribute\Inject;
 use ImagickException;
 use Mei\Model\FilesMap;
 use Mei\Utilities\ImageUtilities;
@@ -24,7 +25,7 @@ final class ServeCtrl extends BaseCtrl
 {
     private const CSP_RULE = "default-src 'none'; style-src 'unsafe-inline'; sandbox";
 
-    /** @Inject */
+    #[Inject]
     private FilesMap $filesMap;
 
     private static array $allowedResizeRange = ['min' => 80, 'max' => 450];

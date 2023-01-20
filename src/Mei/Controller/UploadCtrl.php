@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mei\Controller;
 
+use DI\Attribute\Inject;
 use Exception;
 use ImagickException;
 use JsonException;
@@ -28,10 +29,10 @@ use Tracy\Debugger;
  */
 final class UploadCtrl extends BaseCtrl
 {
-    /** @Inject */
+    #[Inject]
     private FilesMap $filesMap;
 
-    /** @Inject */
+    #[Inject]
     private Encryption $encryption;
 
     private static array $allowedUrlScheme = ['http', 'https'];

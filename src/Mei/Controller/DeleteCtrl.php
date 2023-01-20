@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mei\Controller;
 
+use DI\Attribute\Inject;
 use ErrorException;
 use Exception;
 use JsonException;
@@ -23,10 +24,10 @@ use Tracy\Debugger;
  */
 final class DeleteCtrl extends BaseCtrl
 {
-    /** @Inject */
+    #[Inject]
     private RouteParser $router;
 
-    /** @Inject */
+    #[Inject]
     private FilesMap $filesMap;
 
     /**

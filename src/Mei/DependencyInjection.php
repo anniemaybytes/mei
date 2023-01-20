@@ -28,7 +28,7 @@ final class DependencyInjection
     public static function setup(ArrayAccess $config): Container
     {
         $builder = new DI\ContainerBuilder();
-        $builder->useAnnotations(true);
+        $builder->useAttributes(true);
         if ($config['mode'] === 'production') {
             $builder->enableCompilation(BASE_ROOT);
         }
