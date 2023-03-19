@@ -19,6 +19,7 @@
   ],
   "lockFileMaintenance": {
     "enabled": true,
+    "automerge": true,
     "schedule": [
       "before 3am on friday"
     ]
@@ -36,13 +37,27 @@
       "matchPackagePrefixes": [
         "phpstan/"
       ],
+      "automerge": true,
       "groupName": "phpstan monorepo"
     },
     {
       "matchPackageNames": [
         "overtrue/phplint"
       ],
+      "automerge": true,
       "allowedVersions": "<6.0.0"
+    },
+    {
+      "matchPackageNames": [
+        "squizlabs/php_codesniffer"
+      ],
+      "automerge": true
+    },
+    {
+      "matchPackageNames": [
+        "phpunit/phpunit"
+      ],
+      "automerge": true
     }
   ]
 }

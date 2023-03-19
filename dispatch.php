@@ -29,7 +29,6 @@ $isDev = $di->get('config')['mode'] === 'development';
 // ---
 
 Debugger::$maxDepth = 7;
-Debugger::$showFireLogger = false;
 Debugger::$maxLength = 520;
 Debugger::$logSeverity = ERROR_REPORTING;
 Debugger::$reservedMemorySize = 5000000; // 5 megabytes because we increase depth for bluescreen
