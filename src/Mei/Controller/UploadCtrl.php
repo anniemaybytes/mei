@@ -253,6 +253,10 @@ final class UploadCtrl extends BaseCtrl
      */
     private function processImage(string $bindata, array $metadata, int $protected = 0): string
     {
+        if (!$metadata['extension']) {
+            throw new RuntimeException('Unable to process image without extension');
+        }
+
         $found = $isLegacy = false;
         if ($this->filesMap->getByKey("{$metadata['hash']}.{$metadata['extension']}")) {
             $found = true;

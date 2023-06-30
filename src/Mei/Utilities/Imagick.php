@@ -22,7 +22,7 @@ final class Imagick
     {
         $image = new \Imagick();
         $image->readImageBlob($bindata);
-        $image->setImageFormat($metadata['extension']);
+        $image->setImageFormat($metadata['extension'] ?? '');
         $image->setImageCompressionQuality(90);
         $image->setOption('png:compression-level', '9');
 

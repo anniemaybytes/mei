@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mei\Utilities;
 
+use finfo;
 use InvalidArgumentException;
 use Mei\Dispatcher;
 use RuntimeException;
@@ -39,21 +40,19 @@ final class ImageUtilities
         return "$dir/$name";
     }
 
+    /** @return array{mime: string, extension: ?string, hash: string, md5: string, length: int} */
     public static function getImageInfo(string $bindata): array
     {
-        $data = @getimagesizefromstring($bindata);
-        if (!$data || !isset($data['mime'])) {
-            throw new RuntimeException('Unable to read image info on binary data.');
+        if (!$mime = (new finfo(FILEINFO_MIME_TYPE))->buffer($bindata)) {
+            throw new RuntimeException('Unable to determine MIME type of binary stream');
         }
 
         return [
-            'extension' => self::$allowedTypes[$data['mime']] ?? '',
-            'mime' => $data['mime'],
+            'mime' => $mime,
+            'extension' => self::$allowedTypes[$mime] ?? null,
             'hash' => hash('sha256', $bindata . Dispatcher::config('app.salt')),
             'md5' => md5($bindata),
-            'width' => $data[0],
-            'height' => $data[1],
-            'size' => strlen($bindata)
+            'length' => strlen($bindata)
         ];
     }
 }

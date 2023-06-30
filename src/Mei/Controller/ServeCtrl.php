@@ -14,6 +14,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use RuntimeException;
 use Slim\Exception\HttpBadRequestException;
+use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpNotFoundException;
 
 /**
@@ -56,6 +57,10 @@ final class ServeCtrl extends BaseCtrl
 
         $bindata = self::getImageFromPath($fileEntity->Key);
         $metadata = ImageUtilities::getImageInfo($bindata);
+
+        if (!array_key_exists($metadata['mime'], ImageUtilities::$allowedTypes)) {
+            throw new HttpForbiddenException($request, 'Unallowable MIME type');
+        }
 
         // resize if necessary
         if (isset($width, $height)) {
