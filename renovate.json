@@ -1,17 +1,18 @@
 {
   "extends": [
-    "config:base",
+    "config:recommended",
     "docker:disableMajor"
   ],
   "labels": [
     "kind/deps"
   ],
   "vulnerabilityAlerts": {
+    "enabled": true,
     "labels": [
       "kind/security"
     ]
   },
-  "stabilityDays": 1,
+  "minimumReleaseAge": "3 days",
   "semanticCommits": "disabled",
   "ignoreDeps": [
     "roave/security-advisories",
