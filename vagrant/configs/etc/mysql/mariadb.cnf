@@ -1,56 +1,7 @@
-[client]
-port    = 3306
-socket    = /var/run/mysqld/mysqld.sock
-default-character-set = utf8
+[client-server]
+port            = 3306
+socket          = /run/mysqld/mysqld.sock
 
-[mysqld_safe]
-socket    = /var/run/mysqld/mysqld.sock
-nice    = 0
-timezone  = UTC
-
-[mysqld]
-user    = mysql
-pid-file  = /var/run/mysqld/mysqld.pid
-socket    = /var/run/mysqld/mysqld.sock
-port    = 3306
-basedir   = /usr
-datadir   = /var/lib/mysql
-tmpdir    = /tmp
-collation-server = utf8_unicode_ci
-character-set-server = utf8
-skip-external-locking
-skip_name_resolve
-
-default_tmp_storage_engine = MEMORY
-performance_schema      = ON
-bind-address    = 0.0.0.0
-max_allowed_packet  = 32M
-max_heap_table_size     = 64M
-
-query_cache_limit = 128K
-query_cache_size = 50M
-query_cache_type  = 1
-
-innodb_buffer_pool_size = 128M
-innodb_flush_method = O_DIRECT_NO_FSYNC
-# should be equal to 1/4 of buffer pool size if possible.
-innodb_log_file_size = 32M
-innodb_flush_log_at_trx_commit = 0
-innodb_max_dirty_pages_pct = 90
-innodb_flush_neighbors = 0
-innodb_flush_sync = ON
-innodb_io_capacity = 100
-
-[mysql]
-default-character-set = utf8
-
-[mysqldump]
-quick
-quote-names
-max_allowed_packet  = 256M
-default-character-set = utf8
-
-[isamchk]
-key_buffer    = 16M
-
+# import external config
 !includedir /etc/mysql/conf.d/
+!includedir /etc/mysql/mariadb.conf.d/

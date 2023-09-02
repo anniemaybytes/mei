@@ -1,1 +1,1 @@
-deb [arch=amd64] https://ftp.bme.hu/pub/mirrors/mariadb/repo/10.10/debian bullseye main
+deb [arch=amd64] https://ftp.bme.hu/pub/mirrors/mariadb/repo/11.1/debian bullseye main

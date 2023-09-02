@@ -1,0 +1,21 @@
+[mariadb-client]
+
+[mariadb-upgrade]
+
+[mariadb-admin]
+
+[mariadb-binlog]
+
+[mariadb-check]
+
+[mariadb-dump]
+quick
+quote-names
+max_allowed_packet  = 256M
+
+[mariadb-import]
+max_allowed_packet  = 256M
+
+[mariadb-show]
+
+[mariadb-slap]

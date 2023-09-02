@@ -1,0 +1,4 @@
+[mariadbd-safe]
+nice = 0
+skip_log_error
+syslog

@@ -39,7 +39,6 @@ rm -rf /etc/nginx/{sites,mods}-available
 rm -rf /etc/nginx/conf.d
 cd /vagrantroot/configs
 cp -av * /
-rm -rf /etc/mysql/mariadb.conf.d && ln -s /etc/mysql/conf.d /etc/mysql/mariadb.conf.d
 chown -R root:root /etc/mysql/conf.d /etc/cron.d
 find /etc/mysql -name "*.cnf" -type f -exec chmod 644 '{}' \;
 find /etc/cron.d/ -type f -exec chmod 644 '{}' \;
@@ -80,22 +79,22 @@ systemctl stop cron
 echo
 echo Resetting MariaDB storage...
 rm -rf /var/lib/mysql
-mysql_install_db
+mariadb-install-db
 
 echo
 echo Starting MariaDB...
 systemctl start mariadb
 
 echo
-echo Configuring MySQL...
-echo "DELETE FROM mysql.user WHERE user =''" | mysql -uroot
-echo "CREATE DATABASE mei" | mysql -uroot
-echo "GRANT ALL ON mei.* TO 'mei'@localhost IDENTIFIED BY 'mei'" | mysql -uroot
-echo "GRANT ALL ON mei.* TO 'mei'@'%' IDENTIFIED BY 'mei'" | mysql -uroot
+echo Configuring MariaDB...
+echo "DELETE FROM mysql.user WHERE user =''" | mariadb -uroot
+echo "CREATE DATABASE mei" | mariadb -uroot
+echo "GRANT ALL ON mei.* TO 'mei'@localhost IDENTIFIED BY 'mei'" | mariadb -uroot
+echo "GRANT ALL ON mei.* TO 'mei'@'%' IDENTIFIED BY 'mei'" | mariadb -uroot
 
 echo
 echo Importing database...
-find /vagrantroot/fixtures -type f -name '*.sql' -exec bash -c 'cat '{}' | mysql -umei -pmei mei' \;
+find /vagrantroot/fixtures -type f -name '*.sql' -exec bash -c 'cat '{}' | mariadb -umei -pmei mei' \;
 
 echo
 echo Restarting MariaDB...
@@ -110,6 +109,11 @@ echo
 echo Creating required directories...
 su vagrant -s /bin/bash -c 'mkdir -p /code/images'
 su vagrant -s /bin/bash -c 'mkdir -p /code/logs'
+
+echo
+echo Migrating...
+cd /code
+su vagrant -s /bin/bash -c 'composer phpmig migrate'
 
 echo
 echo Starting daemons...
