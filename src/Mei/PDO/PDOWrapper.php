@@ -116,11 +116,7 @@ final class PDOWrapper extends PDO
         return $res;
     }
 
-    /**
-     * @inheritDoc
-     * @noinspection PhpHierarchyChecksInspection
-     * @noinspection PhpParameterNameChangedDuringInheritanceInspection
-     */
+    /** @inheritDoc */
     public function query(string $query, ?int $fetchMode = null, mixed ...$fetchModeArgs): PDOStatement|false
     {
         $start = microtime(true);
@@ -132,10 +128,7 @@ final class PDOWrapper extends PDO
         return $res;
     }
 
-    /**
-     * @inheritDoc
-     * @noinspection PhpHierarchyChecksInspection
-     */
+    /** @inheritDoc */
     public function exec(string $statement, int $retries = 3): int|false
     {
         $start = microtime(true);
