@@ -22,6 +22,10 @@ final class Encryption
         $this->secret = md5($config['api.secret']);
     }
 
+    /***************************************************************************************************************
+     * *********************************** GENERAL ENCRYPTION/DECRYPTION *******************************************
+     ***************************************************************************************************************/
+
     public function encrypt(?string $input): string
     {
         $data = $input;
@@ -47,9 +51,12 @@ final class Encryption
         if ($data === false || strlen($data) < 16) {
             return '';
         }
+
         $iv = substr($data, 0, 16);
         $crypt = substr($data, 16);
+
         $str = openssl_decrypt($crypt, self::CIPHER, $this->secret, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
+
         return trim($str === false ? '' : $str);
     }
 
@@ -59,6 +66,15 @@ final class Encryption
         return preg_match('//u', $result) ? $result : '';
     }
 
+    public static function secureCompare(string $alpha, string $beta): bool
+    {
+        return hash_equals($alpha, $beta);
+    }
+
+    /***************************************************************************************************************
+     * ******************************************* URL ENCRYPTION/DECRYPTION ***************************************
+     ***************************************************************************************************************/
+
     public function encryptUrl(string $input): string
     {
         return StringUtil::base64UrlEncode($this->encrypt($input));
@@ -67,5 +83,19 @@ final class Encryption
     public function decryptUrl(string $input): string
     {
         return $this->decrypt(StringUtil::base64UrlDecode($input));
+    }
+
+    /***************************************************************************************************************
+     * **************************************************** HMAC ***************************************************
+     ***************************************************************************************************************/
+
+    public function generateHmac(string $data, string $algo = 'sha256'): string
+    {
+        return hash_hmac($algo, $data, $this->secret);
+    }
+
+    public function hmacValid(string $data, string $hmac, string $algo = 'sha256'): bool
+    {
+        return self::secureCompare($hmac, $this->generateHmac($data, $algo));
     }
 }

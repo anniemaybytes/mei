@@ -88,14 +88,6 @@ final class Time
     }
 
     /**
-     * Converts the given time to an unix epoch time string.
-     */
-    public static function epoch(DateTime $t): string
-    {
-        return $t->format('U');
-    }
-
-    /**
      * Creates an interval from the given time string. For example,
      *  interval('-1 day');
      *  interval('+1 year');

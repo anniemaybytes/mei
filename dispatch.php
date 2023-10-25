@@ -49,7 +49,7 @@ array_push(
     'PHP_AUTH_PW'
 );
 
-Debugger::enable($isDev ? Debugger::DEVELOPMENT : Debugger::PRODUCTION, $di->get('config')['logs_dir']);
+Debugger::enable($isDev ? Debugger::Development : Debugger::Production, $di->get('config')['logs_dir']);
 error_reporting($isDev ? E_ALL : ERROR_REPORTING);
 
 /*

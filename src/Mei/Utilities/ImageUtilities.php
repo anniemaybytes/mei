@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Mei\Utilities;
 
 use finfo;
-use InvalidArgumentException;
 use Mei\Dispatcher;
 use RuntimeException;
 
@@ -23,17 +22,12 @@ final class ImageUtilities
         'image/webp' => 'webp'
     ];
 
-    public const USER_AGENT = 'mei-image-server/1.0';
+    private const SAVE_DIR_DEPTH = 3;
 
     public static function getSavePath(string $name): string
     {
-        $depth = Dispatcher::config('images.depth');
-        if ($depth >= 32) {
-            throw new InvalidArgumentException('Can not fetch path that is >= 32 levels deep');
-        }
-
         $dir = Dispatcher::config('images.directory');
-        for ($i = 0; $i < $depth; ++$i) {
+        for ($i = 0; $i < self::SAVE_DIR_DEPTH; ++$i) {
             /** @noinspection PhpUnnecessaryCurlyVarSyntaxInspection */
             $dir .= "/{$name[$i]}";
         }
@@ -50,7 +44,7 @@ final class ImageUtilities
         return [
             'mime' => $mime,
             'extension' => self::$allowedTypes[$mime] ?? null,
-            'hash' => hash('sha256', $bindata . Dispatcher::config('app.salt')),
+            'hash' => hash('sha256', $bindata . Dispatcher::config('app.secret')),
             'md5' => md5($bindata),
             'length' => strlen($bindata)
         ];

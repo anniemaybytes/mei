@@ -16,6 +16,7 @@ use RuntimeException;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpNotFoundException;
+use Tracy\Debugger;
 
 /**
  * Class ServeCtrl
@@ -24,6 +25,7 @@ use Slim\Exception\HttpNotFoundException;
  */
 final class ServeCtrl extends BaseCtrl
 {
+    private const CACHE_MAX_AGE = "1 month";
     private const CSP_RULE = "default-src 'none'; style-src 'unsafe-inline'; sandbox";
 
     #[Inject]
@@ -71,28 +73,34 @@ final class ServeCtrl extends BaseCtrl
                 throw new HttpBadRequestException($request);
             }
 
-            $image = new ImagickUtility($bindata, $metadata);
-            $bindata = $image->resize($width, $height, $crop ?? false)->getImagesBlob();
-            /*
-             * To avoid \Imagick object taking unnecessary memory while streaming, we destroy it here after we
-             * fetch blob of image that we need.
-             */
-            unset($image);
+            try {
+                $image = new ImagickUtility($bindata, $metadata);
+                $bindata = $image->resize($width, $height, $crop ?? false)->getImagesBlob();
+            } catch (ImagickException $e) {
+                Debugger::log($e, Debugger::WARNING);
+            } finally {
+                /*
+                 * To avoid \Imagick object taking unnecessary memory while streaming, we destroy it here after we
+                 * fetch blob of image that we need.
+                 */
+                unset($image);
+            }
         }
 
         $eTag = md5($bindata);
-        $ts = Time::timeIsNonZero($fileEntity->UploadTime) ?
+        $mtime = Time::timeIsNonZero($fileEntity->UploadTime) ?
             $fileEntity->UploadTime->getTimestamp() : filemtime(ImageUtilities::getSavePath($fileEntity->Key));
+        $expire = Time::now()->add(Time::interval(self::CACHE_MAX_AGE));
 
         $response = $response->withHeader('Content-Type', $metadata['mime']);
         $response = $response->withHeader('Content-Length', (string)strlen($bindata));
         $response = $response->withHeader(
             'Cache-Control',
-            'public, max-age=' . Time::epoch(Time::now()->add(Time::interval('1 month')))
+            'public, max-age=' . ($expire->getTimestamp() - Time::getEpoch())
         );
-        $response = $response->withHeader('ETag', '"' . $eTag . '"');
-        $response = $response->withHeader('Expires', Time::rfc2822(Time::now()->add(Time::interval('1 month'))));
-        $response = $response->withHeader('Last-Modified', Time::rfc2822(Time::fromEpoch($ts)));
+        $response = $response->withHeader('ETag', "\"$eTag\"");
+        $response = $response->withHeader('Expires', Time::rfc2822($expire));
+        $response = $response->withHeader('Last-Modified', Time::rfc2822(Time::fromEpoch($mtime)));
 
         // does not match etag (might be empty array)
         if (@$request->getHeader('If-None-Match')[0] !== $eTag) {

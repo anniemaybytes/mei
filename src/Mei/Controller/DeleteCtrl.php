@@ -10,7 +10,9 @@ use Exception;
 use JsonException;
 use Mei\Model\FilesMap;
 use Mei\Utilities\Curl;
+use Mei\Utilities\Encryption;
 use Mei\Utilities\ImageUtilities;
+use Mei\Utilities\StringUtil;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Exception\HttpForbiddenException;
@@ -30,6 +32,9 @@ final class DeleteCtrl extends BaseCtrl
     #[Inject]
     private FilesMap $filesMap;
 
+    #[Inject]
+    private Encryption $encryption;
+
     /**
      * @throws JsonException|HttpForbiddenException
      */
@@ -38,16 +43,18 @@ final class DeleteCtrl extends BaseCtrl
         // dont abort if client disconnects
         ignore_user_abort(true);
 
-        $auth = $request->getParam('auth', '');
-        if (!hash_equals($auth, $this->config['api.secret'])) {
+        if (!$this->encryption->hmacValid($request->getParam('content', ''), $request->getParam('sign', ''))) {
             throw new HttpForbiddenException($request);
         }
 
-        if (!$images = $request->getParam('images')) {
+        $images = json_decode(
+            StringUtil::base64UrlDecode($request->getParam('content')),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+        if (empty($images) || !is_array($images)) {
             return $response->withStatus(400)->withJson(['success' => false, 'error' => 'No images to delete given']);
-        }
-        if (!is_array($images)) {
-            $images = [$images];
         }
 
         $warnings = [];
@@ -98,7 +105,6 @@ final class DeleteCtrl extends BaseCtrl
             $curl->setoptArray(
                 [
                     CURLOPT_ENCODING => 'UTF-8',
-                    CURLOPT_USERAGENT => ImageUtilities::USER_AGENT,
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_POST => true,
                     CURLOPT_FOLLOWLOCATION => false,

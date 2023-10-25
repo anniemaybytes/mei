@@ -16,13 +16,11 @@ final class Defaults
         'logs_dir' => UndefinedValue::class,
         'proxy' => false,
 
-        'app.max_filesize' => UndefinedValue::class,
-        'app.salt' => UndefinedValue::class,
-        'app.strip_exif' => UndefinedValue::class,
+        'app.secret' => UndefinedValue::class,
 
         'images.directory' => UndefinedValue::class,
-        'images.dept' => UndefinedValue::class,
-        'images.name_len' => UndefinedValue::class,
+        'images.max_filesize' => UndefinedValue::class,
+        'images.strip_exif' => UndefinedValue::class,
 
         'api.secret' => UndefinedValue::class,
 

@@ -15,9 +15,7 @@ final class Imagick
 {
     private \Imagick $image;
 
-    /**
-     * @throws ImagickException
-     */
+    /** @throws ImagickException */
     public function __construct(string $bindata, array $metadata)
     {
         $image = new \Imagick();
@@ -35,23 +33,19 @@ final class Imagick
         $this->image->destroy();
     }
 
-    /**
-     * @throws ImagickException
-     */
+    /** @throws ImagickException */
     public function getImagesBlob(): string
     {
         return $this->image->getImagesBlob();
     }
 
-    /**
-     * @throws ImagickException
-     */
-    public function stripExif(): self
+    /** @throws ImagickException */
+    public function stripMeta(): self
     {
-        $profiles = $this->image->getImageProfiles('icc');
-        $this->image->stripImage();
-        if (!empty($profiles)) {
-            $this->image->profileImage('icc', $profiles['icc']);
+        foreach ($this->image->getImageProfiles('*', false) as $p) {
+            if (!in_array($p, ['icc', 'icm'], true)) {
+                $this->image->removeImageProfile($p);
+            }
         }
         return $this;
     }

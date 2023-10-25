@@ -31,14 +31,15 @@ final class ErrorCtrl extends BaseCtrl
     public function handleException(Request $request, Response $response, Throwable $exception): Response
     {
         try {
-            $statusCode = 500;
-            $message = (new HttpInternalServerErrorException($request))->getDescription();
             if ($exception instanceof HttpException) {
-                $statusCode = $exception->getCode();
-                $message = $exception->getDescription();
+                $code = $exception->getCode();
+                $description = $exception->getDescription();
+            } else {
+                $code = 500;
+                $description = (new HttpInternalServerErrorException($request))->getDescription();
             }
 
-            if ($statusCode === 500) {
+            if ($code === 500) {
                 Debugger::log($exception, Debugger::EXCEPTION);
             }
 
@@ -59,8 +60,8 @@ final class ErrorCtrl extends BaseCtrl
             }
 
             return $response
-                ->withStatus($statusCode)
-                ->withJson(['success' => false, 'error' => $message]);
+                ->withStatus($code)
+                ->withJson(['success' => false, 'error' => $description]);
         } catch (Throwable $e) {
             return (new FatalErrorCtrl($this->di))->handleError($request, $response, $e);
         }

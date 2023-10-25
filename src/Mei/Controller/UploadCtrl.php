@@ -42,6 +42,10 @@ final class UploadCtrl extends BaseCtrl
      */
     public function user(Request $request, Response $response, array $args): Response
     {
+        if (!$this->encryption->hmacValid($request->getParam('t', ''), $request->getParam('s', ''))) {
+            throw new HttpForbiddenException($request);
+        }
+
         /**
          * Token specification:
          *  mime (optional): specific mime-type from allowable range to restrict newly uploaded images
@@ -54,7 +58,7 @@ final class UploadCtrl extends BaseCtrl
          *
          * @noinspection JsonEncodingApiUsageInspection
          **/
-        $token = json_decode($this->encryption->decryptString($request->getParam('token', '')), true);
+        $token = json_decode($this->encryption->decryptUrl($request->getParam('t', '')), true);
         if (time() > ($token['tvalid'] ?? 0)) {
             throw new HttpForbiddenException($request);
         }
@@ -69,9 +73,7 @@ final class UploadCtrl extends BaseCtrl
         $allowedTypes = ImageUtilities::$allowedTypes;
         if (@$token['mime']) {
             if (array_key_exists($token['mime'], ImageUtilities::$allowedTypes)) {
-                $allowedTypes = [
-                    $token['mime'] => ImageUtilities::$allowedTypes[$token['mime']]
-                ];
+                $allowedTypes = [$token['mime'] => ImageUtilities::$allowedTypes[$token['mime']]];
             } else {
                 return $response
                     ->withStatus(400)
@@ -83,11 +85,10 @@ final class UploadCtrl extends BaseCtrl
 
         $images = [];
         $errors = [];
-        $uploadedFiles = $request->getUploadedFiles();
-        if (!$uploadedFiles) {
+        if (!$uploadedFiles = $request->getUploadedFiles()) {
             return $response
                 ->withStatus(400)
-                ->withJson(['success' => false, 'error' => 'Empty request (no images supplied)']);
+                ->withJson(['success' => false, 'error' => 'No images to upload given']);
         }
 
         /*
@@ -105,8 +106,8 @@ final class UploadCtrl extends BaseCtrl
                     continue;
                 }
 
-                if (!$file->getSize() || $file->getSize() > $this->config['app.max_filesize']) {
-                    $errors[] = "File {$file->getClientFilename()} exceeds maximum filesize ({$this->config['app.max_filesize']})";
+                if (!$file->getSize() || $file->getSize() > $this->config['images.max_filesize']) {
+                    $errors[] = "File {$file->getClientFilename()} exceeds maximum filesize ({$this->config['images.max_filesize']})";
                     continue;
                 }
 
@@ -131,36 +132,45 @@ final class UploadCtrl extends BaseCtrl
                 ->withJson(['success' => false, 'error' => 'No valid images were processed', 'warnings' => $errors]);
         }
 
-        $token['images'] = $images;
-        $token = $this->encryption->encryptUrl(json_encode($token, JSON_THROW_ON_ERROR));
-        $qs = (parse_url($referer, PHP_URL_QUERY) ? '&' : '?') . "token=$token";
+        $c = $this->encryption->encryptUrl(json_encode(['images' => $images, 'token' => $token], JSON_THROW_ON_ERROR));
+        $s = $this->encryption->generateHmac($c);
+
+        $qs = (parse_url($referer, PHP_URL_QUERY) ? '&' : '?') . http_build_query(['c' => $c, 's' => $s]);
 
         return $response
             ->withStatus(303)
             ->withHeader('Location', $referer . $qs)
-            ->withJson(['success' => true, 'warnings' => $errors]);
+            ->withJson(
+                [
+                    'success' => true,
+                    'warnings' => $errors,
+                    'callback' => ['content' => $c, 'sign' => $s]
+                ]
+            );
     }
 
     /**
-     * @throws HttpForbiddenException
+     * @throws JsonException|HttpForbiddenException
      */
     public function api(Request $request, Response $response, array $args): Response
     {
-        $auth = $request->getParam('auth', '');
-        if (!hash_equals($auth, $this->config['api.secret'])) {
+        if (!$this->encryption->hmacValid($request->getParam('content', ''), $request->getParam('sign', ''))) {
             throw new HttpForbiddenException($request);
         }
 
         $images = [];
         $errors = [];
-        $urls = $request->getParam('urls');
-        if (is_string($urls)) {
-            $urls = [$urls];
-        }
-        if (empty($urls)) {
+
+        $urls = json_decode(
+            StringUtil::base64UrlDecode($request->getParam('content')),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+        if (empty($urls) || !is_array($urls)) {
             return $response
                 ->withStatus(400)
-                ->withJson(['success' => false, 'error' => 'Empty request (no images supplied)']);
+                ->withJson(['success' => false, 'error' => 'No image URLs to upload given']);
         }
 
         foreach ($urls as $url) {
@@ -180,7 +190,6 @@ final class UploadCtrl extends BaseCtrl
             $curl->setoptArray(
                 [
                     CURLOPT_ENCODING => 'UTF-8',
-                    CURLOPT_USERAGENT => ImageUtilities::USER_AGENT,
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_POST => false,
                     CURLOPT_FOLLOWLOCATION => true,
@@ -190,11 +199,10 @@ final class UploadCtrl extends BaseCtrl
                     CURLOPT_SSL_VERIFYHOST => 2,
                     CURLOPT_MAXREDIRS => 3,
                     CURLOPT_HTTPHEADER => ["Host: $host"],
-                    CURLOPT_MAXFILESIZE => $this->config['app.max_filesize'],
+                    CURLOPT_MAXFILESIZE => $this->config['images.max_filesize'],
                     CURLOPT_NOPROGRESS => false,
-                    CURLOPT_PROGRESSFUNCTION => (
-                    fn($ch, $dt, $d, $ut, $u) => (int)($d > $this->config['app.max_filesize'])
-                    ),
+                    CURLOPT_PROGRESSFUNCTION =>
+                        fn($ch, $dt, $d, $ut, $u) => (int)($d > $this->config['images.max_filesize']),
                 ]
             );
 
@@ -202,7 +210,7 @@ final class UploadCtrl extends BaseCtrl
             $err = $curl->error();
             if ($err !== '') {
                 $message = "URL $url encountered cURL error: $err";
-                Debugger::log($message, DEBUGGER::WARNING);
+                Debugger::log($message, Debugger::WARNING);
                 $errors[] = $message;
                 continue;
             }
@@ -219,7 +227,7 @@ final class UploadCtrl extends BaseCtrl
             if (!$content) {
                 $message = "No data received from $url" . ($cl > 0 ? "(expected $cl bytes)" : "") . " with response $respcode";
                 $errors[] = $message;
-                Debugger::log($message, DEBUGGER::WARNING);
+                Debugger::log($message, Debugger::WARNING);
                 continue;
             }
 
@@ -257,30 +265,23 @@ final class UploadCtrl extends BaseCtrl
             throw new RuntimeException('Unable to process image without extension');
         }
 
-        $found = $isLegacy = false;
-        if ($this->filesMap->getByKey("{$metadata['hash']}.{$metadata['extension']}")) {
-            $found = true;
-        } elseif ($this->filesMap->getByKey("{$metadata['md5']}.{$metadata['extension']}")) {
-            $found = true;
-            $isLegacy = true;
-        }
-
-        $key = ($isLegacy ? $metadata['md5'] : $metadata['hash']) . ".{$metadata['extension']}";
-        if (!$found) {
-            // verify image is valid by trying to open it using ImageMagick, will throw if necessary
+        if (
+            ($f = $this->filesMap->getByKey("{$metadata['hash']}.{$metadata['extension']}")) ||
+            ($f = $this->filesMap->getByKey("{$metadata['md5']}.{$metadata['extension']}"))
+        ) {
+            $key = $f->Key;
+        } else {
             $image = new ImagickUtility($bindata, $metadata);
-
-            // strip EXIF is requested
-            if ($this->config['app.strip_exif']) {
-                $bindata = $image->stripExif()->getImagesBlob();
+            if ($this->config['images.strip_metadata']) {
+                $bindata = $image->stripMeta()->getImagesBlob();
             }
 
-            // flush file to disk
+            $key = "{$metadata['hash']}.{$metadata['extension']}";
             self::saveImage($bindata, ImageUtilities::getSavePath($key));
         }
 
         // generate new image entry in database and associate it with file on disk
-        $name = StringUtil::generateRandomString($this->config['images.name_len']);
+        $name = StringUtil::generateRandomString(11);
         $newImage = $this->filesMap->createEntity(
             [
                 'Key' => $key,
