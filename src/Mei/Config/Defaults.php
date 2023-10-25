@@ -20,7 +20,7 @@ final class Defaults
 
         'images.directory' => UndefinedValue::class,
         'images.max_filesize' => UndefinedValue::class,
-        'images.strip_exif' => UndefinedValue::class,
+        'images.strip_metadata' => UndefinedValue::class,
 
         'api.secret' => UndefinedValue::class,
 
