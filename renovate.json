@@ -45,8 +45,7 @@
       "matchPackageNames": [
         "overtrue/phplint"
       ],
-      "automerge": true,
-      "allowedVersions": "<6.0.0"
+      "automerge": true
     },
     {
       "matchPackageNames": [

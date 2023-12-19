@@ -8,7 +8,7 @@ gen/*
 .settings/*
 .buildpath
 .project
-.phplint-cache
+.phplint.cache/*
 .phpcs-cache
 desktop.ini
 composer.phar
