@@ -19,7 +19,7 @@ final class Encryption
 
     public function __construct(ArrayAccess $config)
     {
-        $this->secret = md5($config['api.secret']);
+        $this->secret = md5($config['encryption.secret']);
     }
 
     /***************************************************************************************************************

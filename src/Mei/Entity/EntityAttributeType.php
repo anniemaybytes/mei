@@ -67,7 +67,7 @@ final class EntityAttributeType
             case 'datetime':
             case 'date':
                 if ($val instanceof DateTime) {
-                    $val = Time::sql($val);
+                    $val = Time::toSql($val);
                 }
                 break;
             case 'array':

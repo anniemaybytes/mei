@@ -16,13 +16,13 @@ final class Defaults
         'logs_dir' => UndefinedValue::class,
         'proxy' => false,
 
-        'app.secret' => UndefinedValue::class,
-
         'images.directory' => UndefinedValue::class,
         'images.max_filesize' => UndefinedValue::class,
         'images.strip_metadata' => UndefinedValue::class,
 
-        'api.secret' => UndefinedValue::class,
+        'images.legacy.pepper' => UndefinedValue::class,
+
+        'encryption.secret' => UndefinedValue::class,
 
         'cloudflare.enabled' => false,
         'cloudflare.api' => UndefinedValue::class,

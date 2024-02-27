@@ -96,11 +96,11 @@ final class ServeCtrl extends BaseCtrl
         $response = $response->withHeader('Content-Length', (string)strlen($bindata));
         $response = $response->withHeader(
             'Cache-Control',
-            'public, max-age=' . ($expire->getTimestamp() - Time::getEpoch())
+            'public, max-age=' . ($expire->getTimestamp() - Time::now()->getTimestamp())
         );
         $response = $response->withHeader('ETag', "\"$eTag\"");
-        $response = $response->withHeader('Expires', Time::rfc2822($expire));
-        $response = $response->withHeader('Last-Modified', Time::rfc2822(Time::fromEpoch($mtime)));
+        $response = $response->withHeader('Expires', Time::toRfc2822($expire));
+        $response = $response->withHeader('Last-Modified', Time::toRfc2822(Time::fromEpoch($mtime)));
 
         // does not match etag (might be empty array)
         if (@$request->getHeader('If-None-Match')[0] !== $eTag) {

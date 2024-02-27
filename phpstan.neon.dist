@@ -12,7 +12,6 @@ parameters:
         - '#Call to an undefined method Psr\\Container\\ContainerInterface::set#'
         - '#Call to an undefined method Psr\\Http\\Message\\ServerRequestInterface::getParam#'
         - '#Call to an undefined method Psr\\Http\\Message\\ResponseInterface::write#'
-        - '#Call to an undefined method Psr\\Http\\Message\\ResponseInterface::withRedirect#'
         - '#Call to an undefined method Psr\\Http\\Message\\ResponseInterface::withJson#'
 services:
 	-

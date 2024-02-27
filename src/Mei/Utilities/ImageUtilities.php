@@ -44,7 +44,7 @@ final class ImageUtilities
         return [
             'mime' => $mime,
             'extension' => self::$allowedTypes[$mime] ?? null,
-            'hash' => hash('sha256', $bindata . Dispatcher::config('app.secret')),
+            'hash' => hash('sha256', $bindata . Dispatcher::config('images.legacy.pepper')),
             'md5' => md5($bindata),
             'length' => strlen($bindata)
         ];

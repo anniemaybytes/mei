@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace Mei\Route;
 
+use Mei\Controller\AliveCtrl;
 use Mei\Controller\DeleteCtrl;
 use Mei\Controller\ServeCtrl;
 use Mei\Controller\UploadCtrl;
-use Psr\Container\ContainerInterface as Container;
-use Psr\Http\Message\RequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Routing\RouteCollectorProxy;
-use Slim\Routing\RouteParser;
 
 /**
  * Class Main
@@ -20,8 +17,6 @@ use Slim\Routing\RouteParser;
  */
 final class Main extends Base /** @formatter:off */
 {
-    private const ERROR_IMAGE_PATH = '/error.jpg';
-
     protected function addRoutes(): void
     {
         $app = $this->app;
@@ -29,15 +24,12 @@ final class Main extends Base /** @formatter:off */
         $app->group('', function (RouteCollectorProxy $group) {
             // upload
             $group->group('/upload', function (RouteCollectorProxy $group) {
-                $group->post('/user', UploadCtrl::class . ':user')
-                    ->setName('upload:user');
-                $group->post('/api', UploadCtrl::class . ':api')
-                    ->setName('upload:api');
+                $group->post('/user', UploadCtrl::class . ':user')->setName('upload:user');
+                $group->post('/api', UploadCtrl::class . ':api')->setName('upload:api');
             });
 
             // delete
-            $group->post('/delete', DeleteCtrl::class . ':delete')
-                ->setName('delete');
+            $group->post('/delete', DeleteCtrl::class . ':delete')->setName('delete');
 
             // serve
             $group->get(
@@ -45,22 +37,8 @@ final class Main extends Base /** @formatter:off */
                 ServeCtrl::class . ':serve'
             )->setName('serve');
 
-            // legacy redirects
-            $group->group('/images', function (RouteCollectorProxy $group) {
-                $group->get(self::ERROR_IMAGE_PATH, function (Request $request, Response $response, array $args) {
-                    return $response->withRedirect(self::ERROR_IMAGE_PATH);
-                });
-                $group->get(
-                    '/{image:[a-zA-Z0-9]{32}(?:-\d{2,3}x\d{2,3}(?:-crop)?)?\.[a-zA-Z]{3,4}}',
-                    function (Request $request, Response $response, array $args) {
-                        /** @var Container $this */
-                        return $response->withStatus(301)
-                            ->withRedirect(
-                                $this->get(RouteParser::class)->relativeUrlFor('serve', ['image' => $args['image']])
-                            );
-                    }
-                );
-            });
+            // alive check
+            $group->get('/alive', AliveCtrl::class . ':check');
         });
     }
 }
