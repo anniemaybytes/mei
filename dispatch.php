@@ -8,6 +8,7 @@ require_once BASE_ROOT . '/vendor/autoload.php';
 
 use Mei\Controller\ErrorCtrl;
 use Mei\Dispatcher;
+use Mei\Middleware;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use RunTracy\Helpers\IncludedFiles;
@@ -63,6 +64,7 @@ $app->addBodyParsingMiddleware();
 if (!$isDev) {
     $app->add(new ContentLengthMiddleware());
 }
+$app->add(new Middleware\AccessControl());
 $app->addRoutingMiddleware();
 // ---
 if (!$isDev) {

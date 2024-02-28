@@ -48,26 +48,17 @@ final class UploadCtrl extends BaseCtrl
 
         /**
          * Token specification:
+         *  tvalid (required): unix timestamp this token is valid until
          *  mime (optional): specific mime-type from allowable range to restrict newly uploaded images
-         *  tvalid (required): valid until
-         *  referer (required): url for redirection after upload
          *
          * Token might additionally contain additional arbitrary keys. Site owner can use the fact that on success
-         * we return whole token, as a way to pass over some additonal data (such as userId) to endpoint indicated by
-         * value given in `referer` key.
+         * we return whole token, as a way to pass over some additonal data.
          *
          * @noinspection JsonEncodingApiUsageInspection
          **/
         $token = json_decode($this->encryption->decryptUrl($request->getParam('t', '')), true);
-        if (time() > ($token['tvalid'] ?? 0)) {
+        if (Time::now()->getTimestamp() > ($token['tvalid'] ?? 0)) {
             throw new HttpForbiddenException($request);
-        }
-
-        $referer = $token['referer'] ?? '';
-        if ($referer === '' || !filter_var($referer, FILTER_VALIDATE_URL)) {
-            return $response
-                ->withStatus(400)
-                ->withJson(['success' => false, 'error' => 'No valid Referer given']);
         }
 
         $allowedTypes = ImageUtilities::$allowedTypes;
@@ -135,11 +126,8 @@ final class UploadCtrl extends BaseCtrl
         $c = $this->encryption->encryptUrl(json_encode(['images' => $images, 'token' => $token], JSON_THROW_ON_ERROR));
         $s = $this->encryption->generateHmac($c);
 
-        $qs = (parse_url($referer, PHP_URL_QUERY) ? '&' : '?') . http_build_query(['c' => $c, 's' => $s]);
-
         return $response
-            ->withStatus(303)
-            ->withHeader('Location', $referer . $qs)
+            ->withStatus(200)
             ->withJson(
                 [
                     'success' => true,
