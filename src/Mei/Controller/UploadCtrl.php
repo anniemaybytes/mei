@@ -127,7 +127,7 @@ final class UploadCtrl extends BaseCtrl
         $s = $this->encryption->generateHmac($c);
 
         return $response
-            ->withStatus(200)
+            ->withStatus(201)
             ->withJson(
                 [
                     'success' => true,
