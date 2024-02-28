@@ -2,20 +2,22 @@
 
 declare(strict_types=1);
 
-use Phpmig\Migration\Migration;
+use Phinx\Migration\AbstractMigration;
 
 /**
  * Class JpegToJpg
  */
-class JpegToJpg extends Migration
+final class JpegToJpg extends AbstractMigration
 {
     public function up(): void
     {
-        $sth = $this->get(PDO::class)->query("SELECT DISTINCT `Key` FROM `files_map` WHERE `Key` LIKE '%.jpeg'");
+        $sth = $this->adapter->getConnection()->query(
+            "SELECT DISTINCT `Key` FROM `files_map` WHERE `Key` LIKE '%.jpeg'"
+        );
 
         while ($key = $sth->fetch(PDO::FETCH_COLUMN)) {
             $p = pathinfo($key);
-            $this->get(PDO::class)->exec("UPDATE `files_map` SET `Key` = '{$p['filename']}.jpg' WHERE `Key` = '$key'");
+            $this->execute("UPDATE `files_map` SET `Key` = '{$p['filename']}.jpg' WHERE `Key` = '$key'");
         }
     }
 }

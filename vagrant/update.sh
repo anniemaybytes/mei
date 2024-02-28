@@ -58,7 +58,7 @@ systemctl start mariadb
 echo
 echo Migrating...
 cd /code
-su vagrant -s /bin/bash -c 'composer phpmig migrate'
+su vagrant -s /bin/bash -c 'composer phinx migrate'
 
 echo
 echo Starting daemons...

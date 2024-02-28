@@ -93,10 +93,6 @@ echo "GRANT ALL ON mei.* TO 'mei'@localhost IDENTIFIED BY 'mei'" | mariadb -uroo
 echo "GRANT ALL ON mei.* TO 'mei'@'%' IDENTIFIED BY 'mei'" | mariadb -uroot
 
 echo
-echo Importing database...
-find /vagrantroot/fixtures -type f -name '*.sql' -exec bash -c 'cat '{}' | mariadb -umei -pmei mei' \;
-
-echo
 echo Restarting MariaDB...
 systemctl restart mariadb
 
@@ -111,9 +107,14 @@ su vagrant -s /bin/bash -c 'mkdir -p /code/images'
 su vagrant -s /bin/bash -c 'mkdir -p /code/logs'
 
 echo
+echo Seeding database...
+cd /code
+su vagrant -s /bin/bash -c 'composer phinx seed:run'
+
+echo
 echo Migrating...
 cd /code
-su vagrant -s /bin/bash -c 'composer phpmig migrate'
+su vagrant -s /bin/bash -c 'composer phinx migrate'
 
 echo
 echo Starting daemons...

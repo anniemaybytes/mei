@@ -2,22 +2,26 @@
 
 declare(strict_types=1);
 
-use Phpmig\Migration\Migration;
+use Phinx\Migration\AbstractMigration;
 
 /**
  * Class RemoveUserIdAndTorrentId
  */
-class RemoveUserIdAndTorrentId extends Migration
+final class RemoveUserIdAndTorrentId extends AbstractMigration
 {
     public function up(): void
     {
-        $this->get(PDO::class)->exec('ALTER TABLE `files_map` DROP COLUMN `UploaderId`');
-        $this->get(PDO::class)->exec('ALTER TABLE `files_map` DROP COLUMN `TorrentId`');
+        $this->table('files_map')
+            ->removeColumn('UploaderId')
+            ->removeColumn('TorrentId')
+            ->update();
     }
 
     public function down(): void
     {
-        $this->get(PDO::class)->exec('ALTER TABLE `files_map` ADD COLUMN `UploaderId` INT(11) NOT NULL');
-        $this->get(PDO::class)->exec('ALTER TABLE `files_map` ADD COLUMN `TorrentId` INT(11) NOT NULL');
+        $this->table('files_map')
+            ->addColumn('UploaderId', 'integer', ['null' => false])
+            ->addColumn('TorrentId', 'integer', ['null' => false])
+            ->update();
     }
 }
