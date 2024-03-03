@@ -15,6 +15,7 @@ use Mei\Utilities\Encryption;
 use Mei\Utilities\Time;
 use PDO;
 use Psr\Container\ContainerInterface as Container;
+use Slim\HttpCache\CacheProvider;
 use Throwable;
 use Tracy\Debugger;
 
@@ -37,6 +38,7 @@ final class DependencyInjection
                 // utilites
                 Encryption::class => DI\autowire()->constructorParameter('config', DI\get('config')),
                 Time::class => DI\autowire(),
+                CacheProvider::class => DI\autowire(),
                 // runtime
                 IKeyStore::class => function () {
                     return new Cache\NonPersistent('');
@@ -96,7 +98,7 @@ final class DependencyInjection
 
         // dynamic definitions
         $di->set('config', $config);
-        $di->set('obLevel', ob_get_level());
+        $di->set('ob_level', ob_get_level());
 
         return $di;
     }

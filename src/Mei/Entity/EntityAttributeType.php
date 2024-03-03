@@ -6,6 +6,7 @@ namespace Mei\Entity;
 
 use DateTime;
 use InvalidArgumentException;
+use JsonException;
 use Mei\Utilities\Time;
 use RuntimeException;
 
@@ -29,19 +30,11 @@ final class EntityAttributeType
             case 'date':
                 $val = Time::fromSql($val);
                 break;
-            case 'array':
-                $val = EntityHelper::safelyUnserialize($val);
-                if ($val === null) {
-                    $val = [];
-                } elseif (!is_array($val)) {
-                    throw new RuntimeException('Failed to decode value');
-                }
-                break;
             case 'json':
-                /** @noinspection JsonEncodingApiUsageInspection */
-                $val = json_decode($val, true);
-                if (JSON_ERROR_NONE !== json_last_error()) {
-                    throw new RuntimeException('Failed to decode value');
+                try {
+                    $val = json_decode($val, true, 512, JSON_THROW_ON_ERROR);
+                } catch (JsonException $e) {
+                    throw new RuntimeException("Failed to decode value: {$e->getMessage()}", 0, $e);
                 }
                 break;
             case 'enum-bool':
@@ -66,18 +59,13 @@ final class EntityAttributeType
                 break;
             case 'datetime':
             case 'date':
-                if ($val instanceof DateTime) {
-                    $val = Time::toSql($val);
-                }
-                break;
-            case 'array':
-                $val = serialize($val);
+                $val = ($val instanceof DateTime ? Time::toSql($val) : Time::ZERO_SQLTIME);
                 break;
             case 'json':
-                /** @noinspection JsonEncodingApiUsageInspection */
-                $val = json_encode($val);
-                if (JSON_ERROR_NONE !== json_last_error()) {
-                    throw new InvalidArgumentException('Failed to encode value');
+                try {
+                    $val = json_encode($val, JSON_THROW_ON_ERROR);
+                } catch (JsonException $e) {
+                    throw new RuntimeException("Failed to encode value: {$e->getMessage()}", 0, $e);
                 }
                 break;
             case 'bool':
@@ -85,9 +73,7 @@ final class EntityAttributeType
                 $val = $val ? '1' : '0';
                 break;
             case 'epoch':
-                if ($val instanceof DateTime) {
-                    $val = $val->format('U');
-                }
+                $val = ($val instanceof DateTime ? $val->format('U') : 0);
                 break;
             default:
                 throw new InvalidArgumentException("I don't know how to deflate a $type!");

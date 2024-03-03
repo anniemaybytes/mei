@@ -65,6 +65,7 @@ if (!$isDev) {
     $app->add(new ContentLengthMiddleware());
 }
 $app->add(new Middleware\AccessControl());
+$app->add(new Middleware\Cache($di));
 $app->addRoutingMiddleware();
 // ---
 if (!$isDev) {

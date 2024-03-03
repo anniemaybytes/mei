@@ -11,14 +11,14 @@ class EntityAttributeTypeTest extends PHPUnit\Framework\TestCase
 {
     public function test_maps_bool_from_string(): void
     {
-        self::assertEquals(false, EntityAttributeType::inflate('bool', '0'));
-        self::assertEquals(true, EntityAttributeType::inflate('bool', '1'));
+        self::assertFalse(EntityAttributeType::inflate('bool', '0'));
+        self::assertTrue(EntityAttributeType::inflate('bool', '1'));
     }
 
     public function test_maps_enum_bool_from_string(): void
     {
-        self::assertEquals(false, EntityAttributeType::inflate('enum-bool', '0'));
-        self::assertEquals(true, EntityAttributeType::inflate('enum-bool', '1'));
+        self::assertFalse(EntityAttributeType::inflate('enum-bool', '0'));
+        self::assertTrue(EntityAttributeType::inflate('enum-bool', '1'));
     }
 
     public function test_maps_int_from_string(): void
@@ -45,13 +45,6 @@ class EntityAttributeTypeTest extends PHPUnit\Framework\TestCase
         $val = '2009-04-09 23:24:53';
 
         self::assertEquals($val, EntityAttributeType::inflate('datetime', $val)->format('Y-m-d H:i:s'));
-    }
-
-    public function test_maps_array_from_string(): void
-    {
-        $val = 'a:3:{i:0;s:6:"georgi";i:1;s:2:"is";i:2;s:7:"awesome";}';
-
-        self::assertEquals(unserialize($val), EntityAttributeType::inflate('array', $val));
     }
 
     public function test_maps_json_from_string(): void
@@ -82,13 +75,6 @@ class EntityAttributeTypeTest extends PHPUnit\Framework\TestCase
 
         EntityAttributeType::inflate('json', '["For realz",]');
         EntityAttributeType::deflate('json', base64_decode('iVBORw0K5ErkJggg=='));
-    }
-
-    public function test_throws_on_invalid_array(): void
-    {
-        $this->expectException(Exception::class);
-
-        EntityAttributeType::inflate('array', 'a:0:{i:0;s:6:"georgi";i:1;s:2:"is";i:2;s:7:"awesome";}');
     }
 
     public function test_maps_bool_to_string(): void
@@ -135,14 +121,6 @@ class EntityAttributeTypeTest extends PHPUnit\Framework\TestCase
         self::assertEquals(
             '2009-04-09 23:24:53',
             EntityAttributeType::deflate('datetime', new DateTime('2009-04-09 23:24:53'))
-        );
-    }
-
-    public function test_maps_array_to_string(): void
-    {
-        self::assertEquals(
-            'a:3:{i:0;s:6:"georgi";i:1;s:2:"is";i:2;s:7:"awesome";}',
-            EntityAttributeType::deflate('array', ['georgi', 'is', 'awesome'])
         );
     }
 

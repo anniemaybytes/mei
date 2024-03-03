@@ -8,6 +8,7 @@ use Psr\Container\ContainerInterface as Container;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Exception\HttpInternalServerErrorException;
+use Slim\HttpCache\CacheProvider;
 use Throwable;
 use Tracy\Debugger;
 
@@ -18,11 +19,11 @@ use Tracy\Debugger;
  */
 final class FatalErrorCtrl
 {
-    private int $obLevel;
+    private Container $di;
 
     public function __construct(Container $di)
     {
-        $this->obLevel = $di->get('obLevel');
+        $this->di = $di;
     }
 
     /**
@@ -47,7 +48,7 @@ final class FatalErrorCtrl
         $response = $response->withBody($body);
 
         // clear output buffer
-        while (ob_get_level() > @$this->obLevel) {
+        while (ob_get_level() > @$this->di->get('ob_level')) {
             $status = ob_get_status();
             if (in_array($status['name'], ['ob_gzhandler', 'zlib output compression'], true)) {
                 break;
@@ -56,6 +57,13 @@ final class FatalErrorCtrl
                 break;
             }
         }
+
+        /*
+         * We need to add Cache-Control header here as it was previously done in middleware.
+         * Additionally in case it was changed by code we want to override it to values set below as we
+         * really don't want to cache errors
+         */
+        $response = $this->di->get(CacheProvider::class)->denyCache($response);
 
         return $response
             ->withStatus(500)
