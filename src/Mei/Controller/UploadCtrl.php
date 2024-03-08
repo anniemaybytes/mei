@@ -142,26 +142,26 @@ final class UploadCtrl extends BaseCtrl
      */
     public function api(Request $request, Response $response, array $args): Response
     {
-        if (!$this->encryption->hmacValid($request->getParam('content', ''), $request->getParam('sign', ''))) {
+        /* @formatter:off */
+        if (!$this->encryption->hmacValid($request->getBody()->getContents(), $request->getHeaderLine('X-Hmac-Signature'))) {
             throw new HttpForbiddenException($request);
         }
+        /* @formatter:on */
 
         $images = [];
         $errors = [];
 
-        $urls = json_decode(
-            StringUtil::base64UrlDecode($request->getParam('content')),
-            true,
-            512,
-            JSON_THROW_ON_ERROR
-        );
-        if (empty($urls) || !is_array($urls)) {
+        if (
+            !is_array($request->getParsedBody()) ||
+            !is_array($request->getParsedBody()['urls'] ?? null) ||
+            empty($request->getParsedBody()['urls'])
+        ) {
             return $response
                 ->withStatus(400)
                 ->withJson(['success' => false, 'error' => 'No image URLs to upload given']);
         }
 
-        foreach ($urls as $url) {
+        foreach ($request->getParsedBody()['urls'] as $url) {
             if (!$url || !filter_var($url, FILTER_VALIDATE_URL)) {
                 $errors[] = "Invalid URL $url provided (FILTER_VALIDATE_URL)";
                 continue;
@@ -177,7 +177,6 @@ final class UploadCtrl extends BaseCtrl
             $curl = new Curl($url);
             $curl->setoptArray(
                 [
-                    CURLOPT_ENCODING => 'UTF-8',
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_POST => false,
                     CURLOPT_FOLLOWLOCATION => true,

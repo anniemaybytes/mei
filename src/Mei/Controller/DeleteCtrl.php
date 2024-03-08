@@ -12,7 +12,6 @@ use Mei\Model\FilesMap;
 use Mei\Utilities\Curl;
 use Mei\Utilities\Encryption;
 use Mei\Utilities\ImageUtilities;
-use Mei\Utilities\StringUtil;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Exception\HttpForbiddenException;
@@ -40,26 +39,25 @@ final class DeleteCtrl extends BaseCtrl
      */
     public function delete(Request $request, Response $response, array $args): Response
     {
-        // dont abort if client disconnects
-        ignore_user_abort(true);
-
-        if (!$this->encryption->hmacValid($request->getParam('content', ''), $request->getParam('sign', ''))) {
+        /* @formatter:off */
+        if (!$this->encryption->hmacValid($request->getBody()->getContents(), $request->getHeaderLine('X-Hmac-Signature'))) {
             throw new HttpForbiddenException($request);
         }
+        /* @formatter:on */
 
-        $images = json_decode(
-            StringUtil::base64UrlDecode($request->getParam('content')),
-            true,
-            512,
-            JSON_THROW_ON_ERROR
-        );
-        if (empty($images) || !is_array($images)) {
+        if (
+            !is_array($request->getParsedBody()) ||
+            !is_array($request->getParsedBody()['images'] ?? null) ||
+            empty($request->getParsedBody()['images'])
+        ) {
             return $response->withStatus(400)->withJson(['success' => false, 'error' => 'No images to delete given']);
         }
 
+        ignore_user_abort(true); // dont abort if client disconnects
+
         $warnings = [];
         $urls = [];
-        foreach ($images as $image) {
+        foreach ($request->getParsedBody()['images'] as $image) {
             if (!is_string($image) || $image === '') {
                 continue;
             }
@@ -87,9 +85,8 @@ final class DeleteCtrl extends BaseCtrl
             }
 
             try {
-                // remove file from disk when it's not referenced anymore
                 if (!$this->filesMap->getByKey($fileEntity->Key)) {
-                    self::deleteImage($fileEntity->Key);
+                    self::deleteImage($fileEntity->Key); // remove file from disk when it's not referenced anymore
                 }
             } catch (Exception $e) {
                 Debugger::log($e, Debugger::EXCEPTION);
@@ -104,12 +101,9 @@ final class DeleteCtrl extends BaseCtrl
             );
             $curl->setoptArray(
                 [
-                    CURLOPT_ENCODING => 'UTF-8',
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_POST => true,
                     CURLOPT_FOLLOWLOCATION => false,
-                    CURLOPT_HEADER => false,
-                    CURLOPT_VERBOSE => false,
                     CURLOPT_SSL_VERIFYPEER => true,
                     CURLOPT_SSL_VERIFYHOST => 2,
                     CURLOPT_HTTPHEADER => [
@@ -129,7 +123,6 @@ final class DeleteCtrl extends BaseCtrl
             unset($curl);
 
             try {
-                // will most likely fail if api is down as it would return html error page instead
                 $result = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
             } catch (JsonException $e) {
                 Debugger::log(

@@ -8,18 +8,18 @@ servers:
 paths:
     /upload/user:
         post:
-            summary: Upload image from file using encrypted token verification method
+            summary: Upload one or more images from files
             tags:
                 - upload
+            security:
+                - EncryptedTokenContent: []
+                  EncryptedTokenSignature: []
             requestBody:
                 content:
                     multipart/form-data:
                         schema:
                             type: object
                             properties:
-                                token:
-                                    type: string
-                                    description: Base64 URL-encoded representation of `EncryptedToken` object, encrypted with AES-256-CBC
                                 image[]:
                                     type: array
                                     description: Image to upload
@@ -27,17 +27,40 @@ paths:
                                         type: string
                                         format: binary
                             required:
-                                - token
                                 - image[]
             responses:
-                '303':
+                '201':
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/HttpResponse'
+                                properties:
+                                    success:
+                                        type: boolean
+                                        description: Whether action was succesful
+                                    callback:
+                                        type: object
+                                        description: Object containing encrypted response
+                                        properties:
+                                            content:
+                                                type: string
+                                                description: Base64-encoded encrypted response
+                                            sign:
+                                                type: string
+                                                description: HMAC signature
+                                        required:
+                                            - content
+                                            - sign
+                                    warnings:
+                                        type: array
+                                        description: List of warnings encountered
+                                        items:
+                                            type: string
+                                required:
+                                    - success
+                                    - callback
                 '400':
-                    description: Empty request, unacceptable MIME restriction or invalid Referer
+                    description: Empty request or unacceptable MIME restriction
                     content:
                         application/json:
                             schema:
@@ -56,11 +79,11 @@ paths:
                                 $ref: '#/components/schemas/HttpResponse'
     /upload/api:
         post:
-            summary: Upload image from URL using API token key as verification method
+            summary: Upload one or more images from URLs
             tags:
                 - upload
             security:
-                -   ApiToken: [ ]
+                - SimpleHmacSignature: []
             requestBody:
                 content:
                     application/json:
@@ -136,7 +159,7 @@ paths:
             tags:
                 - delete
             security:
-                -   ApiToken: [ ]
+                - SimpleHmacSignature: []
             requestBody:
                 content:
                     application/json:
@@ -213,15 +236,19 @@ components:
                 tvalid:
                     type: integer
                     description: Unix time this token is valid until
-                referer:
-                    type: string
-                    description: URI for redirection after upload
             additionalProperties: true
             required:
                 - tvalid
-                - referer
     securitySchemes:
-        ApiToken:
-            name: auth
+        SimpleHmacSignature:
+            type: apiKey
+            in: header
+            name: X-Hmac-Signature
+        EncryptedTokenContent:
             type: apiKey
             in: query
+            name: t
+        EncryptedTokenSignature:
+            type: apiKey
+            in: query
+            name: s
