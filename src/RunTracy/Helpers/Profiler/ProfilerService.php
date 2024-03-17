@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace RunTracy\Helpers\Profiler;
 
-use PetrKnap\Php\Singleton\SingletonInterface;
-use PetrKnap\Php\Singleton\SingletonTrait;
+use Singleton\SingletonInterface;
+use Singleton\SingletonTrait;
 
 /**
  * Class ProfilerService
