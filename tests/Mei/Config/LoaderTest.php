@@ -32,8 +32,7 @@ class LoaderTest extends PHPUnit\Framework\TestCase
      */
     public function test_check_load_file(): void
     {
-        $f = Loader::load($this->root->url() . '/load.ini');
-        $c = Loader::parse($f);
+        $c = Loader::parse(Loader::load($this->root->url() . '/load.ini'));
         self::assertArrayHasKey('mode', $c);
         self::assertEquals('development', $c['mode']);
     }
@@ -43,16 +42,15 @@ class LoaderTest extends PHPUnit\Framework\TestCase
      */
     public function test_parses_simple_ini(): void
     {
-        $f = Loader::load($this->root->url() . '/sample.ini');
-        $c = Loader::parse($f);
         self::assertEquals(
             [
                 'mode' => 'development',
                 'logs_dir' => '/code/logs',
-                'app.max_filesize' => 5242880,
-                'app.salt' => '[b,W3=Ryrt`:uQ=S',
+                'images.strip_metadata' => false,
+                'images.max_filesize' => 5242880,
+                'images.legacy.pepper' => '[b,W3=Ryrt`:uQ=S',
             ],
-            $c
+            Loader::parse(Loader::load($this->root->url() . '/sample.ini'))
         );
     }
 }

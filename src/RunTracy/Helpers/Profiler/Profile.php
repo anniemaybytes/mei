@@ -14,10 +14,10 @@ use JsonSerializable;
  */
 final class Profile implements JsonSerializable
 {
-    private const ABSOLUTE_DURATION = 'absolute_duration';
-    private const DURATION = 'duration';
-    private const ABSOLUTE_MEMORY_USAGE_CHANGE = 'absolute_memory_usage_change';
-    private const MEMORY_USAGE_CHANGE = 'memory_usage_change';
+    private const string ABSOLUTE_DURATION = 'absolute_duration';
+    private const string DURATION = 'duration';
+    private const string ABSOLUTE_MEMORY_USAGE_CHANGE = 'absolute_memory_usage_change';
+    private const string MEMORY_USAGE_CHANGE = 'memory_usage_change';
 
     public array $meta = [];
 

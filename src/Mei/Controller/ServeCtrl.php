@@ -25,8 +25,8 @@ use Tracy\Debugger;
  */
 final class ServeCtrl extends BaseCtrl
 {
-    private const CACHE_MAX_AGE = "1 month";
-    private const CSP_RULE = "default-src 'none'; style-src 'unsafe-inline'; sandbox";
+    private const string CACHE_MAX_AGE = "1 month";
+    private const string CSP_RULE = "default-src 'none'; style-src 'unsafe-inline'; sandbox";
 
     #[Inject]
     private FilesMap $filesMap;

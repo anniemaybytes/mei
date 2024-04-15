@@ -22,7 +22,7 @@ final class ImageUtilities
         'image/webp' => 'webp'
     ];
 
-    private const SAVE_DIR_DEPTH = 3;
+    private const int SAVE_DIR_DEPTH = 3;
 
     public static function getSavePath(string $name): string
     {

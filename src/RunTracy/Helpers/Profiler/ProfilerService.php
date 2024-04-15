@@ -17,16 +17,16 @@ final class ProfilerService implements SingletonInterface
 {
     use SingletonTrait;
 
-    public const META_TIME_ZERO = 'meta_time_zero';
-    public const META_TIME_TOTAL = 'meta_time_total';
-    public const META_MEMORY_PEAK = 'meta_memory_peak';
-    public const META_TIME_LINE = 'meta_time_line';
-    public const META_TIME_LINE__MEMORY_USAGE = 'meta_time_line__memory_usage';
+    public const string META_TIME_ZERO = 'meta_time_zero';
+    public const string META_TIME_TOTAL = 'meta_time_total';
+    public const string META_MEMORY_PEAK = 'meta_memory_peak';
+    public const string META_TIME_LINE = 'meta_time_line';
+    public const string META_TIME_LINE__MEMORY_USAGE = 'meta_time_line__memory_usage';
 
-    public const TIME_LINE_BEFORE = 'time_line_before'; // int [0 - 100] percentage
-    public const TIME_LINE_ACTIVE = 'time_line_active'; // int [0 - 100] percentage
-    public const TIME_LINE_INACTIVE = 'time_line_inactive'; // int [0 - 100] percentage
-    public const TIME_LINE_AFTER = 'time_line_after'; // int [0 - 100] percentage
+    public const string TIME_LINE_BEFORE = 'time_line_before'; // int [0 - 100] percentage
+    public const string TIME_LINE_ACTIVE = 'time_line_active'; // int [0 - 100] percentage
+    public const string TIME_LINE_INACTIVE = 'time_line_inactive'; // int [0 - 100] percentage
+    public const string TIME_LINE_AFTER = 'time_line_after'; // int [0 - 100] percentage
 
     private array $metaData = [];
 

@@ -7,8 +7,8 @@ Vagrant.require_version ">= 2.2.12"
 
 Vagrant.configure(2) do |config|
   # box
-  config.vm.box = "generic/debian11"
-  config.vm.box_version = ">= 3.5.0"
+  config.vm.box = "generic/debian12"
+  config.vm.box_version = ">= 4.3.0"
 
   # network
   config.vm.network "forwarded_port", id: "ssh", guest: 22, host_ip: "127.0.0.1", host: 7022

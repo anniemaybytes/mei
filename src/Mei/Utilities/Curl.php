@@ -22,7 +22,7 @@ use function curl_setopt_array;
  */
 final class Curl
 {
-    public const DEFAULT_USER_AGENT = 'mei-image-server/1.0';
+    public const string DEFAULT_USER_AGENT = 'mei-image-server/1.0';
 
     private ?CurlHandle $curl;
 

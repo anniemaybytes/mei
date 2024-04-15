@@ -13,7 +13,7 @@ use ArrayAccess;
  */
 final class Encryption
 {
-    private const CIPHER = 'aes-256-cbc';
+    private const string CIPHER = 'aes-256-cbc';
 
     protected string $secret;
 

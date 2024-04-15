@@ -5,7 +5,7 @@ type: docker
 
 steps:
     -   name: install
-        image: thecodingmachine/php:8.2-v4-cli
+        image: thecodingmachine/php:8.3-v4-cli
         pull: always
         environment:
             COMPOSER_ALLOW_SUPERUSER: 1
@@ -15,7 +15,7 @@ steps:
             - composer validate --ansi --no-check-all --no-check-publish
             - sudo composer install --no-progress --ansi --prefer-dist
     -   name: phplint
-        image: thecodingmachine/php:8.2-v4-cli
+        image: thecodingmachine/php:8.3-v4-cli
         environment:
             PHP_EXTENSION_GD: 1
             PHP_EXTENSION_IMAGICK: 1
@@ -24,7 +24,7 @@ steps:
             - composer phplint
         depends_on: [ install ]
     -   name: phpcs
-        image: thecodingmachine/php:8.2-v4-cli
+        image: thecodingmachine/php:8.3-v4-cli
         environment:
             PHP_EXTENSION_GD: 1
             PHP_EXTENSION_IMAGICK: 1
@@ -33,7 +33,7 @@ steps:
             - composer phpcs
         depends_on: [ install ]
     -   name: phpstan
-        image: thecodingmachine/php:8.2-v4-cli
+        image: thecodingmachine/php:8.3-v4-cli
         environment:
             PHP_EXTENSION_GD: 1
             PHP_EXTENSION_IMAGICK: 1
@@ -46,6 +46,7 @@ trigger:
         - refs/heads/master
         - refs/pull/**
         - refs/tags/**
+
 ---
 kind: pipeline
 name: tests
@@ -53,7 +54,7 @@ type: docker
 
 steps:
     -   name: install
-        image: thecodingmachine/php:8.2-v4-cli
+        image: thecodingmachine/php:8.3-v4-cli
         pull: always
         environment:
             COMPOSER_ALLOW_SUPERUSER: 1
@@ -63,7 +64,7 @@ steps:
             - composer validate --ansi --no-check-all --no-check-publish
             - sudo composer install --no-progress --ansi --prefer-dist
     -   name: phpunit
-        image: thecodingmachine/php:8.2-v4-cli
+        image: thecodingmachine/php:8.3-v4-cli
         environment:
             PHP_EXTENSION_GD: 1
             PHP_EXTENSION_IMAGICK: 1

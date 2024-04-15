@@ -11,7 +11,7 @@ namespace Mei\Config;
  */
 final class Defaults
 {
-    public const CONFIG = [
+    public const array CONFIG = [
         'mode' => 'production', // ensure we fail safely and dont expose sensitive data
         'logs_dir' => UndefinedValue::class,
         'proxy' => false,

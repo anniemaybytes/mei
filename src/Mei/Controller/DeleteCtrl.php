@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Mei\Controller;
 
 use DI\Attribute\Inject;
-use ErrorException;
 use Exception;
 use JsonException;
 use Mei\Model\FilesMap;
@@ -115,9 +114,8 @@ final class DeleteCtrl extends BaseCtrl
                     CURLOPT_POSTFIELDS => json_encode(['files' => $urls], JSON_THROW_ON_ERROR)
                 ]
             );
-            $result = $curl->exec();
-            if ($curl->error() !== '') {
-                Debugger::log(new ErrorException('Failed to clear CDN cache: ' . $curl->error()), DEBUGGER::WARNING);
+            if (!$result = $curl->exec()) {
+                Debugger::log("Failed to clear CDN cache: {$curl->error()}", DEBUGGER::WARNING);
                 return $response->withStatus(200)->withJson(['success' => true, 'warnings' => $warnings]);
             }
             unset($curl);
@@ -125,10 +123,8 @@ final class DeleteCtrl extends BaseCtrl
             try {
                 $result = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
             } catch (JsonException $e) {
-                Debugger::log(
-                    new ErrorException('Failed to clear CDN cache', 0, 1, __FILE__, __LINE__, $e),
-                    DEBUGGER::WARNING
-                );
+                Debugger::log($e, DEBUGGER::WARNING);
+                return $response->withStatus(200)->withJson(['success' => true, 'warnings' => $warnings]);
             }
 
             if (!@$result['success']) {
@@ -138,7 +134,7 @@ final class DeleteCtrl extends BaseCtrl
                     Debugger::log($e, DEBUGGER::WARNING);
                     $err = '(unparsable error)';
                 }
-                Debugger::log(new ErrorException("Failed to clear CDN cache: $err"), DEBUGGER::WARNING);
+                Debugger::log("Received non-success response when clearing CDN cache: $err", DEBUGGER::WARNING);
             }
         }
 

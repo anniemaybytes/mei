@@ -15,7 +15,7 @@ use RuntimeException;
  */
 final class Config implements ArrayAccess
 {
-    private const FILES = [
+    private const array FILES = [
         BASE_ROOT . '/config/private.ini'
     ];
 

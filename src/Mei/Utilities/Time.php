@@ -14,7 +14,7 @@ use DateTime;
  */
 final class Time
 {
-    public const ZERO_SQLTIME = '0000-00-00 00:00:00';
+    public const string ZERO_SQLTIME = '0000-00-00 00:00:00';
 
     /**
      * Returns the current time.
