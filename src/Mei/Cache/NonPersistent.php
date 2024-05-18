@@ -15,8 +15,6 @@ use Tracy\Debugger;
  */
 final class NonPersistent implements IKeyStore
 {
-    private string $keyPrefix;
-
     private bool $clearOnGet = false;
 
     private array $cacheHits = [];
@@ -24,10 +22,8 @@ final class NonPersistent implements IKeyStore
 
     private array $inner = [];
 
-    public function __construct(string $keyPrefix)
+    public function __construct()
     {
-        $this->keyPrefix = $keyPrefix;
-
         $bar = new CacheTracyBarPanel($this);
         Debugger::getBar()->addPanel($bar);
         Debugger::getBlueScreen()->addPanel(
@@ -49,11 +45,9 @@ final class NonPersistent implements IKeyStore
     public function get(string $key): mixed
     {
         $start = $this->startCall();
-        $keyOld = $key;
-        $key = $this->keyPrefix . $key;
 
         if ($this->clearOnGet) {
-            $this->delete($keyOld);
+            $this->delete($key);
             $this->endCall($start);
             return false;
         }
@@ -73,8 +67,6 @@ final class NonPersistent implements IKeyStore
     public function set(string $key, mixed $value, int $time = 10800): bool
     {
         $start = $this->startCall();
-        $key = $this->keyPrefix . $key;
-
         $this->inner[$key] = $value;
         $this->endCall($start);
 
@@ -84,8 +76,6 @@ final class NonPersistent implements IKeyStore
     public function delete(string $key): bool
     {
         $start = $this->startCall();
-        $key = $this->keyPrefix . $key;
-
         unset($this->inner[$key]);
         $this->endCall($start);
 
@@ -95,7 +85,6 @@ final class NonPersistent implements IKeyStore
     public function increment(string $key, int $n = 1, int $initial = 1, int $expiry = 0): bool|int
     {
         $start = $this->startCall();
-        $key = $this->keyPrefix . $key;
 
         if ($this->clearOnGet) {
             $this->endCall($start);

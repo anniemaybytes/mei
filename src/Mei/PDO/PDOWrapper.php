@@ -42,7 +42,12 @@ final class PDOWrapper extends PDO
         ?string $passwd = null,
         ?array $options = null
     ) {
-        parent::__construct($dsn, $username, $passwd, $options);
+        parent::__construct(
+            $dsn,
+            $username,
+            $passwd,
+            ([PDO::ATTR_PERSISTENT => false, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION] + $options)
+        );
         $this->setAttribute(
             PDO::ATTR_STATEMENT_CLASS,
             [PDOStatementWrapper::class, [$this]]
@@ -60,9 +65,10 @@ final class PDOWrapper extends PDO
     }
 
     /**
-     * this implements nested transactions - a savepoint is created within parent transaction to which child transaction can rollback to
-     * however if code or query would to fail, a parent transaction will be rollbacked fully along with all child transactions regardless of where the issue was
-     * even if child transaction was already commited (commiting child transaction just removes it from queue stack)
+     * This implements nested transactions - a savepoint is created within parent transaction to which child
+     * transaction can rollback to, however if code or query would to fail, a parent transaction will be rollbacked
+     * fully along with all child transactions regardless of where the issue was even if child transaction was
+     * already commited (commiting child transaction just removes it from queue stack)
      *
      * @inheritDoc
      * @noinspection MissUsingParentKeywordInspection

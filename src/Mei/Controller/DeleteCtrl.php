@@ -41,8 +41,7 @@ final class DeleteCtrl extends BaseCtrl
         /* @formatter:off */
         if (!$this->encryption->hmacValid($request->getBody()->getContents(), $request->getHeaderLine('X-Hmac-Signature'))) {
             throw new HttpForbiddenException($request);
-        }
-        /* @formatter:on */
+        } /* @formatter:on */
 
         if (
             !is_array($request->getParsedBody()) ||

@@ -6,6 +6,7 @@ const BASE_ROOT = __DIR__;
 const ERROR_REPORTING = E_ALL & ~(E_STRICT | E_NOTICE | E_DEPRECATED);
 require_once BASE_ROOT . '/vendor/autoload.php';
 
+use Mei\Application;
 use Mei\Controller\ErrorCtrl;
 use Mei\Dispatcher;
 use Mei\Middleware;
@@ -21,9 +22,8 @@ use Tracy\Debugger;
 date_default_timezone_set('UTC');
 putenv('RES_OPTIONS=retrans:1 retry:1 timeout:1 attempts:1');
 
-$app = Dispatcher::app();
-/** @var Psr\Container\ContainerInterface $di */
-$di = $app->getContainer();
+$di = Dispatcher::di();
+$app = Application::setup($di);
 
 $isDev = $di->get('config')['mode'] === 'development';
 

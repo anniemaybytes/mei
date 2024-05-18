@@ -6,18 +6,10 @@ namespace Mei;
 
 use ArrayAccess;
 use DI;
-use Mei\Cache\IKeyStore;
+use Exception;
 use Mei\Entity\ICacheable;
 use Mei\Model\FilesMap;
-use Mei\PDO\PDOTracyBarPanel;
-use Mei\PDO\PDOWrapper;
-use Mei\Utilities\Encryption;
-use Mei\Utilities\Time;
-use PDO;
 use Psr\Container\ContainerInterface as Container;
-use Slim\HttpCache\CacheProvider;
-use Throwable;
-use Tracy\Debugger;
 
 /**
  * Class DependencyInjection
@@ -26,74 +18,19 @@ use Tracy\Debugger;
  */
 final class DependencyInjection
 {
-    public static function setup(ArrayAccess $config): Container
+    /** @throws Exception */
+    public static function build(array $baseDefinitions, ArrayAccess $config, bool $enableCompilation): Container
     {
+        // prepare builder
         $builder = new DI\ContainerBuilder();
         $builder->useAttributes(true);
-        if ($config['mode'] === 'production') {
+        if ($enableCompilation) {
             $builder->enableCompilation(BASE_ROOT);
         }
-        $builder->addDefinitions(
-            [
-                // utilites
-                Encryption::class => DI\autowire()->constructorParameter('config', DI\get('config')),
-                Time::class => DI\autowire(),
-                CacheProvider::class => DI\autowire(),
-                // runtime
-                IKeyStore::class => function () {
-                    return new Cache\NonPersistent('');
-                },
-                PDO::class => function (Container $di) {
-                    $config = $di->get('config');
+        $builder->addDefinitions($baseDefinitions);
+        $builder->addDefinitions(self::getModelsDefinitions());
 
-                    $dsn = "mysql:dbname={$config['db.database']};charset=utf8;";
-                    if (isset($config['db.socket'])) {
-                        $dsn .= "unix_socket={$config['db.socket']};";
-                    } else {
-                        $dsn .= "host={$config['db.hostname']};port={$config['db.port']};";
-                    }
-
-                    $w = new PDOWrapper(
-                        $dsn,
-                        $config['db.username'],
-                        $config['db.password'],
-                        [
-                            PDO::ATTR_PERSISTENT => false,
-                            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                            PDO::MYSQL_ATTR_INIT_COMMAND => "set time_zone = '+00:00';",
-                            PDO::ATTR_EMULATE_PREPARES => false, // emulated prepares ignore param hinting when binding
-                        ]
-                    );
-
-                    $bar = new PDOTracyBarPanel($w);
-                    Debugger::getBar()->addPanel($bar);
-                    Debugger::getBlueScreen()->addPanel(
-                        function (?Throwable $e) use ($bar) {
-                            if ($e) {
-                                return null;
-                            }
-                            return [
-                                'tab' => 'PDO',
-                                'panel' => $bar->getPanel()
-                            ];
-                        }
-                    );
-
-                    return $w;
-                },
-                // models
-                FilesMap::class => DI\autowire()
-                    ->constructorParameter(
-                        'entityBuilder',
-                        DI\value(
-                            function (ICacheable $c) {
-                                return new Entity\FilesMap($c);
-                            }
-                        )
-                    ),
-            ]
-        );
-        /** @noinspection PhpUnhandledExceptionInspection */
+        // run build
         $di = $builder->build();
 
         // dynamic definitions
@@ -101,5 +38,20 @@ final class DependencyInjection
         $di->set('ob_level', ob_get_level());
 
         return $di;
+    }
+
+    private static function getModelsDefinitions(): array
+    {
+        return [
+            FilesMap::class => DI\autowire()
+                ->constructorParameter(
+                    'entityBuilder',
+                    DI\value(
+                        function (ICacheable $c) {
+                            return new Entity\FilesMap($c);
+                        }
+                    )
+                ),
+        ];
     }
 }

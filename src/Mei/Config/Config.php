@@ -45,8 +45,20 @@ final class Config implements ArrayAccess
         if (!isset($this->config[$offset])) {
             throw new RuntimeException("$offset is not a valid configuration property");
         }
+
         if ($this->config[$offset] === UndefinedValue::class) {
             throw new RuntimeException("Config property $offset is uninitialized");
+        }
+
+        if (
+            isset(AllowedValues::CONFIG[$offset]) &&
+            !in_array($this->config[$offset], AllowedValues::CONFIG[$offset], true)
+        ) {
+            throw new RuntimeException(
+                "Config property '$offset' has wrong value " . var_export($this->config[$offset], true) .
+                ' - must be one of: ' .
+                implode(', ', array_map(static fn($imp) => var_export($imp, true), AllowedValues::CONFIG[$offset]))
+            );
         }
 
         return $this->config[$offset];

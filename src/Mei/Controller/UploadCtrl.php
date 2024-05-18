@@ -145,8 +145,7 @@ final class UploadCtrl extends BaseCtrl
         /* @formatter:off */
         if (!$this->encryption->hmacValid($request->getBody()->getContents(), $request->getHeaderLine('X-Hmac-Signature'))) {
             throw new HttpForbiddenException($request);
-        }
-        /* @formatter:on */
+        } /* @formatter:on */
 
         $images = [];
         $errors = [];

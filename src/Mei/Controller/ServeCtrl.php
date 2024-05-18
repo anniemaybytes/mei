@@ -87,7 +87,7 @@ final class ServeCtrl extends BaseCtrl
             }
         }
 
-        $eTag = md5($bindata);
+        $etag = '"' . hash('xxh64', $bindata) . '"';
         $mtime = Time::timeIsNonZero($fileEntity->UploadTime) ?
             $fileEntity->UploadTime->getTimestamp() : filemtime(ImageUtilities::getSavePath($fileEntity->Key));
         $expire = Time::now()->add(Time::interval(self::CACHE_MAX_AGE));
@@ -98,17 +98,16 @@ final class ServeCtrl extends BaseCtrl
             'Cache-Control',
             'public, max-age=' . ($expire->getTimestamp() - Time::now()->getTimestamp())
         );
-        $response = $response->withHeader('ETag', "\"$eTag\"");
+        $response = $response->withHeader('ETag', $etag);
         $response = $response->withHeader('Expires', Time::toRfc2822($expire));
         $response = $response->withHeader('Last-Modified', Time::toRfc2822(Time::fromEpoch($mtime)));
+        $response = $response->withHeader('Content-Security-Policy', self::CSP_RULE);
 
-        // does not match etag (might be empty array)
-        if (@$request->getHeader('If-None-Match')[0] !== $eTag) {
-            return $response->withHeader('Content-Security-Policy', self::CSP_RULE)->write($bindata);
+        if ($request->getHeaderLine('If-None-Match') === $etag) {
+            return $response->withStatus(304);
         }
 
-        // matches etag, return 304
-        return $response->withStatus(304)->withHeader('Content-Security-Policy', self::CSP_RULE);
+        return $response->write($bindata);
     }
 
     private static function getImageFromPath(string $filename): string
