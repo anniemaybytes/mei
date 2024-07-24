@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mei\Utilities;
 
 use ArrayAccess;
+use Random\RandomException;
 
 /**
  * Class Encryption
@@ -26,6 +27,7 @@ final class Encryption
      * *********************************** GENERAL ENCRYPTION/DECRYPTION *******************************************
      ***************************************************************************************************************/
 
+    /** @throws RandomException */
     public function encrypt(?string $input): string
     {
         $data = $input;
@@ -34,7 +36,6 @@ final class Encryption
             $data = str_pad($data, strlen($data) + 32 - strlen($data) % 32, "\0");
         }
 
-        /** @noinspection PhpUnhandledExceptionInspection */
         $iv = random_bytes(16);
         $crypt = openssl_encrypt($data, self::CIPHER, $this->secret, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
 
@@ -75,6 +76,7 @@ final class Encryption
      * ******************************************* URL ENCRYPTION/DECRYPTION ***************************************
      ***************************************************************************************************************/
 
+    /** @throws RandomException */
     public function encryptUrl(string $input): string
     {
         return StringUtil::base64UrlEncode($this->encrypt($input));

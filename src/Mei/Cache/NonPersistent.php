@@ -15,8 +15,6 @@ use Tracy\Debugger;
  */
 final class NonPersistent implements IKeyStore
 {
-    private bool $clearOnGet = false;
-
     private array $cacheHits = [];
     private float $time = 0;
 
@@ -45,12 +43,6 @@ final class NonPersistent implements IKeyStore
     public function get(string $key): mixed
     {
         $start = $this->startCall();
-
-        if ($this->clearOnGet) {
-            $this->delete($key);
-            $this->endCall($start);
-            return false;
-        }
 
         if (array_key_exists($key, $this->inner)) {
             $res = $this->inner[$key];
@@ -86,11 +78,6 @@ final class NonPersistent implements IKeyStore
     {
         $start = $this->startCall();
 
-        if ($this->clearOnGet) {
-            $this->endCall($start);
-            return $initial;
-        }
-
         if (!array_key_exists($key, $this->inner)) { // key does not exists yet, create it with $initial.
             $value = $initial;
         } elseif (is_int($this->inner[$key])) { // exists and value is numeric, increment by $n
@@ -118,10 +105,11 @@ final class NonPersistent implements IKeyStore
         }
     }
 
-    public function setClearOnGet(bool $val): void
-    {
-        $this->clearOnGet = $val;
-    }
+    /**
+     * @phpcs:disable Squiz.WhiteSpace.ScopeClosingBrace
+     * @phpcs:disable Squiz.Functions.MultiLineFunctionDeclaration.BraceOnSameLine
+     */
+    public function setClearOnGet(bool $val): void {}
 
     // === ENTITY ===
 

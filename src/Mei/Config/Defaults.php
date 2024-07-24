@@ -31,8 +31,8 @@ final class Defaults
         'db.username' => UndefinedValue::class,
         'db.password' => UndefinedValue::class,
         'db.database' => UndefinedValue::class,
-        'db.hostname' => 'localhost',
+        'db.hostname' => '', // must default to empty value to allow configuring only hostname/port or socket
         'db.port' => 3306,
-        'db.socket' => '/run/mysqld/mysqld.sock',
+        'db.socket' => '',
     ];
 }

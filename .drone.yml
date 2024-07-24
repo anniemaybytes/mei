@@ -76,3 +76,69 @@ trigger:
         - refs/heads/master
         - refs/pull/**
         - refs/tags/**
+
+---
+kind: pipeline
+name: phinx
+type: docker
+
+services:
+    -   name: mariadb
+        image: mariadb:11.4
+        pull: always
+        environment:
+            MYSQL_RANDOM_ROOT_PASSWORD: yes
+            MYSQL_DATABASE: mei_test
+            MYSQL_USER: drone
+            MYSQL_PASSWORD: w33lkn0wn
+            MYSQL_INITDB_SKIP_TZINFO: yes
+
+steps:
+    -   name: install
+        image: thecodingmachine/php:8.3-v4-cli
+        pull: always
+        environment:
+            COMPOSER_ALLOW_SUPERUSER: 1
+            PHP_EXTENSION_GD: 1
+            PHP_EXTENSION_IMAGICK: 1
+        commands:
+            - composer validate --ansi --no-check-all --no-check-publish
+            - sudo composer install --no-progress --ansi --prefer-dist
+    -   name: await
+        image: albinodrought/drone-wait-for-it
+        pull: always
+        environment:
+            PLUGIN_HOST: mariadb
+            PLUGIN_PORT: 3306
+    -   name: configure
+        image: alpine:3
+        pull: always
+        commands:
+            - echo -e 'mode = staging\n\n[db]\nusername = drone\npassword = w33lkn0wn\ndatabase = mei_test\nhostname = mariadb\nport = 3306' > config/private.ini
+        depends_on:
+            - install
+            - await
+    -   name: seed
+        image: thecodingmachine/php:8.3-v4-cli
+        environment:
+            PHP_EXTENSION_GD: 1
+            PHP_EXTENSION_IMAGICK: 1
+        commands:
+            - composer phinx seed:run -- -e staging
+        depends_on:
+            - configure
+    -   name: migrate
+        image: thecodingmachine/php:8.3-v4-cli
+        environment:
+            PHP_EXTENSION_GD: 1
+            PHP_EXTENSION_IMAGICK: 1
+        commands:
+            - composer phinx migrate -- -e staging
+        depends_on:
+            - seed
+
+trigger:
+    ref:
+        - refs/heads/master
+        - refs/pull/**
+        - refs/tags/**

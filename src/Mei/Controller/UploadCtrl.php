@@ -18,6 +18,7 @@ use Mei\Utilities\Time;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\UploadedFileInterface;
+use Random\RandomException;
 use RuntimeException;
 use Slim\Exception\HttpForbiddenException;
 use Tracy\Debugger;
@@ -38,7 +39,8 @@ final class UploadCtrl extends BaseCtrl
     private static array $allowedUrlScheme = ['http', 'https'];
 
     /**
-     * @throws HttpForbiddenException|JsonException
+     * @throws HttpForbiddenException
+     * @throws JsonException|RandomException
      */
     public function user(Request $request, Response $response, array $args): Response
     {
@@ -138,7 +140,8 @@ final class UploadCtrl extends BaseCtrl
     }
 
     /**
-     * @throws JsonException|HttpForbiddenException
+     * @throws HttpForbiddenException
+     * @throws JsonException
      */
     public function api(Request $request, Response $response, array $args): Response
     {
@@ -176,44 +179,31 @@ final class UploadCtrl extends BaseCtrl
             $curl = new Curl($url);
             $curl->setoptArray(
                 [
-                    CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_POST => false,
-                    CURLOPT_FOLLOWLOCATION => true,
                     CURLOPT_HEADER => false,
-                    CURLOPT_VERBOSE => false,
-                    CURLOPT_SSL_VERIFYPEER => true,
-                    CURLOPT_SSL_VERIFYHOST => 2,
-                    CURLOPT_MAXREDIRS => 3,
                     CURLOPT_HTTPHEADER => ["Host: $host"],
                     CURLOPT_MAXFILESIZE => $this->config['images.max_filesize'],
+                    CURLOPT_TIMEOUT_MS => 0, // unlimited
+                    CURLOPT_CONNECTTIMEOUT_MS => 3000, // 3s
                     CURLOPT_NOPROGRESS => false,
                     CURLOPT_PROGRESSFUNCTION =>
                         fn($ch, $dt, $d, $ut, $u) => (int)($d > $this->config['images.max_filesize']),
                 ]
             );
 
-            $content = $curl->exec();
-            $err = $curl->error();
-            if ($err !== '') {
-                $message = "URL $url encountered cURL error: $err";
-                Debugger::log($message, Debugger::WARNING);
+            if (!$content = $curl->exec()) {
+                $message = "URL $url encountered cURL error: {$curl->error()}";
                 $errors[] = $message;
+
+                Debugger::log($message, Debugger::WARNING);
                 continue;
             }
 
-            $cl = (int)$curl->getInfo(CURLINFO_CONTENT_LENGTH_DOWNLOAD);
-            $respcode = (int)$curl->getInfo(CURLINFO_HTTP_CODE);
-            unset($curl);
+            $rescode = (int)$curl->getInfo(CURLINFO_HTTP_CODE);
+            if ($rescode !== 200) {
+                $message = "Received non-success response $rescode from $url";
+                $errors[] = $message;
 
-            if ($respcode !== 200) {
-                $message = "Received non-success response $respcode from $url";
-                $errors[] = $message;
-                continue;
-            }
-            if (!$content) {
-                $message = "No data received from $url" . ($cl > 0 ? "(expected $cl bytes)" : "") . " with response $respcode";
-                $errors[] = $message;
-                Debugger::log($message, Debugger::WARNING);
                 continue;
             }
 
@@ -225,7 +215,7 @@ final class UploadCtrl extends BaseCtrl
                 }
                 $images[] = $this->processImage($content, $metadata);
             } catch (Exception $e) {
-                Debugger::log($e, Debugger::EXCEPTION);
+                Debugger::log($e, $e instanceof ImagickException ? Debugger::WARNING : Debugger::EXCEPTION);
                 $errors[] = "Encountered error while processing image $url";
             }
         }
@@ -281,9 +271,6 @@ final class UploadCtrl extends BaseCtrl
         return "$name.{$metadata['extension']}";
     }
 
-    /**
-     * @throws RuntimeException
-     */
     private static function saveImage(string $bindata, string $path): void
     {
         if (file_exists($path)) {

@@ -10,6 +10,7 @@ use Mei\Utilities\Encryption;
 use Mei\Utilities\Time;
 use PDO;
 use Psr\Container\ContainerInterface as Container;
+use RuntimeException;
 
 use function DI\autowire;
 use function DI\get;
@@ -27,10 +28,12 @@ final class CLI
             PDO::class => function (Container $di) {
                 $config = $di->get('config');
                 $dsn = "mysql:dbname={$config['db.database']};charset=utf8;";
-                if (isset($config['db.socket'])) {
+                if ($config['db.socket']) {
                     $dsn .= "unix_socket={$config['db.socket']};";
-                } else {
+                } elseif ($config['db.hostname'] && $config['db.port']) {
                     $dsn .= "host={$config['db.hostname']};port={$config['db.port']};";
+                } else {
+                    throw new RuntimeException('Either db.socket or both db.hostname and db.port must be configured');
                 }
 
                 return new PDO(

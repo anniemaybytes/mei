@@ -19,9 +19,7 @@ final class Main extends Base /** @formatter:off */
 {
     protected function addRoutes(): void
     {
-        $app = $this->app;
-
-        $app->group('', function (RouteCollectorProxy $group) {
+        $this->app->group('', function (RouteCollectorProxy $group) {
             // upload
             $group->group('/upload', function (RouteCollectorProxy $group) {
                 $group->post('/user', UploadCtrl::class . ':user')->setName('upload:user');

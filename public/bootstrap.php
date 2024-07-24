@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+if (in_array('phar', stream_get_wrappers(), true)) {
+    stream_wrapper_unregister('phar');
+}
+
 set_error_handler(
     static function (int $errno, string $errstr, string $errfile, int $errline): void {
         error_log("$errstr ($errno) - $errfile:$errline");

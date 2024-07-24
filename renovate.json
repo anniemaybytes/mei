@@ -39,7 +39,8 @@
     {
       "matchPackagePatterns": [
         "^phpstan/phpstan$",
-        "/phpstan-"
+        "/phpstan-",
+        "^overtrue/phplint$"
       ],
       "automerge": true
     }

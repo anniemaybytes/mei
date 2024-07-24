@@ -34,8 +34,12 @@ final class Curl
             $this->curl,
             [
                 CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_ENCODING => '', // let curl decode content if supported
                 CURLOPT_USERAGENT => self::DEFAULT_USER_AGENT,
-                CURLOPT_PROXY => Dispatcher::config('proxy')
+                CURLOPT_TIMEOUT_MS => 3000, // 3s
+                CURLOPT_PROXY => Dispatcher::config('proxy'),
+                CURLOPT_HTTPPROXYTUNNEL => true
             ]
         );
     }

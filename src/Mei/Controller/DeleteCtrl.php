@@ -99,17 +99,14 @@ final class DeleteCtrl extends BaseCtrl
             );
             $curl->setoptArray(
                 [
-                    CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_POST => true,
+                    CURLOPT_CUSTOMREQUEST => 'DELETE',
                     CURLOPT_FOLLOWLOCATION => false,
-                    CURLOPT_SSL_VERIFYPEER => true,
-                    CURLOPT_SSL_VERIFYHOST => 2,
                     CURLOPT_HTTPHEADER => [
                         'Host: api.cloudflare.com',
                         "Authorization: Bearer {$this->config['cloudflare.api']}",
                         'Content-Type: application/json'
                     ],
-                    CURLOPT_CUSTOMREQUEST => 'DELETE',
                     CURLOPT_POSTFIELDS => json_encode(['files' => $urls], JSON_THROW_ON_ERROR)
                 ]
             );
@@ -117,7 +114,6 @@ final class DeleteCtrl extends BaseCtrl
                 Debugger::log("Failed to clear CDN cache: {$curl->error()}", DEBUGGER::WARNING);
                 return $response->withStatus(200)->withJson(['success' => true, 'warnings' => $warnings]);
             }
-            unset($curl);
 
             try {
                 $result = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
