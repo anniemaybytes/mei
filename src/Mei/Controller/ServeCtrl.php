@@ -60,7 +60,7 @@ final class ServeCtrl extends BaseCtrl
         $bindata = self::getImageFromPath($fileEntity->Key);
         $metadata = ImageUtilities::getImageInfo($bindata);
 
-        if (!array_key_exists($metadata['mime'], ImageUtilities::$allowedTypes)) {
+        if (!array_key_exists($metadata['content_type'], ImageUtilities::$allowedTypes)) {
             throw new HttpForbiddenException($request, 'Unallowable MIME type');
         }
 
@@ -92,7 +92,7 @@ final class ServeCtrl extends BaseCtrl
             $fileEntity->UploadTime->getTimestamp() : filemtime(ImageUtilities::getSavePath($fileEntity->Key));
         $expire = Time::now()->add(Time::interval(self::CACHE_MAX_AGE));
 
-        $response = $response->withHeader('Content-Type', $metadata['mime']);
+        $response = $response->withHeader('Content-Type', $metadata['content_type']);
         $response = $response->withHeader('Content-Length', (string)strlen($bindata));
         $response = $response->withHeader(
             'Cache-Control',

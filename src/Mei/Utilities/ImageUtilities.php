@@ -34,7 +34,7 @@ final class ImageUtilities
         return "$dir/$name";
     }
 
-    /** @return array{mime: string, extension: ?string, hash: string, md5: string, length: int} */
+    /** @return array{extension: ?string, content_type: string, hash: string, md5: string, length: int} */
     public static function getImageInfo(string $bindata): array
     {
         if (!$mime = (new finfo(FILEINFO_MIME_TYPE))->buffer($bindata)) {
@@ -42,8 +42,8 @@ final class ImageUtilities
         }
 
         return [
-            'mime' => $mime,
             'extension' => self::$allowedTypes[$mime] ?? null,
+            'content_type' => $mime,
             'hash' => hash('sha256', $bindata . Dispatcher::config('images.legacy.pepper')),
             'md5' => md5($bindata),
             'length' => strlen($bindata)

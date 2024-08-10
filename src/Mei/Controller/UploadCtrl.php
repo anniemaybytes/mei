@@ -20,6 +20,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\UploadedFileInterface;
 use Random\RandomException;
 use RuntimeException;
+use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
 use Tracy\Debugger;
 
@@ -49,29 +50,29 @@ final class UploadCtrl extends BaseCtrl
         }
 
         /**
-         * Token specification:
-         *  tvalid (required): unix timestamp this token is valid until
-         *  mime (optional): specific mime-type from allowable range to restrict newly uploaded images
-         *
-         * Token might additionally contain additional arbitrary keys. Site owner can use the fact that on success
-         * we return whole token, as a way to pass over some additonal data.
-         *
+         * @var array{expires: int, content_type?: string, reference?: mixed} $token
          * @noinspection JsonEncodingApiUsageInspection
-         **/
+         */
         $token = json_decode($this->encryption->decryptUrl($request->getParam('t', '')), true);
-        if (Time::now()->getTimestamp() > ($token['tvalid'] ?? 0)) {
+
+        /** @phpstan-ignore-next-line */
+        if (!is_array($token) || !array_key_exists('expires', $token)) {
+            throw new HttpBadRequestException($request);
+        }
+
+        if (Time::now()->getTimestamp() > $token['expires']) {
             throw new HttpForbiddenException($request);
         }
 
         $allowedTypes = ImageUtilities::$allowedTypes;
-        if (@$token['mime']) {
-            if (array_key_exists($token['mime'], ImageUtilities::$allowedTypes)) {
-                $allowedTypes = [$token['mime'] => ImageUtilities::$allowedTypes[$token['mime']]];
+        if (isset($token['content_type'])) {
+            if (array_key_exists($token['content_type'], ImageUtilities::$allowedTypes)) {
+                $allowedTypes = [$token['content_type'] => ImageUtilities::$allowedTypes[$token['content_type']]];
             } else {
                 return $response
                     ->withStatus(400)
                     ->withJson(
-                        ['success' => false, 'error' => "Unacceptable MIME type restriction ({$token['mime']})"]
+                        ['success' => false, 'error' => "Unacceptable MIME type restriction ({$token['content_type']})"]
                     );
             }
         }
@@ -107,8 +108,8 @@ final class UploadCtrl extends BaseCtrl
                 try {
                     $bindata = $file->getStream()->getContents();
                     $metadata = ImageUtilities::getImageInfo($bindata);
-                    if (!array_key_exists($metadata['mime'], $allowedTypes)) {
-                        $errors[] = "File {$file->getClientFilename()} has MIME type ({$metadata['mime']}) which is not allowable";
+                    if (!array_key_exists($metadata['content_type'], $allowedTypes)) {
+                        $errors[] = "File {$file->getClientFilename()} has MIME type ({$metadata['content_type']}) which is not allowable";
                         continue;
                     }
                     $images[] = $this->processImage($bindata, $metadata);
@@ -125,7 +126,8 @@ final class UploadCtrl extends BaseCtrl
                 ->withJson(['success' => false, 'error' => 'No valid images were processed', 'warnings' => $errors]);
         }
 
-        $c = $this->encryption->encryptUrl(json_encode(['images' => $images, 'token' => $token], JSON_THROW_ON_ERROR));
+        /** @noinspection JsonEncodingApiUsageInspection */
+        $c = $this->encryption->encryptUrl(json_encode(['images' => $images, 'reference' => $token['reference'] ?? null]));
         $s = $this->encryption->generateHmac($c);
 
         return $response
@@ -209,8 +211,8 @@ final class UploadCtrl extends BaseCtrl
 
             try {
                 $metadata = ImageUtilities::getImageInfo($content);
-                if (!array_key_exists($metadata['mime'], ImageUtilities::$allowedTypes)) {
-                    $errors[] = "File $url has MIME type ({$metadata['mime']} which is not allowable";
+                if (!array_key_exists($metadata['content_type'], ImageUtilities::$allowedTypes)) {
+                    $errors[] = "File $url has MIME type ({$metadata['content_type']} which is not allowable";
                     continue;
                 }
                 $images[] = $this->processImage($content, $metadata);

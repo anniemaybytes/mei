@@ -230,15 +230,32 @@ components:
             title: EncryptedToken
             type: object
             properties:
-                mime:
-                    type: string
-                    description: Specific MIME-type from allowable range to restrict newly uploaded images
-                tvalid:
+                expires:
                     type: integer
                     description: Unix time this token is valid until
-            additionalProperties: true
+                content_type:
+                    type: string
+                    nullable: true
+                    description: Specific MIME-type from allowable range to restrict newly uploaded images
+                reference:
+                    nullable: true
+                    description: Any serializable value, passed back as-is in EncryptedCallback
             required:
-                - tvalid
+                - expires
+        EncryptedCallback:
+            title: EncryptedCallback
+            type: object
+            properties:
+                images:
+                    type: array
+                    items:
+                        type: string
+                    description: List of filenames for newly uploaded images
+                reference:
+                    nullable: true
+                    description: Any serializable value, sourced directly from EncryptedToken
+            required:
+                - images
     securitySchemes:
         SimpleHmacSignature:
             type: apiKey
