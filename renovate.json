@@ -39,6 +39,7 @@
     {
       "matchPackagePatterns": [
         "^phpstan/phpstan$",
+        "^phpstan/extension-installer$",
         "/phpstan-",
         "^overtrue/phplint$"
       ],

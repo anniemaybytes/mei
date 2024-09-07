@@ -96,8 +96,9 @@ systemctl start mariadb
 
 echo
 echo Configuring MariaDB...
-echo "DELETE FROM mysql.user WHERE user =''" | mariadb -uroot
-echo "CREATE DATABASE mei" | mariadb -uroot
+echo "DELETE FROM mysql.user WHERE user =''" | mariadb -uroot # mariadb-secure-installation
+echo "DROP DATABASE IF EXISTS test" | mariadb -uroot # mariadb-secure-installation
+echo "CREATE DATABASE mei CHARACTER SET utf8mb3 COLLATE utf8mb3_bin" | mariadb -uroot
 echo "GRANT ALL ON mei.* TO 'vagrant'@localhost IDENTIFIED BY 'vagrant'" | mariadb -uroot
 echo "GRANT ALL ON mei.* TO 'vagrant'@'%' IDENTIFIED BY 'vagrant'" | mariadb -uroot
 
