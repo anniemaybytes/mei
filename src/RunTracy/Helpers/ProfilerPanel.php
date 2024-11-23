@@ -24,6 +24,8 @@ final class ProfilerPanel implements IBarPanel
         $this->profilerService = ProfilerService::getInstance();
     }
 
+    /// IBarPanel Implementation
+
     public function getTab(): string
     {
         $countOfProfiles = count($this->profilerService->getProfiles());
@@ -97,6 +99,8 @@ final class ProfilerPanel implements IBarPanel
             Profiler::isEnabled() ? $table : 'Profiling is disabled.'
         );
     }
+
+    /// End of IBarPanel Implementation
 
     private function getMemoryChart(): string
     {

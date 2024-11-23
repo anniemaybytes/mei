@@ -34,7 +34,8 @@ final class ServeCtrl extends BaseCtrl
     private static array $allowedResizeRange = ['min' => 80, 'max' => 450];
 
     /**
-     * @throws HttpNotFoundException|ImagickException|HttpBadRequestException
+     * @throws ImagickException
+     * @throws HttpNotFoundException|HttpBadRequestException
      */
     public function serve(Request $request, Response $response, array $args): Response
     {

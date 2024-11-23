@@ -6,13 +6,13 @@ namespace Mei\Environment;
 
 use Mei\Cache\IKeyStore;
 use Mei\Cache\NonPersistent;
+use Mei\PDO\PDOLogger;
 use Mei\PDO\PDOTracyBarPanel;
 use Mei\PDO\PDOWrapper;
 use Mei\Utilities\Encryption;
 use Mei\Utilities\Time;
 use PDO;
 use Psr\Container\ContainerInterface as Container;
-use RuntimeException;
 use Slim\HttpCache\CacheProvider;
 use Throwable;
 use Tracy\Debugger;
@@ -37,42 +37,32 @@ final class SAPI
             CacheProvider::class => autowire(),
             // runtime
             PDO::class => function (Container $di) {
-                $config = $di->get('config');
-
-                $dsn = "mysql:dbname={$config['db.database']};charset=utf8;";
-                if ($config['db.socket']) {
-                    $dsn .= "unix_socket={$config['db.socket']};";
-                } elseif ($config['db.hostname'] && $config['db.port']) {
-                    $dsn .= "host={$config['db.hostname']};port={$config['db.port']};";
-                } else {
-                    throw new RuntimeException('Either db.socket or both db.hostname and db.port must be configured');
-                }
-
-                $w = new PDOWrapper(
-                    $dsn,
-                    $config['db.username'],
-                    $config['db.password'],
+                return new PDOWrapper(
+                    $di,
                     [
                         PDO::MYSQL_ATTR_INIT_COMMAND => "set time_zone = '+00:00';",
                         PDO::ATTR_EMULATE_PREPARES => false, // emulated prepares ignore param hinting when binding
                     ]
                 );
+            },
+            PDOLogger::class => function () {
+                $logger = new PDOLogger(PDO::class);
 
-                $bar = new PDOTracyBarPanel($w);
+                $bar = new PDOTracyBarPanel($logger);
                 Debugger::getBar()->addPanel($bar);
                 Debugger::getBlueScreen()->addPanel(
-                    function (?Throwable $e) use ($bar) {
+                    function (?Throwable $e) use ($bar, $logger) {
                         if ($e) {
                             return null;
                         }
                         return [
-                            'tab' => 'PDO',
+                            'tab' => $logger->getProvider() . ' queries',
                             'panel' => $bar->getPanel()
                         ];
                     }
                 );
 
-                return $w;
+                return $logger;
             },
             IKeyStore::class => function () {
                 return new NonPersistent();

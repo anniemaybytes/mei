@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Mei\PDO;
 
+use ArrayAccess;
 use PDO;
 use PDOException;
 use PDOStatement;
+use Psr\Container\ContainerInterface as Container;
+use RuntimeException;
 use Tracy\Debugger;
 
 /**
@@ -16,49 +19,42 @@ use Tracy\Debugger;
  */
 final class PDOWrapper extends PDO
 {
-    /**
-     * @var array $transactionQueue
-     */
-    private array $transactionQueue = [];
+    protected Container $di;
+    protected ArrayAccess $config;
 
-    /**
-     * Logged queries.
-     *
-     * @var array
-     */
-    private array $log = [];
+    private PDOLogger $logger;
 
-    /**
-     * PDOInstrumentationWrapper constructor.
-     *
-     * @param string $dsn
-     * @param string|null $username
-     * @param string|null $passwd
-     * @param array|null $options
-     */
-    public function __construct(
-        string $dsn,
-        ?string $username = null,
-        ?string $passwd = null,
-        ?array $options = null
-    ) {
+    private array $transactions = [];
+
+    public function __construct(Container $di, ?array $options = null)
+    {
+        $this->di = $di;
+        $this->config = $di->get('config');
+        $this->logger = $di->get(PDOLogger::class);
+
+        $dsn = "mysql:dbname={$this->config['db.database']};charset=utf8;";
+        if ($this->config['db.socket']) {
+            $dsn .= "unix_socket={$this->config['db.socket']};";
+        } elseif ($this->config['db.hostname'] && $this->config['db.port']) {
+            $dsn .= "host={$this->config['db.hostname']};port={$this->config['db.port']};";
+        } else {
+            throw new RuntimeException('Either db.socket or both db.hostname and db.port must be configured');
+        }
+
         parent::__construct(
             $dsn,
-            $username,
-            $passwd,
+            $this->config['db.username'],
+            $this->config['db.password'],
             ([PDO::ATTR_PERSISTENT => false, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION] + $options)
         );
-        $this->setAttribute(
-            PDO::ATTR_STATEMENT_CLASS,
-            [PDOStatementWrapper::class, [$this]]
-        );
+        $this->setAttribute(PDO::ATTR_STATEMENT_CLASS, [PDOStatementWrapper::class, [$this, $this->logger]]);
     }
 
     public function __destruct()
     {
-        if ($this->transactionQueue) {
+        if ($this->transactions) {
             Debugger::log('PDO transaction queue was not empty on destruct!', Debugger::WARNING);
-            while (count($this->transactionQueue) > 0) {
+            while (count($this->transactions) > 0) {
                 $this->rollBack();
             }
         }
@@ -75,31 +71,31 @@ final class PDOWrapper extends PDO
      */
     public function beginTransaction(): bool
     {
-        $tid = str_replace('.', '', (string)microtime(true)) . '_' . count($this->transactionQueue);
-        $this->transactionQueue[] = $tid; // ... and push it to array
+        $tid = str_replace('.', '', (string)microtime(true)) . '_' . count($this->transactions);
+        $this->transactions[] = $tid;
 
         if (!parent::inTransaction()) {
             $start = microtime(true);
-            $res = parent::beginTransaction(); // creating new parent transaction
-            $this->addLog('START TRANSACTION', microtime(true) - $start);
+            $res = parent::beginTransaction(); // creating new parent
+            $this->logger->recordEvent('START TRANSACTION', microtime(true) - $start);
             return $res;
         }
 
-        return (bool)$this->exec('SAVEPOINT tq_' . $tid); // creating new child transaction via savepoint
+        return (bool)$this->exec('SAVEPOINT tq_' . $tid); // creating new child via savepoint
     }
 
     /** @inheritDoc */
     public function commit(): bool
     {
-        array_pop($this->transactionQueue);
+        array_pop($this->transactions);
 
-        if (count($this->transactionQueue) !== 0) {
-            return true;
-        } // there are still transactions left, do nothing as theyll be commited by parent transaction
+        if (count($this->transactions) !== 0) {
+            return true; // there are still transactions left, do nothing as they'll be commited by parent
+        }
 
         $start = microtime(true);
         $res = parent::commit();
-        $this->addLog('COMMIT', microtime(true) - $start);
+        $this->logger->recordEvent('COMMIT', microtime(true) - $start);
         return $res;
     }
 
@@ -109,12 +105,12 @@ final class PDOWrapper extends PDO
      */
     public function rollBack(): bool
     {
-        $tid = array_pop($this->transactionQueue); // pop transactionId
+        $tid = array_pop($this->transactions); // pop transactionId
 
-        if (count($this->transactionQueue) === 0) { // this is parent transaction, do transaction rollback
+        if (count($this->transactions) === 0) { // this is parent transaction, do transaction rollback
             $start = microtime(true);
             $res = parent::rollBack();
-            $this->addLog('ROLLBACK', microtime(true) - $start);
+            $this->logger->recordEvent('ROLLBACK', microtime(true) - $start);
         } else {
             $res = (bool)parent::exec('ROLLBACK TO tq_' . $tid); // this is child transaction, rollback to savepoint
         }
@@ -129,7 +125,7 @@ final class PDOWrapper extends PDO
 
         $res = parent::query(...func_get_args());
 
-        $this->addLog($query, microtime(true) - $start);
+        $this->logger->recordEvent($query, microtime(true) - $start);
 
         return $res;
     }
@@ -148,33 +144,8 @@ final class PDOWrapper extends PDO
             sleep(max([2, (3 - $retries) * 3])); // wait longer as attempts increase
             return $this->exec($statement, $retries - 1);
         }
-        $this->addLog($statement, microtime(true) - $start);
+        $this->logger->recordEvent($statement, microtime(true) - $start);
 
         return $res;
-    }
-
-    /**
-     * Add query to logged queries.
-     *
-     * @param string $statement
-     * @param float $time Elapsed seconds with microseconds
-     */
-    public function addLog(string $statement, float $time): void
-    {
-        $query = [
-            'statement' => $statement,
-            'time' => $time * 1000
-        ];
-        $this->log[] = $query;
-    }
-
-    /**
-     * Return logged queries.
-     *
-     * @return array Logged queries
-     */
-    public function getLog(): array
-    {
-        return $this->log;
     }
 }

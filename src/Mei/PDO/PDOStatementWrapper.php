@@ -15,13 +15,15 @@ use PDOStatement;
  */
 final class PDOStatementWrapper extends PDOStatement
 {
-    private PDOWrapper $PDO;
-    private array $bindings;
+    private PDOWrapper $pdo;
+    private PDOLogger $logger;
 
-    protected function __construct(PDOWrapper $PDO)
+    private array $bindings = [];
+
+    protected function __construct(PDOWrapper $PDO, PDOLogger $logger)
     {
-        $this->PDO = $PDO;
-        $this->bindings = [];
+        $this->pdo = $PDO;
+        $this->logger = $logger;
     }
 
     /**
@@ -75,7 +77,7 @@ final class PDOStatementWrapper extends PDOStatement
             return $this->execute($params, $retries - 1);
         }
 
-        $this->PDO->addLog($statement, microtime(true) - $start);
+        $this->logger->recordEvent($statement, microtime(true) - $start);
 
         return $out;
     }
@@ -84,7 +86,7 @@ final class PDOStatementWrapper extends PDOStatement
     {
         $indexed = array_is_list($bindings);
         foreach ($bindings as $param => $value) {
-            $value = (is_numeric($value) || $value === null) ? $value : $this->PDO->quote($value);
+            $value = (is_numeric($value) || $value === null) ? $value : $this->pdo->quote($value);
             $value = $value ?? 'null';
             if ($indexed) {
                 $query = preg_replace('/\?/', $value, $query, 1);

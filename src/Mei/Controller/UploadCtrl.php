@@ -193,7 +193,7 @@ final class UploadCtrl extends BaseCtrl
                 ]
             );
 
-            if (!$content = $curl->exec()) {
+            if (($content = $curl->exec()) === false) {
                 $message = "URL $url encountered cURL error: {$curl->error()}";
                 $errors[] = $message;
 
@@ -201,9 +201,8 @@ final class UploadCtrl extends BaseCtrl
                 continue;
             }
 
-            $rescode = (int)$curl->getInfo(CURLINFO_HTTP_CODE);
-            if ($rescode !== 200) {
-                $message = "Received non-success response $rescode from $url";
+            if (($code = $curl->getInfo(CURLINFO_RESPONSE_CODE)) !== 200) {
+                $message = "Received non-success response $code from $url";
                 $errors[] = $message;
 
                 continue;

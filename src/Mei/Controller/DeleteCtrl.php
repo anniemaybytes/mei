@@ -34,7 +34,8 @@ final class DeleteCtrl extends BaseCtrl
     private Encryption $encryption;
 
     /**
-     * @throws JsonException|HttpForbiddenException
+     * @throws JsonException
+     * @throws HttpForbiddenException
      */
     public function delete(Request $request, Response $response, array $args): Response
     {
@@ -110,8 +111,13 @@ final class DeleteCtrl extends BaseCtrl
                     CURLOPT_POSTFIELDS => json_encode(['files' => $urls], JSON_THROW_ON_ERROR)
                 ]
             );
-            if (!$result = $curl->exec()) {
+            if (($result = $curl->exec()) === false) {
                 Debugger::log("Failed to clear CDN cache: {$curl->error()}", DEBUGGER::WARNING);
+                return $response->withStatus(200)->withJson(['success' => true, 'warnings' => $warnings]);
+            }
+
+            if (($code = $curl->getInfo(CURLINFO_RESPONSE_CODE)) >= 400) {
+                Debugger::log("Failed to clear CDN cache: got non-success respone code $code", DEBUGGER::WARNING);
                 return $response->withStatus(200)->withJson(['success' => true, 'warnings' => $warnings]);
             }
 

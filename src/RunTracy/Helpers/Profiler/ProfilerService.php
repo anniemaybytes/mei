@@ -56,9 +56,7 @@ final class ProfilerService implements SingletonInterface
         return $profile;
     }
 
-    /**
-     * @return Profile[]
-     */
+    /** @return Profile[] */
     public function getProfiles(): array
     {
         return $this->profiles;

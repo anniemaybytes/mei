@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Mei\PHPStan;
 
 use DI\Attribute\Inject;
+use PHPStan\Reflection\MissingPropertyFromReflectionException;
 use PHPStan\Reflection\PropertyReflection;
+use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Properties\ReadWritePropertiesExtension;
-use ReflectionClass;
-use ReflectionException;
 
 /**
  * Class PropertiesExtension
@@ -17,20 +17,30 @@ use ReflectionException;
  */
 class PropertiesExtension implements ReadWritePropertiesExtension
 {
+    private ReflectionProvider $reflectionProvider;
+
+    public function __construct(ReflectionProvider $reflectionProvider)
+    {
+        $this->reflectionProvider = $reflectionProvider;
+    }
+
     public function isAlwaysRead(PropertyReflection $property, string $propertyName): bool
     {
         return false;
     }
 
-    /** @throws ReflectionException */
     public function isAlwaysWritten(PropertyReflection $property, string $propertyName): bool
     {
         $declaringClass = $property->getDeclaringClass();
         $className = $declaringClass->getName();
 
-        $reflectionClass = new ReflectionClass($className);
-        $property = $reflectionClass->getProperty($propertyName);
-        $attributes = $property->getAttributes(Inject::class);
+        $reflectionClass = $this->reflectionProvider->getClass($className);
+        try {
+            $property = $reflectionClass->getNativeProperty($propertyName);
+        } catch (MissingPropertyFromReflectionException) {
+            return false;
+        }
+        $attributes = $property->getNativeReflection()->getAttributes(Inject::class);
 
         return sizeof($attributes) >= 1;
     }
