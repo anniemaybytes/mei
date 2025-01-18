@@ -88,7 +88,7 @@ type: docker
 
 services:
     -   name: mariadb
-        image: mariadb:11.5
+        image: mariadb:11.4
         pull: always
         environment:
             MYSQL_RANDOM_ROOT_PASSWORD: yes

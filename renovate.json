@@ -37,11 +37,11 @@
       ]
     },
     {
-      "matchPackagePatterns": [
-        "^phpstan/phpstan$",
-        "^phpstan/extension-installer$",
-        "/phpstan-",
-        "^overtrue/phplint$"
+      "matchPackageNames": [
+        "phpstan/phpstan",
+        "//phpstan-/",
+        "phpstan/extension-installer",
+        "overtrue/phplint"
       ],
       "automerge": true
     }
