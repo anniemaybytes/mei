@@ -26,7 +26,7 @@
     "slim/psr7": "1.7.1",
     "slim/http": "1.4.0",
     "slim/http-cache": "1.2.0",
-    "robmorgan/phinx": "0.16.8",
+    "robmorgan/phinx": "0.16.9",
     "jdorn/sql-formatter": "dev-master#7ef9b85961956aa572413693e1194b60f50ab9ab",
     "ext-xml": "*",
     "ext-json": "*",
@@ -50,14 +50,14 @@
   "require-dev": {
     "roave/security-advisories": "dev-latest",
     "phpstan/extension-installer": "1.4.3",
-    "phpstan/phpstan": "2.1.15",
+    "phpstan/phpstan": "2.1.17",
     "phpstan/phpstan-deprecation-rules": "2.0.3",
     "phpstan/phpstan-phpunit": "2.0.6",
     "overtrue/phplint": "9.6.2",
     "squizlabs/php_codesniffer": "3.13.0",
     "mikey179/vfsstream": "1.6.12",
     "dg/bypass-finals": "1.9.0",
-    "phpunit/phpunit": "12.1.5"
+    "phpunit/phpunit": "12.1.6"
   },
   "autoload-dev": {
     "psr-0": {
