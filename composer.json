@@ -22,7 +22,7 @@
     "slim/slim": "4.14.0",
     "tracy/tracy": "2.10.10",
     "paragonie/random-lib": "2.0.3",
-    "php-di/php-di": "7.0.10",
+    "php-di/php-di": "7.0.11",
     "slim/psr7": "1.7.1",
     "slim/http": "1.4.0",
     "slim/http-cache": "1.2.0",
