@@ -36,7 +36,7 @@ final class Main extends Base /** @formatter:off */
             )->setName('serve');
 
             // alive check
-            $group->get('/alive', AliveCtrl::class . ':check');
+            $group->get('/alive', AliveCtrl::class . ':check')->setName('alive');
         });
     }
 }

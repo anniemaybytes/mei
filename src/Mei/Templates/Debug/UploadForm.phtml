@@ -1,0 +1,37 @@
+<?php /** @noinspection PhpUnhandledExceptionInspection */
+
+declare(strict_types=1);
+
+use Mei\Dispatcher;
+use Mei\Utilities\Encryption;
+use Mei\Utilities\Time;
+use Slim\Routing\RouteParser;
+use Tracy\Debugger;
+
+$data = [
+    'expires' => Time::interval('+30 minutes'),
+    'reference' => [
+        'debug' => true,
+        'remote_addr' => $_SERVER['REMOTE_ADDR']
+    ]
+];
+
+Debugger::barDump($data, 'Token');
+
+$token = Dispatcher::di()->get(Encryption::class)->encryptUrl(json_encode($data, JSON_THROW_ON_ERROR));
+$signature = Dispatcher::di()->get(Encryption::class)->generateHmac($token);
+
+$url = Dispatcher::di()->get(RouteParser::class)->relativeUrlFor('upload:user', [], ['t' => $token, 's' => $signature]);
+?>
+
+<html>
+    <head>
+        <title>Mei Image Server :: Upload</title>
+    </head>
+    <body>
+        <form action="<?=$url?>" method="post" enctype="multipart/form-data">
+            <input type="file" class="upload" name="image[]" multiple accept="image/jpeg,image/gif,image/png,image/webp" />
+            <input type="submit" value="Upload" />
+        </form>
+    </body>
+</html>

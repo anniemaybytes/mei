@@ -1,0 +1,24 @@
+<?php
+
+declare(strict_types=1);
+
+use Mei\Dispatcher;
+use Slim\Routing\RouteParser;
+
+?>
+
+<html>
+    <head>
+        <title>Mei Image Server</title>
+    </head>
+    <body>
+        <ul>
+            <li>
+                <a href="<?=Dispatcher::di()->get(RouteParser::class)->relativeUrlFor('alive')?>">Alive</a>
+            </li>
+            <li>
+                <a href="<?=Dispatcher::di()->get(RouteParser::class)->relativeUrlFor('upload')?>">Upload</a>
+            </li>
+        </ul>
+    </body>
+</html>

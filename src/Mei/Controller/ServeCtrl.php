@@ -76,7 +76,7 @@ final class ServeCtrl extends BaseCtrl
 
             try {
                 $image = new ImagickUtility($bindata, $metadata);
-                $bindata = $image->resize($width, $height, $crop ?? false)->getImagesBlob();
+                $bindata = $image->makeThumbnail($width, $height, $crop ?? false)->getImagesBlob();
             } catch (ImagickException $e) {
                 Debugger::log($e, Debugger::WARNING);
             } finally {

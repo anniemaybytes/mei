@@ -23,6 +23,7 @@ final class Imagick
         $image->setImageFormat($metadata['extension'] ?? '');
         $image->setImageCompressionQuality(90);
         $image->setOption('png:compression-level', '9');
+        $image->setOption('png:exclude-chunk', 'date,zTXt,tEXt,tIME');
 
         $this->image = $image;
     }
@@ -30,7 +31,6 @@ final class Imagick
     public function __destruct()
     {
         $this->image->clear();
-        $this->image->destroy();
     }
 
     /** @throws ImagickException */
@@ -47,6 +47,8 @@ final class Imagick
                 $this->image->removeImageProfile($p);
             }
         }
+        $this->image->setOption('png:include-chunk', 'none,cHRM,gAMA,iCCP,sBIT,sRGB,cICP,mDCV,cLLI,tRNS,bKGD,sPLT');
+
         return $this;
     }
 
@@ -59,7 +61,7 @@ final class Imagick
      *
      * @throws ImagickException
      */
-    public function resize(int $maxWidth, int $maxHeight, bool $crop = false): self
+    public function makeThumbnail(int $maxWidth, int $maxHeight, bool $crop = false): self
     {
         if ($this->image->getNumberImages() > 1) {
             /*
@@ -68,6 +70,8 @@ final class Imagick
              */
             return $this;
         }
+
+        $this->image->setOption('png:bit-depth', '8');
 
         $crop ?
             $this->image->cropThumbnailImage($maxWidth, $maxHeight) :

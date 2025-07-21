@@ -17,6 +17,7 @@
   "minimumReleaseAge": "3 days",
   "semanticCommits": "disabled",
   "ignoreDeps": [
+    "mariadb",
     "roave/security-advisories",
     "thecodingmachine/php"
   ],

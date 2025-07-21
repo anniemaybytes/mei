@@ -35,6 +35,10 @@ final class Application
             new R\Main($app),
         ]);
 
+        if ($di->get('config')['mode'] === 'development') { // install debug-only routes
+            $di->set('routes', array_merge($di->get('routes'), [new R\Debug($app)]));
+        }
+
         if ($di->get('config')['mode'] === 'production') { // this explicitly uses production only on purpose
             $app->getRouteCollector()->setCacheFile(BASE_ROOT . '/routes.cache.php');
         }
