@@ -35,7 +35,7 @@ final class PDOStatementWrapper extends PDOStatement
         mixed $param,
         mixed &$var,
         int $type = PDO::PARAM_INT,
-        int $length = null,
+        ?int $length = null,
         mixed $options = null
     ): bool {
         $this->bindings[$param] = $var;
@@ -51,7 +51,7 @@ final class PDOStatementWrapper extends PDOStatement
     }
 
     /** @inheritDoc */
-    public function execute(array $params = null, int $retries = 3): bool
+    public function execute(?array $params = null, int $retries = 3): bool
     {
         if (is_array($params)) {
             $this->bindings = $params;

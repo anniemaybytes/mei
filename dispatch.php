@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 const BASE_ROOT = __DIR__;
-const ERROR_REPORTING = E_ALL & ~(E_STRICT | E_NOTICE | E_DEPRECATED);
+const ERROR_REPORTING = E_ALL & ~(E_NOTICE | E_DEPRECATED);
 require_once BASE_ROOT . '/vendor/autoload.php';
 
 use Mei\Application;

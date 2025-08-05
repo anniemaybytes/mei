@@ -27,13 +27,13 @@ find /etc/apt/sources.list.d -name "*.list" -type f -exec \
     -o Dir::Etc::sourceparts="-" \
     -o APT::Get::List-Cleanup="0" \
     dist-upgrade \; # https://github.com/oerdnj/deb.sury.org/issues/1682
-apt-get -qq -y -o Dpkg::Options::="--force-confnew" install php8.3 php8.3-xdebug php8.3-imagick php8.3-xml php8.3-fpm \
-    php8.3-cli php8.3-gd php8.3-curl php8.3-mysql php8.3-bcmath php8.3-imagick php8.3-mbstring pv curl git unzip zip \
+apt-get -qq -y -o Dpkg::Options::="--force-confnew" install php8.4 php8.4-xdebug php8.4-imagick php8.4-xml php8.4-fpm \
+    php8.4-cli php8.4-gd php8.4-curl php8.4-mysql php8.4-bcmath php8.4-imagick php8.4-mbstring pv curl git unzip zip \
     htop iotop nginx libmysqlclient18 libmariadb3 mariadb-server imagemagick
 
 echo
 echo Setting up packages...
-rm -f /etc/php/8.3/cli/conf.d/20-xdebug.ini
+rm -f /etc/php/8.4/cli/conf.d/20-xdebug.ini
 rm -rf /etc/nginx/{sites,mods}-enabled
 rm -rf /etc/nginx/{sites,mods}-available
 rm -rf /etc/nginx/conf.d
@@ -75,13 +75,13 @@ echo
 echo Configuring daemons...
 systemctl daemon-reload
 systemctl disable nginx
-systemctl disable php8.3-fpm
+systemctl disable php8.4-fpm
 systemctl disable mariadb
 
 echo
 echo Stopping daemons...
 systemctl stop nginx
-systemctl stop php8.3-fpm
+systemctl stop php8.4-fpm
 systemctl stop mariadb
 systemctl stop cron
 
@@ -129,5 +129,5 @@ su vagrant -s /bin/bash -c 'composer phinx migrate'
 echo
 echo Starting daemons...
 systemctl start nginx
-systemctl start php8.3-fpm
+systemctl start php8.4-fpm
 systemctl start cron
