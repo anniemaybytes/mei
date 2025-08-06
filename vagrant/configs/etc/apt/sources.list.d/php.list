@@ -1,1 +1,1 @@
-deb https://packages.sury.org/php/ bookworm main
+deb [signed-by=/etc/apt/keyrings/debsuryorg-archive.gpg] https://packages.sury.org/php/ bookworm main

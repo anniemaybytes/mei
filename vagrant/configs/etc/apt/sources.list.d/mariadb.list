@@ -1,1 +1,1 @@
-deb [arch=amd64] https://ftp.bme.hu/pub/mirrors/mariadb/repo/11.4/debian bookworm main
+deb [signed-by=/etc/apt/keyrings/mariadb-org.gpg arch=amd64] https://ftp.bme.hu/pub/mirrors/mariadb/repo/11.4/debian bookworm main
