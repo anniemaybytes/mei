@@ -1,9 +1,14 @@
 {
   "extends": [
-    "config:recommended",
+    "config:best-practices",
     "docker:disableMajor",
+    "security:openssf-scorecard",
     ":automergeLinters",
     ":automergeTesters"
+  ],
+  "ignorePresets": [
+    "mergeConfidence:all-badges",
+    "mergeConfidence:age-confidence-badges"
   ],
   "labels": [
     "kind/deps"
@@ -14,12 +19,10 @@
       "kind/security"
     ]
   },
-  "minimumReleaseAge": "3 days",
   "semanticCommits": "disabled",
   "ignoreDeps": [
     "mariadb",
-    "roave/security-advisories",
-    "thecodingmachine/php"
+    "roave/security-advisories"
   ],
   "lockFileMaintenance": {
     "enabled": true,

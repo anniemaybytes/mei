@@ -8,19 +8,19 @@ gen/*
 .settings/*
 .buildpath
 .project
-.phplint.cache/*
+.phplint-cache/*
 .phpcs-cache
+.phpstan-cache/*
 desktop.ini
-composer.phar
-
-# dynamic vendor stuff
-vendor/*
-node_modules/*
 
 # general extensions of files we dont want
 *.sql
 *.sql.gz
 *.log
+
+# dynamic vendor stuff
+vendor/*
+node_modules/*
 
 # project dirs
 /logs/*
@@ -36,3 +36,4 @@ node_modules/*
 # these files might exist on production and we dont really want them
 /*.sh
 /scripts/*
+composer.phar

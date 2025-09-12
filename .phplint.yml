@@ -5,3 +5,4 @@ extensions:
     - php
 exclude:
     - vendor
+cache-dir: .phplint-cache

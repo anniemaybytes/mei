@@ -4,6 +4,7 @@ parameters:
         - src
         - dispatch.php
         - public/bootstrap.php
+    tmpDir: .phpstan-cache
     bootstrapFiles:
         - phpstan.bootstrap.php
     inferPrivatePropertyTypeFromConstructor: true

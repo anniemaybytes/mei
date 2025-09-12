@@ -19,10 +19,10 @@
   },
   "require": {
     "php": "~8.4",
-    "slim/slim": "4.14.0",
+    "slim/slim": "4.15.0",
     "tracy/tracy": "2.10.10",
     "paragonie/random-lib": "2.0.3",
-    "php-di/php-di": "7.0.11",
+    "php-di/php-di": "7.1.1",
     "slim/psr7": "1.7.1",
     "slim/http": "1.4.0",
     "slim/http-cache": "1.2.0",
@@ -50,14 +50,14 @@
   "require-dev": {
     "roave/security-advisories": "dev-latest",
     "phpstan/extension-installer": "1.4.3",
-    "phpstan/phpstan": "2.1.21",
+    "phpstan/phpstan": "2.1.22",
     "phpstan/phpstan-deprecation-rules": "2.0.3",
     "phpstan/phpstan-phpunit": "2.0.7",
     "overtrue/phplint": "9.6.2",
-    "squizlabs/php_codesniffer": "3.13.2",
+    "squizlabs/php_codesniffer": "3.13.4",
     "mikey179/vfsstream": "1.6.12",
     "dg/bypass-finals": "1.9.0",
-    "phpunit/phpunit": "12.2.9"
+    "phpunit/phpunit": "12.3.8"
   },
   "autoload-dev": {
     "psr-0": {
