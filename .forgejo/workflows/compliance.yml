@@ -27,13 +27,13 @@ jobs:
                     extensions: ${{ env.PHP_EXTENSIONS }}
                     key: cache-v1
             -   name: Cache extensions
-                uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+                uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
                 with:
                     path: ${{ steps.ext-cache.outputs.dir }}
                     key: ${{ steps.ext-cache.outputs.key }}
                     restore-keys: ${{ steps.ext-cache.outputs.key }}
             -   name: Set up PHP
-                uses: shivammathur/setup-php@ec406be512d7077f68eed36e63f4d91bc006edc4 # v2
+                uses: shivammathur/setup-php@bf6b4fbd49ca58e4608c9c89fba0b8d90bd2a39f # v2
                 with:
                     php-version: ${{ env.PHP_VERSION }}
                     extensions: ${{ env.PHP_EXTENSIONS }}
@@ -45,7 +45,7 @@ jobs:
                 id: deps-cache
                 run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
             -   name: Cache dependencies
-                uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+                uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
                 with:
                     path: ${{ steps.deps-cache.outputs.dir }}
                     key: ${{ runner.os }}-${{ runner.arch }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -55,7 +55,7 @@ jobs:
                     composer validate --ansi --no-check-all --no-check-publish
                     composer install --no-progress --ansi --prefer-dist
             -   name: Cache linters
-                uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+                uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
                 with:
                     path: |
                         .phpstan-cache
