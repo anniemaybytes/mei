@@ -42,7 +42,7 @@ class PropertiesExtension implements ReadWritePropertiesExtension
         }
         $attributes = $property->getNativeReflection()->getAttributes(Inject::class);
 
-        return sizeof($attributes) >= 1;
+        return count($attributes) >= 1;
     }
 
     public function isInitialized(PropertyReflection $property, string $propertyName): bool
