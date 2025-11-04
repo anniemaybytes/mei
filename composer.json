@@ -20,7 +20,7 @@
   "require": {
     "php": "~8.4",
     "slim/slim": "4.15.0",
-    "tracy/tracy": "2.10.10",
+    "tracy/tracy": "2.11.0",
     "paragonie/random-lib": "2.0.3",
     "php-di/php-di": "7.1.1",
     "slim/psr7": "1.7.1",
@@ -57,7 +57,7 @@
     "squizlabs/php_codesniffer": "4.0.0",
     "mikey179/vfsstream": "1.6.12",
     "dg/bypass-finals": "1.9.0",
-    "phpunit/phpunit": "12.4.1"
+    "phpunit/phpunit": "12.4.2"
   },
   "autoload-dev": {
     "psr-0": {
