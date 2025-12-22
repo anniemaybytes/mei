@@ -1,12 +1,11 @@
-name: compliance
+name: audit
 
 on:
-    push:
-        branches:
-            - master
     pull_request:
         branches:
             - master
+        paths:
+            - composer.lock
         types: [ opened, synchronize, reopened ]
 
 env:
@@ -14,7 +13,7 @@ env:
     PHP_EXTENSIONS: xml, gd, imagick, curl, mysql, bcmath, mbstring
 
 jobs:
-    backend:
+    composer:
         runs-on: ubuntu-24.04
         steps:
             -   name: Checkout
@@ -49,24 +48,11 @@ jobs:
                 with:
                     path: ${{ steps.deps-cache.outputs.dir }}
                     key: ${{ runner.os }}-${{ runner.arch }}-composer-${{ hashFiles('**/composer.lock') }}
-                    restore-keys: ${{ runner.os }}-${{ runner.arch }}-composer-
+                    restore-keys: |
+                        ${{ runner.os }}-${{ runner.arch }}-composer-
             -   name: Install dependencies
                 run: |
                     composer validate --ansi --no-check-all --no-check-publish
                     composer install --no-progress --ansi --prefer-dist
-            -   name: Cache linters
-                uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5
-                with:
-                    path: |
-                        .phpstan-cache
-                        .phplint-cache
-                        .phpcs-cache
-                    key: ${{ runner.os }}-${{ runner.arch }}-linters-${{ forge.run_id }}
-                    restore-keys: |
-                        ${{ runner.os }}-${{ runner.arch }}-linters-
-            -   name: PHPLint
-                run: composer phplint
-            -   name: PHPStan
-                run: composer phpstan
-            -   name: PHP_CodeSniffer
-                run: composer phpcs
+            -   name: Audit dependencies
+                run: composer audit --ansi

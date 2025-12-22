@@ -2,7 +2,6 @@
   "extends": [
     "config:best-practices",
     "docker:disableMajor",
-    "security:openssf-scorecard",
     ":automergeLinters",
     ":automergeTesters",
     ":automergeDigest"
