@@ -39,8 +39,8 @@ rm -rf /etc/nginx/{sites,mods}-available
 rm -rf /etc/nginx/conf.d
 cd /vagrantroot/configs
 cp -av * /
-chown -R root:root /etc/mysql/conf.d /etc/cron.d
-find /etc/mysql -name "*.cnf" -type f -exec chmod 644 '{}' \;
+chown -R root:root /etc/mysql/mariadb.conf.d /etc/cron.d
+find /etc/mysql/ -name "*.cnf" -type f -exec chmod 644 '{}' \;
 find /etc/cron.d/ -type f -exec chmod 644 '{}' \;
 echo never >/sys/kernel/mm/transparent_hugepage/defrag
 echo never >/sys/kernel/mm/transparent_hugepage/enabled
